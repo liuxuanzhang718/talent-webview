@@ -1495,7 +1495,7 @@
             if (missing.length > 0) {
                 const msg = document.getElementById('questionsError');
                 msg.style.display = 'block';
-                msg.textContent = `还有 ${missing.length} 道题未完成：第 ${missing.join('、')} 题。`;
+                msg.textContent = `还有 ${missing.length} 道题未完成，请继续完成后提交。`;
                 const firstMissingMeta = questionRegistry.find(item => item.number === missing[0]);
                 const firstMissing = firstMissingMeta && document.querySelector(`[data-question-name="${firstMissingMeta.name}"]`);
                 if (firstMissing) {
