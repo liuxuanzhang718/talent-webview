@@ -280,10 +280,10 @@
         .question-progress-rail {
             display: none;
             position: fixed;
-            right: 4px;
+            right: 1px;
             top: 120px;
             bottom: 96px;
-            width: 18px;
+            width: 10px;
             z-index: 1500;
             pointer-events: auto;
         }
@@ -313,34 +313,34 @@
             top: 0;
             bottom: 0;
             left: 50%;
-            width: 3px;
+            width: 2px;
             transform: translateX(-50%);
-            background: rgba(120, 120, 120, 0.24);
+            background: rgba(120, 120, 120, 0.14);
             border-radius: 999px;
         }
         .question-progress-dot {
             position: absolute;
             left: 50%;
-            width: 12px;
-            height: 3px;
+            width: 8px;
+            height: 2px;
             border-radius: 999px;
             transform: translate(-50%, -50%);
-            background: rgba(120, 120, 120, 0.2);
+            background: transparent;
             border: none;
             box-shadow: none;
             cursor: pointer;
             transition: transform 0.2s ease, background 0.2s ease, width 0.2s ease, height 0.2s ease;
         }
         .question-progress-dot.answered {
-            background: rgba(0, 184, 148, 0.85);
+            background: transparent;
         }
         .question-progress-dot.missing {
             background: #ff7675;
         }
         .question-progress-dot:hover,
         .question-progress-dot.current {
-            width: 16px;
-            height: 4px;
+            width: 10px;
+            height: 2px;
             transform: translate(-50%, -50%);
         }
         .question-progress-dot.current {
@@ -403,11 +403,11 @@
             .report-navigation { flex-direction: column; }
             .status-options { grid-template-columns: 1fr 1fr; }
             .container { padding: 0 8px; }
-            .question-progress-rail { right: 1px; top: 88px; bottom: 82px; width: 14px; }
+            .question-progress-rail { right: 0; top: 88px; bottom: 82px; width: 8px; }
             .question-progress-summary { min-width: 34px; padding: 4px 6px; font-size: 9px; bottom: -48px; }
-            .question-progress-dot { width: 10px; height: 2px; }
+            .question-progress-dot { width: 6px; height: 2px; }
             .question-progress-dot:hover,
-            .question-progress-dot.current { width: 14px; height: 3px; }
+            .question-progress-dot.current { width: 8px; height: 2px; }
             .debug-fab { right: 12px; bottom: 16px; padding: 12px 16px; font-size: 13px; }
             .step { padding: 18px 10px; border-radius: 16px; margin-bottom: 16px; }
             #step5 { padding: 12px 6px 18px; }
