@@ -598,6 +598,8 @@
         const isReportMode = getURLParameter('mode') === 'report';
         const questionRegistry = [];
         let questionValidationTriggered = false;
+        let currentVisibleQuestionName = '';
+        let scrollTicking = false;
 
         // URL参数解析工具函数
         function getURLParameter(name) {
@@ -1250,6 +1252,54 @@
             });
         }
 
+        function updateCurrentQuestionMarker() {
+            if (currentStep !== 4) return;
+
+            const questions = questionRegistry
+                .map((item) => ({
+                    item,
+                    el: document.querySelector(`[data-question-name="${item.name}"]`)
+                }))
+                .filter(({ el }) => !!el);
+
+            if (!questions.length) return;
+
+            const viewportCenter = window.innerHeight * 0.42;
+            let closest = questions[0];
+            let closestDistance = Infinity;
+
+            questions.forEach(({ item, el }) => {
+                const rect = el.getBoundingClientRect();
+                const center = rect.top + rect.height / 2;
+                const distance = Math.abs(center - viewportCenter);
+                if (distance < closestDistance) {
+                    closest = { item, el };
+                    closestDistance = distance;
+                }
+            });
+
+            currentVisibleQuestionName = closest.item.name;
+
+            document.querySelectorAll('.question-progress-dot').forEach((dotEl) => {
+                dotEl.classList.toggle('current', dotEl.dataset.questionName === currentVisibleQuestionName);
+            });
+        }
+
+        function bindQuestionScrollTracking() {
+            const syncCurrentMarker = () => {
+                if (scrollTicking) return;
+                scrollTicking = true;
+                window.requestAnimationFrame(() => {
+                    updateCurrentQuestionMarker();
+                    scrollTicking = false;
+                });
+            };
+
+            window.addEventListener('scroll', syncCurrentMarker, { passive: true });
+            window.addEventListener('resize', syncCurrentMarker);
+            syncCurrentMarker();
+        }
+
         function updateQuestionProgress(showErrors = questionValidationTriggered) {
             const total = questionRegistry.length;
             const missing = getMissingQuestionNumbers();
@@ -1270,9 +1320,10 @@
                 if (dotEl) {
                     dotEl.classList.toggle('answered', answeredNow);
                     dotEl.classList.toggle('missing', showErrors && !answeredNow);
-                    dotEl.classList.toggle('current', !answeredNow && missing[0] === item.number);
                 }
             });
+
+            updateCurrentQuestionMarker();
 
             return missing;
         }
@@ -1375,6 +1426,7 @@
             }
 
             createQuestionProgressDots();
+            bindQuestionScrollTracking();
             updateQuestionProgress(false);
         }
 
