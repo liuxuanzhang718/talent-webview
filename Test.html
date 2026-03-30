@@ -277,25 +277,85 @@
         .option:hover { border-color: var(--primary-light); background: #f8f7ff; }
         .option.selected { background: #f0edff; border-color: var(--primary-color); color: var(--primary-color); font-weight: 600; }
 
-        .question-progress-panel {
+        .question-progress-rail {
             display: none;
             position: fixed;
-            right: 12px;
+            right: 8px;
             top: 120px;
-            width: 170px;
-            background: rgba(255,255,255,0.96);
-            border: 1px solid var(--gray-light);
-            box-shadow: var(--shadow-md);
-            border-radius: 16px;
-            padding: 14px;
+            bottom: 100px;
+            width: 44px;
             z-index: 1500;
+            pointer-events: none;
         }
-        .step#step4.active .question-progress-panel { display: block; }
-        .question-progress-header { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:0.9em; font-weight:700; margin-bottom:10px; }
-        .question-progress-bar { height: 8px; background: var(--gray-light); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
-        .question-progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-color), #55efc4); transition: width 0.25s ease, background 0.25s ease; }
-        .question-progress-fill.incomplete { background: linear-gradient(90deg, #ff7675, #fab1a0); }
-        .question-progress-missing { font-size: 0.82em; color: #666; line-height: 1.6; }
+        .step#step4.active .question-progress-rail { display: block; }
+        .question-progress-summary {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 44px;
+            padding: 6px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.96);
+            border: 1px solid rgba(108, 92, 231, 0.18);
+            box-shadow: var(--shadow-sm);
+            color: var(--primary-color);
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            pointer-events: auto;
+        }
+        .question-progress-summary.incomplete {
+            color: #ff7675;
+            border-color: rgba(255, 118, 117, 0.24);
+        }
+        .question-progress-track {
+            position: absolute;
+            top: 40px;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            transform: translateX(-50%);
+            background: rgba(178, 190, 195, 0.5);
+            border-radius: 999px;
+        }
+        .question-progress-dot {
+            position: absolute;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            border: 2px solid var(--gray-medium);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.9);
+            cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+        .question-progress-dot.answered {
+            border-color: var(--accent-color);
+            background: var(--accent-color);
+        }
+        .question-progress-dot.missing {
+            border-color: #ff7675;
+            background: #ffffff;
+        }
+        .question-progress-dot.missing::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff7675;
+        }
+        .question-progress-dot:hover,
+        .question-progress-dot.current {
+            transform: translate(-50%, -50%) scale(1.15);
+        }
 
         .debug-fab {
             display: none;
@@ -353,8 +413,9 @@
             .report-navigation { flex-direction: column; }
             .status-options { grid-template-columns: 1fr 1fr; }
             .container { padding: 0 8px; }
-            .question-progress-panel { width: 132px; right: 8px; top: 86px; padding: 12px; }
-            .question-progress-missing { font-size: 0.78em; }
+            .question-progress-rail { right: 2px; top: 88px; bottom: 88px; width: 34px; }
+            .question-progress-summary { min-width: 34px; padding: 4px 6px; font-size: 10px; }
+            .question-progress-dot { width: 10px; height: 10px; box-shadow: 0 0 0 3px rgba(255,255,255,0.92); }
             .debug-fab { right: 12px; bottom: 16px; padding: 12px 16px; font-size: 13px; }
             .step { padding: 18px 10px; border-radius: 16px; margin-bottom: 16px; }
             #step5 { padding: 12px 6px 18px; }
@@ -509,15 +570,9 @@
             <h2 style="margin-top: 50px;">第二部分：天赋探索</h2>
             <div id="questions-part2"></div>
             <div class="error-message" id="questionsError" style="text-align: center; margin-top: 20px; font-size: 1rem; padding: 10px; background: #fff5f5; border-radius: 8px;"></div>
-            <div class="question-progress-panel" id="questionProgressPanel">
-                <div class="question-progress-header">
-                    <span>答题进度</span>
-                    <span id="questionProgressCount">0/0</span>
-                </div>
-                <div class="question-progress-bar">
-                    <div class="question-progress-fill" id="questionProgressFill"></div>
-                </div>
-                <div class="question-progress-missing" id="questionProgressMissing">未完成：--</div>
+            <div class="question-progress-rail" id="questionProgressRail">
+                <div class="question-progress-summary" id="questionProgressCount">0/0</div>
+                <div class="question-progress-track" id="questionProgressTrack"></div>
             </div>
             <div style="margin-top: 30px; display: flow-root;">
                 <button class="btn btn-prev" onclick="prevStep(4)">上一步</button>
@@ -1178,31 +1233,53 @@
                 .map(item => item.number);
         }
 
+        function createQuestionProgressDots() {
+            const trackEl = document.getElementById('questionProgressTrack');
+            if (!trackEl || !questionRegistry.length) return;
+
+            trackEl.innerHTML = '';
+            const total = questionRegistry.length;
+
+            questionRegistry.forEach((item, index) => {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'question-progress-dot';
+                dot.dataset.questionName = item.name;
+                dot.dataset.questionNumber = item.number;
+                dot.title = `第 ${item.number} 题`;
+                dot.style.top = `${total === 1 ? 0 : (index / (total - 1)) * 100}%`;
+                dot.addEventListener('click', () => {
+                    const questionEl = document.querySelector(`[data-question-name="${item.name}"]`);
+                    if (questionEl) {
+                        questionEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+                trackEl.appendChild(dot);
+            });
+        }
+
         function updateQuestionProgress(showErrors = questionValidationTriggered) {
             const total = questionRegistry.length;
             const missing = getMissingQuestionNumbers();
             const answered = total - missing.length;
             const countEl = document.getElementById('questionProgressCount');
-            const fillEl = document.getElementById('questionProgressFill');
-            const missingEl = document.getElementById('questionProgressMissing');
 
-            if (countEl) countEl.textContent = `${answered}/${total}`;
-            if (fillEl) {
-                fillEl.style.width = `${total ? (answered / total) * 100 : 0}%`;
-                fillEl.classList.toggle('incomplete', missing.length > 0);
-            }
-            if (missingEl) {
-                missingEl.style.color = missing.length > 0 ? '#ff7675' : '#00b894';
-                missingEl.textContent = missing.length > 0
-                    ? `未完成：第 ${missing.slice(0, 6).join('、')} 题${missing.length > 6 ? '...' : ''}`
-                    : '已全部完成';
+            if (countEl) {
+                countEl.textContent = `${answered}/${total}`;
+                countEl.classList.toggle('incomplete', missing.length > 0);
             }
 
             questionRegistry.forEach((item) => {
                 const el = document.querySelector(`[data-question-name="${item.name}"]`);
+                const dotEl = document.querySelector(`.question-progress-dot[data-question-name="${item.name}"]`);
                 if (!el) return;
                 const answeredNow = !!document.querySelector(`input[name="${item.name}"]:checked`);
                 el.classList.toggle('question-unanswered', showErrors && !answeredNow);
+                if (dotEl) {
+                    dotEl.classList.toggle('answered', answeredNow);
+                    dotEl.classList.toggle('missing', showErrors && !answeredNow);
+                    dotEl.classList.toggle('current', !answeredNow && missing[0] === item.number);
+                }
             });
 
             return missing;
@@ -1305,6 +1382,7 @@
                 document.getElementById('debugFillButton')?.classList.add('show');
             }
 
+            createQuestionProgressDots();
             updateQuestionProgress(false);
         }
 
