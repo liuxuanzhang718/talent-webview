@@ -1068,19 +1068,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             initializeQuestions();
 
-            // 检查URL参数中是否携带激活码（小程序通过WebView URL传入）
-            const urlCode = getURLParameter('code');
-            if (urlCode) {
-                const code = urlCode.trim().toUpperCase();
-                if (CONFIG.VALID_CODES.includes(code)) {
-                    // 激活码有效，自动跳过激活弹窗
-                    const modal = document.getElementById('activationModal');
-                    if (modal) {
-                        modal.style.display = 'none';
+            const modal = document.getElementById('activationModal');
+
+            // 小程序内已完成激活码校验，直接跳过 H5 自身的激活弹窗
+            if (isMiniProgram && modal) {
+                modal.style.display = 'none';
+                console.log('[MiniProgram] Skip local activation modal');
+            } else {
+                // 兼容纯网页场景的 URL 激活码
+                const urlCode = getURLParameter('activationCode') || getURLParameter('code');
+                if (urlCode) {
+                    const code = urlCode.trim().toUpperCase();
+                    if (CONFIG.VALID_CODES.includes(code)) {
+                        if (modal) {
+                            modal.style.display = 'none';
+                        }
+                        console.log('[URL] Activation code accepted from URL parameter');
+                    } else {
+                        console.warn('[URL] Invalid activation code in URL:', urlCode);
                     }
-                    console.log('[URL] Activation code accepted from URL parameter');
-                } else {
-                    console.warn('[URL] Invalid activation code in URL:', urlCode);
                 }
             }
 
