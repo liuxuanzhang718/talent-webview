@@ -289,24 +289,10 @@
         }
         .step#step4.active .question-progress-rail { display: block; }
         .question-progress-summary {
-            position: absolute;
-            bottom: -54px;
-            left: 50%;
-            transform: translateX(-50%);
-            min-width: 42px;
-            padding: 5px 8px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.96);
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            box-shadow: var(--shadow-sm);
-            color: #666;
-            font-size: 10px;
-            font-weight: 700;
-            text-align: center;
+            display: none;
         }
         .question-progress-summary.incomplete {
-            color: #ff7675;
-            border-color: rgba(255, 118, 117, 0.24);
+            display: none;
         }
         .question-progress-track {
             position: absolute;
@@ -404,7 +390,7 @@
             .status-options { grid-template-columns: 1fr 1fr; }
             .container { padding: 0 8px; }
             .question-progress-rail { right: 0; top: 88px; bottom: 82px; width: 8px; }
-            .question-progress-summary { min-width: 34px; padding: 4px 6px; font-size: 9px; bottom: -48px; }
+            .question-progress-summary { display: none; }
             .question-progress-dot { width: 6px; height: 2px; }
             .question-progress-dot:hover,
             .question-progress-dot.current { width: 8px; height: 2px; }
