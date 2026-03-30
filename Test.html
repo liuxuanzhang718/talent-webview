@@ -258,9 +258,7 @@
         
         .question { margin-bottom: 32px; padding-bottom: 24px; }
         .question-unanswered { background: rgba(255, 118, 117, 0.04); border-radius: 12px; padding: 16px; margin-left: -16px; margin-right: -16px; }
-        .question-title { display:flex; align-items:flex-start; gap:12px; margin-bottom: 16px; }
-        .question-badge { width: 30px; height: 30px; border-radius: 50%; background: var(--light-color); color: var(--primary-color); display:flex; align-items:center; justify-content:center; font-size: 0.9em; font-weight:700; flex-shrink:0; }
-        .question-unanswered .question-badge { background:#ff7675; color:#fff; }
+        .question-title { display:block; margin-bottom: 16px; }
         .question-text { font-weight: 600; margin-bottom: 0; font-size: 1.1em; }
        
         .options { display: grid; gap: 10px; }
@@ -1370,7 +1368,7 @@
                     const div = document.createElement('div');
                     div.className = 'question';
                     div.dataset.questionName = `p1_${qIdx}`;
-                    div.innerHTML = `<div class="question-title"><div class="question-badge">${displayIndex}</div><div class="question-text">${q}</div></div>${createOptions('p1', qIdx)}`;
+                    div.innerHTML = `<div class="question-title"><div class="question-text">${q}</div></div>${createOptions('p1', qIdx)}`;
                     p1Container.appendChild(div);
                     questionRegistry.push({ name: `p1_${qIdx}`, number: displayIndex });
                     qIdx++;
@@ -1383,7 +1381,7 @@
                 const div = document.createElement('div');
                 div.className = 'question';
                 div.dataset.questionName = `p2_${idx}`;
-                div.innerHTML = `<div class="question-title"><div class="question-badge">${displayIndex}</div><div class="question-text">${item.question}</div></div>${createOptions('p2', idx)}`;
+                div.innerHTML = `<div class="question-title"><div class="question-text">${item.question}</div></div>${createOptions('p2', idx)}`;
                 p2Container.appendChild(div);
                 questionRegistry.push({ name: `p2_${idx}`, number: displayIndex });
                 displayIndex++;
