@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>天赋潜能测评 | Talent Unlimited</title>
+    <meta name="description" content="基于心理学与天赋模型，发现你的核心优势与成长路径。">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ================= 安全防护脚本 (加密核心) ================= -->
+    <script>
+        // 禁止右键
+        document.oncontextmenu = function() { return false; };
+        
+        // 禁止拖拽
+        document.ondragstart = function() { return false; };
+        
+        // 禁止选择文本 (JS层)
+        document.onselectstart = function() { return false; };
+
+        // 键盘快捷键拦截 (F12, Ctrl+U, Ctrl+S, Ctrl+P 等)
+        document.onkeydown = function(e) {
+            // F12
+            if(e.keyCode == 123) { return false; }
+            // Ctrl+Shift+I (开发者工具)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+            // Ctrl+Shift+C (开发者工具)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+            // Ctrl+Shift+J (控制台)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+            // Ctrl+U (查看源码)
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+            // Ctrl+S (保存)
+            if(e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) { return false; }
+            // Ctrl+P (打印)
+            if(e.ctrlKey && e.keyCode == 'P'.charCodeAt(0)) { return false; }
+        };
+        
+        // 尝试防止控制台调试
+        setInterval(function() {
+            const before = new Date();
+            debugger; // 如果控制台打开，会在这里暂停
+            const after = new Date();
+            if (after - before > 100) {
+                document.body.innerHTML = "<h1>请关闭开发者工具以继续使用</h1>";
+            }
+        }, 1000);
+    </script>
+    <!-- ======================================================== -->
+
+    <style>
+        /* CSS层禁止选择文本 */
+        body {
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+/Edge */
+            user-select: none; /* Standard */
+        }
+
+        /* 允许输入框被选中，否则无法输入 */
+        input, textarea {
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
+        }
+
+        :root {
+            --primary-color: #6C5CE7;
+            --primary-light: #A29BFE;
+            --secondary-color: #FD79A8;
+            --accent-color: #00B894;
+            --accent-hover: #00A383;
+            --light-color: #F8FAFC;
+            --dark-color: #2D3436;
+            --gray-light: #DFE6E9;
+            --gray-medium: #B2BEC3;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --gradient: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+       
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--dark-color);
+            line-height: 1.7;
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+       
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 表单样式优化 */
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: var(--transition);
+            background: white;
+            appearance: none;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        /* 恢复原生圆圈样式并自定义颜色 */
+        input[type="radio"],
+        input[type="checkbox"] {
+            appearance: auto;
+            accent-color: var(--primary-color);
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+       
+        /* 激活码模态框 */
+        .activation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(45, 52, 54, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+       
+        .activation-box {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+       
+        .activation-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            font-size: 18px;
+            margin: 20px 0;
+            text-align: center;
+            letter-spacing: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .activation-error {
+            color: #ff7675;
+            display: none;
+            background: #fff5f5;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        /* 步骤容器 */
+        .step {
+            display: none;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+       
+        .step.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+       
+        h1 {
+            text-align: center;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 800;
+        }
+        
+        h2 { font-size: 1.8em; margin-bottom: 25px; color: var(--dark-color); border-left: 4px solid var(--primary-color); padding-left: 15px; }
+        h3 { color: var(--dark-color); margin-top: 30px; margin-bottom: 15px; font-weight: 700; }
+        h4 { color: var(--dark-color); margin-bottom: 15px; font-weight: 600; font-size: 1.1em; }
+        h5 { color: var(--dark-color); margin-bottom: 10px; font-weight: 600; margin-top: 15px; }
+       
+        .section {
+            margin-bottom: 30px;
+            padding: 24px;
+            background: var(--light-color);
+            border-radius: 16px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient);
+            color: white;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+            user-select: none;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4); }
+        .btn-prev { float: left; background: white; color: var(--dark-color); border: 2px solid var(--gray-light); box-shadow: none; }
+        .btn-prev:hover { border-color: var(--primary-color); color: var(--primary-color); }
+        .btn-next { float: right; }
+        .btn-download { background: var(--accent-color); box-shadow: 0 4px 12px rgba(0, 184, 148, 0.3); }
+
+        .form-group { margin-bottom: 24px; }
+        label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--dark-color); }
+        
+        .question { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px dashed var(--gray-light); }
+        .question-text { font-weight: 600; margin-bottom: 16px; font-size: 1.1em; }
+       
+        .options { display: grid; gap: 10px; }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+        }
+        .option:hover { border-color: var(--primary-light); background: #f8f7ff; }
+        .option.selected { background: #f0edff; border-color: var(--primary-color); color: var(--primary-color); font-weight: 600; }
+       
+        /* 进度条 */
+        .progress-indicator { display: flex; justify-content: center; margin-bottom: 40px; position: relative; max-width: 500px; margin: 0 auto 40px auto; }
+        .progress-indicator::before { content: ''; position: absolute; top: 50%; left: 40px; right: 40px; height: 3px; background: var(--gray-light); z-index: 1; transform: translateY(-50%); }
+        .progress-step { width: 40px; height: 40px; border-radius: 50%; background: white; border: 3px solid var(--gray-light); display: flex; align-items: center; justify-content: center; margin: 0 25px; font-weight: 700; color: var(--gray-medium); position: relative; z-index: 2; }
+        .progress-step.active { border-color: var(--primary-color); color: var(--primary-color); transform: scale(1.1); }
+        .progress-step.completed { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+
+        .quote { font-style: italic; text-align: center; margin: 30px 0; padding: 30px; background: white; border-radius: 16px; border: 1px solid #eee; position: relative; }
+        .quote::before { content: '"'; font-size: 5em; color: var(--primary-light); position: absolute; top: -10px; left: 10px; opacity: 0.2; font-family: serif; }
+        
+        /* 报告内容样式 */
+        .report-content { padding: 20px; }
+        .talent-card, .role-card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: var(--shadow-sm); border: 1px solid #eee; position: relative; overflow: hidden; }
+        .talent-card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--gradient); }
+        
+        .keyword-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 20px 0; border-radius: 12px; overflow: hidden; border: 1px solid #eee; }
+        .keyword-table th { background: #f8f9fa; padding: 15px; color: var(--dark-color); font-weight: 700; border-bottom: 1px solid #eee; text-align: left; }
+        .keyword-table td { padding: 15px; border-bottom: 1px solid #eee; background: white; vertical-align: top; }
+        
+        .suggestion-list li { position: relative; padding-left: 24px; margin-bottom: 12px; list-style: none; }
+        .suggestion-list li::before { content: '•'; position: absolute; left: 0; color: var(--primary-color); font-size: 1.5em; line-height: 1; top: -2px; }
+
+        .error-message { color: #ff7675; font-size: 0.9em; margin-top: 8px; display: none; }
+        .form-group.error input { border-color: #ff7675; background-color: #fff5f5; }
+        .form-group.error .error-message { display: block; }
+        
+        .status-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .status-option { flex-direction: column; text-align: center; justify-content: center; padding: 15px 10px; }
+        
+        .loading { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 0.8s linear infinite; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 768px) {
+            .btn { width: 100%; margin-bottom: 12px; }
+            .btn-next, .btn-prev { float: none; }
+            .report-navigation { flex-direction: column; }
+            .status-options { grid-template-columns: 1fr 1fr; }
+            .container { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="activation-modal" id="activationModal">
+        <div class="activation-box">
+            <h2>开启你的天赋潜能</h2>
+            <p style="color: #666; margin-bottom: 20px;">请输入激活码以开始测评旅程</p>
+            <input type="text" class="activation-input" id="activationCode" placeholder="输入激活码" maxlength="15" autocomplete="off">
+            <div class="activation-error" id="activationError"><i class="fas fa-exclamation-circle"></i> 激活码无效，请重试</div>
+            <button class="btn" style="width:100%" onclick="validateActivationCode()">
+                开始测评 <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+            </button>
+            <p style="margin-top: 20px; font-size: 0.85em; color: #b2bec3;">如需获取激活码，请联系管理员</p>
+        </div>
+    </div>
+ 
+    <div class="container">
+        <div class="progress-indicator">
+            <div class="progress-step active" id="step1-indicator">1</div>
+            <div class="progress-step" id="step2-indicator">2</div>
+            <div class="progress-step" id="step3-indicator">3</div>
+            <div class="progress-step" id="step4-indicator">4</div>
+        </div>
+ 
+        <div class="step active" id="step1">
+            <h1>天赋潜能测评 · 适合你的成长路径</h1>
+            <div class="section">
+                <h3>你是否也有这些困惑：</h3>
+                <p>不知道自己真正擅长什么？明明很努力，却始终找不到方向？面对多种选择，始终犹豫不决？</p>
+                <p style="margin-top: 15px;">也许，问题并不在于你不够优秀，而是你还没有看清：什么才真正适合你。</p>
+            </div>
+            <div class="quote">
+                "当你自然地做擅长的事，竞争就会减少。<br>
+                找到世界需要的天赋，放大它，产品化它。"
+            </div>
+            <div class="section" style="text-align: center; background: rgba(108, 92, 231, 0.05); border: 1px solid rgba(108, 92, 231, 0.1);">
+                <p><i class="far fa-clock"></i> <strong>所需时间：5-7分钟</strong></p>
+                <p style="margin-top: 5px; font-size: 0.9em; color: #666;">请根据第一反应作答，无需纠结</p>
+            </div>
+            <button class="btn btn-next" onclick="nextStep(1)">
+                <span class="loading" id="loading1"></span>开始测评
+            </button>
+        </div>
+ 
+        <div class="step" id="step2">
+            <h2>测评说明</h2>
+            <div class="section">
+                <h3>本测评包含两个部分：</h3>
+                <div class="part-section" style="margin-bottom: 20px;">
+                    <h4 style="color:var(--primary-color); margin-bottom:8px;">第一部分：潜能校准</h4>
+                    <p>回顾你最近的生活，看看你的主要任务和日常事务是否足以激发你的天赋。</p>
+                </div>
+                <div class="part-section">
+                    <h4 style="color:var(--primary-color); margin-bottom:8px;">第二部分：天赋探索</h4>
+                    <p>从六个方面分析你的思维方式、表达风格和内在动机，帮助你更好地调整方向。</p>
+                </div>
+            </div>
+            <div class="section">
+                <h3>为什么值得信赖：</h3>
+                <ul class="suggestion-list">
+                    <li>基于国际主流的天赋理论与心理模型</li>
+                    <li>由专业心理与教育顾问团队设计</li>
+                    <li>经过验证，报告结构清晰、内容贴近真实需求</li>
+                </ul>
+            </div>
+            <div class="section" style="background: #fff; border: 2px solid var(--gray-light);">
+                <h3 style="margin-top:0">参与同意书</h3>
+                <div class="consent-checkbox">
+                    <label class="option" style="border:none; padding:0; background:none;">
+                        <!-- 默认不勾选 -->
+                        <input type="checkbox" id="consentAgreement" style="width:20px; height:20px;">
+                        <span>我理解并同意：数据仅用于生成报告，将被严格保密。</span>
+                    </label>
+                </div>
+            </div>
+            <div style="margin-top: 30px; display: flow-root;">
+                <button class="btn btn-prev" onclick="prevStep(2)">上一步</button>
+                <button class="btn btn-next" onclick="nextStep(2)">
+                    <span class="loading" id="loading2"></span>下一步
+                </button>
+            </div>
+        </div>
+ 
+        <div class="step" id="step3">
+            <h2>个人信息</h2>
+            <div class="form-group">
+                <label for="nickname">昵称</label>
+                <input type="text" id="nickname" placeholder="如何称呼您？" required>
+                <div class="error-message">请输入您的昵称</div>
+            </div>
+            <div class="form-group">
+                <label for="age">年龄</label>
+                <input type="number" id="age" min="10" max="100" placeholder="请输入您的年龄" required>
+                <div class="error-message">请输入有效的年龄</div>
+            </div>
+            <div class="form-group">
+                <label for="gender">性别</label>
+                <select id="gender" required>
+                    <option value="">请选择性别</option>
+                    <option value="male">男</option>
+                    <option value="female">女</option>
+                    <option value="other">其他</option>
+                </select>
+                <div class="error-message">请选择您的性别</div>
+            </div>
+            <div class="form-group">
+                <label>当前状态 (可多选)</label>
+                <div class="status-options">
+                    <label class="option status-option">
+                        <input type="checkbox" name="status" value="highschool"><span>大学前</span>
+                    </label>
+                    <label class="option status-option">
+                        <input type="checkbox" name="status" value="undergraduate"><span>专科/本硕博</span>
+                    </label>
+                    <label class="option status-option">
+                        <input type="checkbox" name="status" value="working"><span>工作中</span>
+                    </label>
+                    <label class="option status-option">
+                        <input type="checkbox" name="status" value="entrepreneur"><span>自主创业</span>
+                    </label>
+                    <label class="option status-option">
+                        <input type="checkbox" name="status" value="gapyear"><span>空档期</span>
+                    </label>
+                </div>
+                <div class="error-message">请至少选择一项状态</div>
+            </div>
+            <div class="form-group">
+                <label for="current-focus">你目前最常做、最投入的一件事？</label>
+                <textarea id="current-focus" rows="3" placeholder="例如：正在准备考研、负责某个项目..." required></textarea>
+                <div class="error-message">请填写此项</div>
+            </div>
+            <div style="margin-top: 30px; display: flow-root;">
+                <button class="btn btn-prev" onclick="prevStep(3)">上一步</button>
+                <button class="btn btn-next" onclick="nextStep(3)">
+                    <span class="loading" id="loading3"></span>下一步
+                </button>
+            </div>
+        </div>
+ 
+        <div class="step" id="step4">
+            <h2>第一部分：潜能校准</h2>
+            <div id="questions-part1"></div>
+            <h2 style="margin-top: 50px;">第二部分：天赋探索</h2>
+            <div id="questions-part2"></div>
+            <div class="error-message" id="questionsError" style="text-align: center; margin-top: 20px; font-size: 1rem; padding: 10px; background: #fff5f5; border-radius: 8px;"></div>
+            <div style="margin-top: 30px; display: flow-root;">
+                <button class="btn btn-prev" onclick="prevStep(4)">上一步</button>
+                <button class="btn btn-next" onclick="nextStep(4)">
+                    <span class="loading" id="loading4"></span>提交并生成报告
+                </button>
+            </div>
+        </div>
+ 
+        <div class="step" id="step5">
+            <div id="report-content" class="report-content"></div>
+            <div class="report-navigation" style="display: flex; justify-content: center; gap: 20px; margin-top: 40px; flex-wrap: wrap;">
+                <button class="btn btn-prev" onclick="prevStep(5)">返回修改</button>
+                <button class="btn btn-next" onclick="backToMiniProgram('report')">
+                    返回小程序报告
+                </button>
+                <button class="btn btn-prev" onclick="backToMiniProgram('home')">
+                    回到首页
+                </button>
+                <button class="btn btn-download" onclick="downloadReport()">
+                    <span class="loading" id="loadingPdf"></span><i class="fas fa-download" style="margin-right:8px"></i> 下载PDF报告
+                </button>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- 微信小程序 WebView JS-SDK -->
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+    <script>
+        // ================= 小程序环境检测 =================
+        const isMiniProgram = window.__wxjs_environment === 'miniprogram';
+
+        // URL参数解析工具函数
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 向小程序发送消息的工具函数
+        function postMessageToMiniProgram(messageData) {
+            if (isMiniProgram) {
+                try {
+                    wx?.miniProgram?.postMessage({ data: messageData });
+                    console.log('[MiniProgram] postMessage sent:', messageData.type);
+                } catch (e) {
+                    console.warn('[MiniProgram] postMessage failed:', e);
+                }
+            }
+        }
+
+        function backToMiniProgram(target = 'report') {
+            if (!window.reportData) {
+                return;
+            }
+
+            postMessageToMiniProgram({
+                type: 'assessment_complete',
+                data: {
+                    talentType: window.reportData.roleData.name,
+                    top3: window.reportData.top3,
+                    part1Scores: window.reportData.part1Scores,
+                    part2Scores: window.reportData.part2Scores,
+                    roleData: window.reportData.roleData,
+                    roleKey: window.reportData.roleKey,
+                    matchType: window.reportData.matchType,
+                    userInfo: window.reportData.userInfo,
+                    rawAnswers: window.reportData.rawAnswers,
+                    returnTarget: target,
+                    timestamp: new Date().toISOString()
+                }
+            });
+
+            if (isMiniProgram) {
+                try {
+                    wx.miniProgram.navigateBack();
+                } catch (e) {
+                    console.warn('[MiniProgram] navigateBack failed:', e);
+                }
+            }
+        }
+
+        const CONFIG = {
+            // 您的新 Web App URL
+            GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwG3of9wZLjuoUS_3rSV7SCxX1IqIhuNgpHWaOIKLm4xQXxTncQZN0HIKjVUa67alBD/exec',
+            VALID_CODES: ["TALENT2024", "GIFTED123", "POTENTIAL"]
+        };
+
+        const dimensions = {
+            part1: [
+                {
+                    name: "学习感知力",
+                    questions: ["相比于按部就班，我更在意理解这件事背后的原理和逻辑。", "我常常能举一反三，将学到的东西自然地运用到类似的任务上。", "做这件事时，我常常能注意到别人容易忽略的细节或规律。"]
+                },
+                {
+                    name: "创意活跃度",
+                    questions: ["每当开始做这件事，我脑子里总能蹦出不少点子。", "做这件事时，我通常会想出别人没试过的新方法去解决问题。", "在过程中，我习惯不断调整、优化已有的做法，让成果更有自己的特色。"]
+                },
+                {
+                    name: "内驱动状态",
+                    questions: ["一旦开始做这件事，我可以长时间沉浸其中，不容易分心。", "我通常愿意主动承担这项任务的责任，因为我觉得它本身就很有意义。", "即使中途遇到困难，我也有动力坚持下去、解决问题。"]
+                }
+            ],
+            part2: [
+                { dimension: "创意表达力", question: "我擅长模仿别人的语气或动作，也喜欢在模仿中加上自己的风格。" },
+                { dimension: "沟通影响力", question: "我会根据不同的人和场合调整说话方式，让对方更容易理解。" },
+                { dimension: "协作引领力", question: "做团队任务时，我会思考怎么分工，让每个人都能发挥所长。" },
+                { dimension: "创意表达力", question: "我常从生活或别人的作品中获得灵感，想要创作点什么。" },
+                { dimension: "沟通影响力", question: "我喜欢参与讨论、表达自己的看法，观点被接受会让我很有成就感。" },
+                { dimension: "创意表达力", question: "我享受即兴创作，比如根据主题快速构思诗歌或故事。" },
+                { dimension: "沟通影响力", question: "我表达观点时很有信心，觉得自己能清晰、有条理地说服他人。" },
+                { dimension: "创意表达力", question: "我容易被艺术触动，比如音乐、绘画或表演，会联想到某个记忆或情绪。" },
+                { dimension: "沟通影响力", question: "我喜欢在讨论中担任发言的主导者角色。" },
+                { dimension: "目标执行力", question: "做事前我习惯预想到可能会出现的困难，并提前想好解决办法。" },
+                { dimension: "创意表达力", question: "看电影或小说时，我很容易进入角色的情绪，甚至觉得'我懂他在想什么'。" },
+                { dimension: "沟通影响力", question: "我说话或写作能够抓重点，内容精炼有条理，但也不会漏掉重要信息。" },
+                { dimension: "沟通影响力", question: "我讲故事或表达观点时，会配合语气和表情，让别人更容易理解。" },
+                { dimension: "目标执行力", question: "面对复杂任务时，我会把它分成几个步骤，按顺序完成。" },
+                { dimension: "协作引领力", question: "我很有团队意识，做事负责是为了不让团队掉链子。" },
+                { dimension: "结构思维力", question: "我喜欢玩乐高、拼图、数独、推理游戏，享受'找规律'和'一步步推出结论'的过程。" },
+                { dimension: "目标执行力", question: "我习惯记录工作进度和复盘，这能帮我看清自己的表现和改进方向。" },
+                { dimension: "结构思维力", question: "我对科学或知识背后的'原理'感兴趣，不只想知道答案，更想知道它是怎么来的。" },
+                { dimension: "目标执行力", question: "我会为自己设定明确的目标，并愿意为之持续投入努力。" },
+                { dimension: "结构思维力", question: "我思考问题时，不用纸笔写或画，也能在脑中构建逻辑并解决。" },
+                { dimension: "结构思维力", question: "我喜欢自己动手做小实验，比如混合颜色、搭结构、做小观察，然后分析结果出现的原因。" },
+                { dimension: "沟通影响力", question: "我在讨论或争论中，我能快速清楚地表达自己的想法，不容易被绕晕。" },
+                { dimension: "结构思维力", question: "我擅长快速比较数字，比如估算打折价格、判断哪个更划算，几乎不会算错。" },
+                { dimension: "技术适应力", question: "我喜欢用技术工具（比如剪辑软件、排版App、可视化工具）让内容看起来更有表现力。" },
+                { dimension: "创意表达力", question: "我感觉自己比身边的人更容易注意到生活中的'美感'，比如光影、颜色搭配。" },
+                { dimension: "结构思维力", question: "做事时我常思考'为什么'，总在寻找到让我信服的解释或底层逻辑。" },
+                { dimension: "技术适应力", question: "我能快速掌握并熟练使用各类数码工具，遇到技术问题时也能独立解决。" },
+                { dimension: "协作引领力", question: "我热衷于教授他人新技能，或协助他们解决实际问题。" },
+                { dimension: "结构思维力", question: "我对数字、表格或时间线这类'有结构的信息'比较敏感。" },
+                { dimension: "技术适应力", question: "我会关注最新的AI工具、数码产品或App，有新东西出来我常会主动去试试。" },
+                { dimension: "技术适应力", question: "我喜欢研究数码工具的功能，遇到软件报错时会主动查原因并解决。" },
+                { dimension: "技术适应力", question: "遇到一个没用过的软件，我通常能靠自己摸索着很快上手。" },
+                { dimension: "目标执行力", question: "在开始之前，我会先想好要准备什么、找谁帮忙、去哪里查资料。" },
+                { dimension: "协作引领力", question: "我对多人合作很积极，愿意主导团队把任务一步步推进下去。" },
+                { dimension: "技术适应力", question: "我擅长把不同平台或软件结合使用，找到更高效的解决方案。" },
+                { dimension: "协作引领力", question: "发现组员状态不好或进度落后时，我会主动了解情况并帮忙。" },
+                { dimension: "结构思维力", question: "在工作或学习中，我喜欢用数字、图表、思维导图或结构图来表达。" },
+                { dimension: "协作引领力", question: "小组讨论混乱时，我会带大家理清思路、统一方向。" },
+                { dimension: "协作引领力", question: "我很在意团队里的合作氛围，会主动调节气氛、解决纠纷。" }
+            ]
+        };
+
+        const talentDetails = {
+            "创意表达力": {
+                description: "你是个内在创意丰沛的人，脑海里总能蹦出各种想法，表达方式独具个性。也许是一段旋律、一幅画、一个即兴表演——你用这些方式表达自己真实的感受，不是照搬别人的套路，而是把你自己的想法和情绪，用一种特别的方式传递给别人。",
+                keywords: [
+                    { keyword: "情绪共鸣力强", interpretation: "听一段旋律、看一场剧，你能迅速'入戏'并共情，情绪调频敏锐。" },
+                    { keyword: "细节观察者", interpretation: "你能看到常被忽略的美感与微小瞬间，这些常成为灵感源泉。" },
+                    { keyword: "二创高手", interpretation: "善于重构已有故事、作品或概念，赋予它们新的生命。" }
+                ],
+                learning: [
+                    "多尝试不同媒介表达，如写作、绘画、短视频、配音等，找到最适合你的创作方式。",
+                    "主动积累灵感素材，多看、多听、多体验，把日常变成创意源泉。",
+                    "放下对'完美'的执念，持续表达、不断尝试，比等待完美更重要。"
+                ],
+                career: [
+                    "视觉设计、内容创作、广告、影视、音乐、教育、品牌传播等",
+                    "一切需要创造性表达与共情力的职业领域"
+                ],
+                growth: [
+                    "给自己安排一些'没有明确目标'的时光，在轻松中激发新灵感",
+                    "试着把你的表达变成一种分享和邀请，让别人也能走进你的世界"
+                ],
+                summary: "你是那种'说不清但能表达出来'的人，用感觉而不是解释去沟通，别把这份天赋藏起来，它其实很珍贵。"
+            },
+            "沟通影响力": {
+                description: "有些人擅长倾听，而你更擅长把话讲得让人愿意听下去。你不仅表达清晰，还能调动别人的注意力、情绪甚至想法，这是一种能够在人与人之间建立连接的能力。",
+                keywords: [
+                    { keyword: "观点表达清晰", interpretation: "能快速、精准、逻辑清楚地表达想法，不易跑题。" },
+                    { keyword: "情绪调动能力", interpretation: "善于用语气、表情、故事调动听众情绪和兴趣。" },
+                    { keyword: "场景适配力", interpretation: "能根据不同对象、场合灵活调整表达方式。" }
+                ],
+                learning: [
+                    "学习非暴力沟通、演讲技巧、故事表达等实用方法，提升说话的影响力。",
+                    "多参与辩论、分享会、社群交流，让输出成为日常练习。",
+                    "刻意练习'说人话'——把复杂的概念讲得简单、有趣、易懂。"
+                ],
+                career: [
+                    "公关传播、教育、心理咨询、播客、社交媒体、销售谈判等",
+                    "一切需要沟通影响与人际连接的领域"
+                ],
+                growth: [
+                    "学会倾听与提问，让你的影响力建立在真实的共情和理解之上。",
+                    "把语言当作'点亮他人'的工具，而不是'说服他人'的手段。"
+                ],
+                summary: "你有一种'让人愿意听你说话'的能力，语言是你最温柔的影响力。"
+            },
+            "目标执行力": {
+                description: "你是那种'说到做到'的行动者，习惯在行动前铺路，有计划、有节奏地推进目标，哪怕慢，也能走到底。你具备很强的'自我驱动+系统执行'能力。",
+                keywords: [
+                    { keyword: "目标清晰", interpretation: "行动前思考周全，知道自己为什么而做。" },
+                    { keyword: "步骤拆解力", interpretation: "擅长将复杂任务拆解成清晰步骤。" },
+                    { keyword: "预判与规划", interpretation: "能提前识别可能的风险和挑战。" }
+                ],
+                learning: [
+                    "学着把目标拆得清清楚楚，再用清单或表格安排每天的重点",
+                    "自己做一个进度看板或打卡表，随手记录进展，动力也会更足",
+                    "每隔一段时间回头看看自己做成了什么，整理出适合自己的做事习惯"
+                ],
+                career: [
+                    "项目管理、运营策划、产品设计、组织管理、创业者、独立工作者等",
+                    "任何需要长期执行、系统统筹、稳定推进的职业路径"
+                ],
+                growth: [
+                    "学会为自己设定边界，聚焦重点，避免'什么都接'导致精力透支",
+                    "练习'小步快跑、持续迭代'的节奏，既保持执行力，也给自己留出调整空间"
+                ],
+                summary: "你不是走得最快的人，但你总能稳稳走到终点。"
+            },
+            "结构思维力": {
+                description: "你天生擅长'把混乱的世界整理成有逻辑的样子'。无论是信息、想法还是行动步骤，你的大脑里都有一套清晰的'扫描系统'，能帮你理出头绪、找到路径。",
+                keywords: [
+                    { keyword: "条理清晰", interpretation: "思维有序，善于将复杂问题简化为清晰的步骤或逻辑链。" },
+                    { keyword: "快速拆解", interpretation: "擅长快速分解任务、提炼重点、整合信息。" },
+                    { keyword: "喜欢探究原理", interpretation: "不满足于表面，喜欢深挖原因与规律。" }
+                ],
+                learning: [
+                    "学习逻辑思维方法，如金字塔原理、MECE原则，提升结构化思考与表达能力",
+                    "多用思维导图、流程图来整理复杂信息，训练信息归纳与梳理能力",
+                    "在写作或表达时，刻意训练'观点—理由—例子'的清晰结构"
+                ],
+                career: [
+                    "数据分析、商业策略、科研、产品设计、流程优化、政策研究等方向",
+                    "适合那些需要系统拆解、逻辑推理与结构设计的工作场景"
+                ],
+                growth: [
+                    "训练自己看见问题背后的'结构逻辑'，而不只是停留在现象或情绪层面",
+                    "在日常生活中练习分类整理、简化流程、搭建结构"
+                ],
+                summary: "你是那种'脑中自带系统'的人，能把一团乱麻梳理成一条清晰路径。"
+            },
+            "技术适应力": {
+                description: "你是典型的'数字原住民+创造者'。你不只是'会用工具'，而是能灵活组合、玩出新花样的人。对你来说，技术是一种表达、一种解决方案。",
+                keywords: [
+                    { keyword: "技术嗅觉灵敏", interpretation: "对新技术、新工具有天然好奇和探索欲。" },
+                    { keyword: "自学上手快", interpretation: "遇到新工具不怕'踩坑'，能快速学会。" },
+                    { keyword: "创意组合力", interpretation: "擅长整合多个工具、平台创造新方法。" }
+                ],
+                learning: [
+                    "保持对数字趋势、AI工具、设计软件等新兴领域的关注，边学边用",
+                    "多参与实战项目，比如剪辑一条视频、搭建个人网站，提升技术组合力",
+                    "尝试做一回'效率实验者'，测试不同工具组合，形成自己的效率方法论"
+                ],
+                career: [
+                    "数字创意、短视频、UI/UX 设计、产品运营、新媒体、AI 应用、数字营销等方向",
+                    "适合那些擅长用技术+创意解决问题的人"
+                ],
+                growth: [
+                    "主动拓展你的'数字工具箱'，持续尝试新工具，解决真实问题",
+                    "保持技术对生活的赋能感，而非被工具捆绑或焦虑感牵着走"
+                ],
+                summary: "你不是'工具使用者'，你是'方法创造者'，你的脑子里装着一个灵活多变的数字工具箱。"
+            },
+            "协作引领力": {
+                description: "你属于那种'有你在，大家更安心'的人。不仅能把事情做好，更能带着别人一起做好，让团队和集体走得更稳、更远。",
+                keywords: [
+                    { keyword: "主动承担", interpretation: "乐于承担责任，不轻易推诿。" },
+                    { keyword: "资源整合", interpretation: "善于看清团队结构、合理分配任务。" },
+                    { keyword: "氛围营造", interpretation: "能让团队氛围更轻松、积极、互相支持。" }
+                ],
+                learning: [
+                    "学习项目管理、积极心理学、冲突调解、赋能式领导等理念",
+                    "多主动参与或主导集体任务，练习从'拉人做事'到'共创共赢'",
+                    "刻意练习建立信任感，提升团队的心理安全感"
+                ],
+                career: [
+                    "人力资源、教育、社会组织、项目管理、培训教练、公共事务等领域",
+                    "适合需要'人与人协作'和'群体赋能'的职业"
+                ],
+                growth: [
+                    "学会'引领但不控制'，把团队带往目标，而不是替大家做决定",
+                    "有意识建立自己的'人际关系网'，成为资源互通、信息流转的节点型人物"
+                ],
+                summary: "你是那种'让大家一起变得更好'的人，你的影响来自于支持、赋能和连接人心。"
+            }
+        };
+
+        const roleCards = {
+            "创意表达力 × 沟通影响力 × 目标执行力": {
+                name: "驱动型创讲师",
+                description: "你像一位'故事发动机'，用生动的表达和感染力调动他人的行动力，让愿景从纸面走进现实。你既能点燃热情，也能引导具体执行。",
+                characteristics: ["擅长把复杂概念讲得生动易懂，能让听众快速理解", "能激励他人并提供清晰执行步骤，将鼓舞与行动结合", "通过语言和情绪调动氛围，在关键场合带动团队积极参与", "擅长将愿景拆解成阶段目标，保持思路清晰"],
+                blindSpots: ["有创意想尝试，同时急于结果，可能出现'浅尝辄止'的倾向", "表达和沟通优势突出，可能不自觉掩盖他人声音或让团队缺乏反思空间"],
+                suggestions: {
+                    work: ["主动将想法转化为可见成果，充分发挥创造力和思维拓展优势", "设定稍微超出舒适区的目标，增强成长感和成就感", "用任务清单或时间块的方法，把大目标拆解成可操作的小步骤"],
+                    life: ["将零散灵感落地为小实验，例如连续三天尝试新的学习方法", "在日常小事中也练习'讲故事'，让表达力不断磨炼", "将生活目标和灵感结合，既保持习惯，又积累创作素材"],
+                    social: ["利用感染力和表达力，让社交更有价值", "在朋友或同事遇到困难时先倾听，再给出可行建议", "在关键场合描绘积极未来画面，并明确任务分工"],
+                    interest: ["将创作作为表达工具，让灵感得到展示和反馈", "刻意练习舞台表现或演讲技巧，让故事更生动立体", "定期回顾创意和项目成果，记录落地成功和需要调整的策略"],
+                    longterm: ["养成'创意—行动—复盘'习惯，让成长积累可见", "在不同场合发挥影响力，实现多层面价值", "记录他人因你的故事或建议采取的行动"]
+                }
+            },
+            "创意表达力 × 沟通影响力 × 结构思维力": {
+                name: "灵感型策划师",
+                description: "你像一位既能提出新点子，又能将其整理成系统方案的策划师。你的优势在于把零散的创意梳理成逻辑清晰的结构，并通过流畅的表达分享给他人，让创意真正落地。",
+                characteristics: ["能快速捕捉新鲜点子，并将它们转化为可操作的方案", "擅长用图表、框架或故事化的方式，让复杂内容变得易于理解", "善于在团队中担任'创意讲述者'，把抽象概念转化为生动形象的语言", "在沟通中兼顾逻辑与感染力，能影响并带动他人参与"],
+                blindSpots: ["点子较多时容易分散注意力，缺乏优先级排序", "在表达创意时可能过于理想化，忽略现实中的资源或限制", "容易在结构和创意之间摇摆，出现'想得多、做得慢'的情况"],
+                suggestions: {
+                    work: ["在团队项目中担任方案设计者，将不同人的零散点子汇总成清晰框架", "学习时使用思维导图或系统化笔记，将复杂知识分模块整理", "在创意阶段提前设定可行性标准，避免陷入不切实际的设想"],
+                    life: ["用清单、表格或小型计划板整理生活创意和计划，让灵感落地", "将灵感及时记录，并定期整理成分类文档", "在和朋友或家人分享创意时，配合具体步骤或小目标"],
+                    social: ["用生动故事讲述自己的想法，吸引他人共鸣", "在社交活动中担任点子贡献者，让氛围更有创意与趣味", "多倾听他人的观点，帮助自己平衡创意与实际可行性"],
+                    interest: ["参与创意类兴趣项目并结合结构化输出", "通过参加辩论赛、演讲社团等活动锻炼综合能力", "在兴趣中主动输出成果，增加成就感和反馈"],
+                    longterm: ["学会筛选并聚焦最有价值的创意，避免被过多可能性困扰", "在长期目标中兼顾创造力释放和结构化落地", "将创意表达作为持续影响他人、实现自我价值的方式"]
+                }
+            },
+            "创意表达力 × 沟通影响力 × 技术适应力": {
+                name: "灵感型传播者",
+                description: "你擅长将创意与技术结合，用直观、生动的方式让想法触达更多人。无论是在工作项目、课堂展示还是生活活动中，你都能用视觉与故事吸引注意，并推动理念快速传播。",
+                characteristics: ["能用技术工具将创意表现得更具吸引力与感染力", "善于根据受众特点调整表达方式，实现高效沟通", "具备较强的内容视觉化与故事化能力，让复杂信息更易理解", "在群体中能快速传播并推广新想法"],
+                blindSpots: ["容易在技术细节上投入过多时间，忽略内容准备", "可能忽略创意与实际需求的匹配度"],
+                suggestions: {
+                    work: ["在制作内容前明确目标受众与核心需求", "学习并熟练掌握多种呈现工具，保持创意新鲜感", "在项目中平衡美感与功能，确保内容既吸引人又实用"],
+                    life: ["用视觉化方式记录生活，让生活记忆更生动", "在家庭活动或朋友聚会中设计创意邀请函", "在日常创作中留意时间控制，避免陷入技术细节"],
+                    social: ["在社交中用图片、视频或故事化表达让交流更生动有趣", "主动帮助朋友或社区推广他们的想法或活动", "与不同圈层的人合作，让创意覆盖更广的受众"],
+                    interest: ["适合摄影、视频制作、插画等结合技术与表达的兴趣", "尝试将兴趣作品公开展示获取反馈和成就感", "通过参与跨领域创作，拓宽表达形式与视野"],
+                    longterm: ["定期为自己策划创意项目，保持创造激情", "结合技术与艺术，在非工作场景中也创造影响力", "学会在表达中平衡自我风格与他人需求"]
+                }
+            },
+            "创意表达力 × 沟通影响力 × 协作引领力": {
+                name: "火花型合作者",
+                description: "你是团队的创意发动机，总能用新鲜的想法和感染力，让大家更投入。无论是在项目、课堂还是生活聚会中，你都能激发氛围、推动灵感变为现实。",
+                characteristics: ["擅长捕捉零散的灵感并转化为可执行方案", "以生动表达方式让不同背景的人乐于参与", "在合作中能激发他人的创作热情和投入感", "在群体氛围中自然扮演气氛带动者和创意催化剂"],
+                blindSpots: ["在细节推进上可能缺乏耐心", "容易被新的灵感分散注意力"],
+                suggestions: {
+                    work: ["在灵感高峰期及时记录并筛选可落地的方案", "为创意推进设定阶段性目标，避免只开头不收尾", "在执行阶段减少额外创意输入，专注于当前目标的完成"],
+                    life: ["在家庭、旅行或聚会策划中发挥创意，让活动更有亮点", "尝试将新点子转化为实际行动", "在生活项目中平衡创意与可行性，避免想法很多却无法落地"],
+                    social: ["利用幽默感和故事性表达，让人际互动更有吸引力", "主动在社交场合带动话题、缓解冷场", "在多人意见冲突时，用创意方案找到折中点"],
+                    interest: ["适合参与创意与协作结合的活动", "给兴趣项目设立完成节点", "尝试跨领域合作，把不同兴趣融合成新的创作形式"],
+                    longterm: ["定期回顾已完成的创意成果，增强成就感", "学会在灵感与执行之间找到平衡，让想法持续落地", "在非工作场景中也创造有影响力的时刻"]
+                }
+            },
+            "创意表达力 × 目标执行力 × 结构思维力": {
+                name: "灵感型执行官",
+                description: "你像一位兼顾创意与落地的执行官，能够把新颖的想法转化为有条理的计划，并用坚定的行动推动实现。你既能想象未来的可能性，也能规划路径和步骤，让创意变为切实成果。",
+                characteristics: ["善于将灵感转化为清晰可行的计划", "能平衡创新思维与目标导向，避免停留在空想", "在团队中常担任创意推动者，带动项目落地", "行动有节奏，善于在创意与执行间找到平衡"],
+                blindSpots: ["灵感过多时容易分散，缺乏聚焦", "过度强调执行时，可能削弱创意发散性", "在面对不确定性时容易焦虑，追求完美执行"],
+                suggestions: {
+                    work: ["在团队中主动承担创意落地的角色", "学会拆解目标，制定分阶段执行方案", "练习在创意阶段就加入可行性评估"],
+                    life: ["使用日程表或看板工具，将灵感逐步落实", "在生活小项目中练习'想+做'结合", "设定小目标，让创意快速产生成就感"],
+                    social: ["分享想法时配合具体步骤，更容易获得他人支持", "多倾听团队意见，避免自己推进过快", "善用逻辑与热情影响他人，推动集体执行"],
+                    interest: ["尝试写作、设计、策划等兴趣并输出成果", "参与黑客松或创新比赛，磨练'快想快做'的能力", "定期复盘，找到创意落地的最佳节奏"],
+                    longterm: ["聚焦少数高价值创意，避免过度消耗", "在'想得远'和'做得到'之间保持张力", "将把创意实现作为人生的持续成就来源"]
+                }
+            },
+            "创意表达力 × 目标执行力 × 技术适应力": {
+                name: "实干型创作者",
+                description: "你像一位高效的'创意施工队长'，能在明确目标的引导下，熟练运用技术与创意，将构想迅速落地成可用成果。无论是职场项目、学业任务，还是个人兴趣，你都能以成果为导向快速交付。",
+                characteristics: ["善于设定清晰目标并制定执行步骤", "熟练使用技术工具提升产出效率", "创作成果兼具实用性与吸引力", "能在执行中灵活调整方案以适应新需求"],
+                blindSpots: ["在赶进度时可能忽略创意的独特性", "对非必要的创意尝试兴趣不高"],
+                suggestions: {
+                    work: ["在团队中担任关键任务的执行与交付角色", "借助技术工具提升效率", "在执行计划前预留创意思考阶段"],
+                    life: ["在家庭或朋友活动中负责落实关键环节", "为个人兴趣项目设立清晰目标并按计划推进", "适度尝试非结果导向的创作，激发灵感"],
+                    social: ["用可视化成果促进沟通", "成为小组活动中'说到做到'的人", "倾听创意型伙伴的想法，为执行提供最佳落地路径"],
+                    interest: ["适合参与需要快速产出和实用落地的项目", "学习新技术手段，让执行更高效", "定期评估自己的成果创意度，防止陷入机械执行"],
+                    longterm: ["保持成果交付的高效性，同时兼顾创新性", "让执行过程也有创造的乐趣", "在不同领域积累'快速落地'的能力储备"]
+                }
+            },
+            "创意表达力 × 目标执行力 × 协作引领力": {
+                name: "策动型实践家",
+                description: "你能将创意想法快速转化为行动，并带领团队把设想落地成可见成果。无论是在跨部门项目、校园活动还是兴趣小组中，你都能推动创意一步步变成现实。",
+                characteristics: ["善于在团队中凝聚共识并推动执行", "能从创意中提炼出清晰的可执行方案", "分配任务时兼顾创意与落地需求", "在执行中保持高效与灵活的节奏"],
+                blindSpots: ["容易在推进中忽视细节打磨", "在多创意同时推进时可能分散精力"],
+                suggestions: {
+                    work: ["制定创意筛选标准，优先推进最有价值的想法", "在任务分配后定期跟进成果质量，确保收尾完整", "在推进中根据反馈及时调整策略"],
+                    life: ["在家庭或个人项目中快速将想法落实为行动", "为生活计划设定明确期限并跟进进展", "在非紧急任务中也保留细节优化的时间"],
+                    social: ["善于调动他人积极性，让大家愿意参与共同计划", "在朋友聚会或社群活动中扮演组织与推进的核心角色", "平衡高效推进与聆听他人意见，让合作更持久"],
+                    interest: ["适合参与需要创意落地的兴趣", "给兴趣项目设置明确目标", "学会在兴趣中留出反思与改进的时间"],
+                    longterm: ["在不同人生阶段挑选一个重点创意项目长期深耕", "结合个人热情与社会需求，推动有意义的长期计划", "在结果与过程之间找到平衡"]
+                }
+            },
+            "创意表达力 × 结构思维力 × 技术适应力": {
+                name: "构想型设计师",
+                description: "你像一位兼具艺术眼光与工程思维的设计师，能够将天马行空的创意通过有序结构和精致技术呈现出来。无论是在工作项目、学习作品，还是生活中的创意实践，你都能让内容兼具美感与逻辑。",
+                characteristics: ["善于将复杂创意拆解成条理清晰的结构", "熟练运用技术工具提升创作质量与表现力", "注重细节打磨，让成果兼顾美感与功能", "在创作中融入逻辑，让受众更容易理解信息"],
+                blindSpots: ["过度投入细节打磨可能影响整体进度", "对不按逻辑或非结构化的创意形式接受度较低"],
+                suggestions: {
+                    work: ["承担创意策划中结构设计与视觉呈现的核心角色", "为复杂方案建立清晰步骤图或信息架构", "在时间有限时学会抓重点，先完成核心部分"],
+                    life: ["在家庭或朋友活动中负责视觉与流程设计", "用结构化思路管理个人兴趣项目", "适时尝试打破惯性结构，为生活注入新鲜体验"],
+                    social: ["用视觉化方式让想法更易被理解", "在跨领域活动中充当'创意解释员'", "学习以更开放的心态接纳非结构化灵感"],
+                    interest: ["适合参与需要美感与逻辑结合的项目", "尝试将自己的设计过程记录并分享", "学习不同领域的设计语言，拓展表达方式"],
+                    longterm: ["学会平衡细节追求与整体进度", "在生活中创造'美感与秩序共存'的体验", "不只在作品完成时获得成就感，也在创作过程中享受发现和解决问题的乐趣"]
+                }
+            },
+            "创意表达力 × 结构思维力 × 协作引领力": {
+                name: "构思型组织者",
+                description: "你擅长在团队中提出有价值的创意，并通过结构化思维将点子整理成可执行计划，同时能带动他人落实。你像一位既能构想蓝图、又能凝聚团队的组织者。",
+                characteristics: ["能将零散灵感转化为系统化方案，并规划清晰实施路径", "在团队中自然承担协调与分工角色", "善于把复杂想法变成易于理解的框架和指引", "在执行中关注整体节奏，确保目标与团队步调一致"],
+                blindSpots: ["过于强调结构和流程时，可能削弱创意自由度", "容易承担过多责任，导致个人精力被分散"],
+                suggestions: {
+                    work: ["在团队项目中担任方案策划与执行统筹角色", "学会把大目标拆解为阶段性步骤，提升团队执行力", "多练习框架化写作，锻炼创意与逻辑并重的表达方式"],
+                    life: ["用表格或清单整理生活创意计划", "在家庭或朋友聚会中主动承担组织者角色", "给自己留出自由创意时间"],
+                    social: ["在团队或社交圈中发挥桥梁作用", "练习在引导时多倾听，避免替别人做过多决定", "适合主持或策划社群活动"],
+                    interest: ["适合参与策展、写作、剧本设计等兴趣领域", "尝试运营小型社群或项目", "培养放手与授权习惯"],
+                    longterm: ["将构思与组织能力发展为可复制的技能", "学会在理想与现实之间找到平衡", "把帮助团队实现创意价值作为长期使命"]
+                }
+            },
+            "创意表达力 × 技术适应力 × 协作引领力": {
+                name: "融合型创行者",
+                description: "你像一位跨界导演，能带领团队将创意与技术结合，产出既有亮点又具实用价值的成果。你是创新与落地之间的双向驱动者，善于整合资源、协调团队。",
+                characteristics: ["善于引导团队创意讨论并快速推进执行", "能运用技术工具将创意高质量呈现", "协作中兼顾表现力与功能性", "灵活应对团队多样化需求"],
+                blindSpots: ["在平衡创意与效率时可能偏向一方", "容易在探索新技术时分散团队精力"],
+                suggestions: {
+                    work: ["在项目中担任创意与技术结合的总负责人", "为创意确定明确的技术实现路径", "定期组织成果展示，提升团队士气和认同感"],
+                    life: ["在活动中结合创意与技术", "为个人兴趣项目加入新技术元素", "平衡美观与实用，避免偏科"],
+                    social: ["让团队或朋友的创意被更好落地", "在合作中扮演创意调解员", "与技术或创意专长的人建立互补合作"],
+                    interest: ["适合参与跨界项目", "学习更多表达工具，让创意呈现方式多元化", "尝试不同技术领域，保持灵感新鲜"],
+                    longterm: ["在创新与执行间找到理想平衡", "让每个落地成果成为成就感来源", "将跨界整合力发展成独有竞争力"]
+                }
+            },
+            "沟通影响力 × 目标执行力 × 结构思维力": {
+                name: "策略型沟通师",
+                description: "你像一位'语言工程师'，能用条理清晰、直击要点的表达，让复杂信息瞬间易懂，并推动计划精准落地。无论是谈判桌、团队会议，还是生活协商，你都能成为让事情顺利推进的关键力量。",
+                characteristics: ["善于用结构化语言让对方快速抓住重点", "能将复杂任务拆解成明确可行的步骤", "在讨论中保持目标导向，减少偏题和冗余", "确保信息准确、全面且可操作"],
+                blindSpots: ["可能在沟通中过度强调逻辑而忽视情感温度", "对无条理、漫谈式的交流耐心不足"],
+                suggestions: {
+                    work: ["在谈判、方案汇报、跨部门沟通中担任主导", "利用思维导图、金字塔原理等工具提升表达效率", "先获取情感认同，再进入逻辑论证"],
+                    life: ["在家庭讨论或朋友聚会中充当'决策推动者'", "用清晰的计划协助执行", "多用幽默或故事增强交流亲和力"],
+                    social: ["在关系冲突中扮演'翻译员'", "关注对方情绪，让沟通更温暖", "倾听无结构的意见，从中提炼有价值的信息"],
+                    interest: ["适合主持、演讲、辩论、培训等活动", "学习讲故事技巧，让逻辑与情感并重", "尝试非正式沟通场景，训练随机应变能力"],
+                    longterm: ["在工作与生活中兼顾'理性推进'和'情感联结'", "用沟通建立长期信任关系", "让精准表达成为你在各领域的核心竞争力"]
+                }
+            },
+            "沟通影响力 × 目标执行力 × 技术适应力": {
+                name: "赋能型执行官",
+                description: "你像一位'效率指挥官'，能够结合新技术与沟通能力，让目标在高效协作中迅速实现。无论是在工作、学习还是生活中，你都能利用工具和方法，让团队或家庭运作顺畅。",
+                characteristics: ["熟练使用手机App、AI工具等新技术，让任务处理更高效", "能快速把复杂需求转化为简单可执行的步骤", "擅长在不同团队或群体中清晰传达信息", "能在多任务环境下高效推进，同时保持结果质量"],
+                blindSpots: ["可能在追求效率时忽略创意或人性化考虑", "在跨部门或跨圈子沟通时，可能高估他人对新技术的熟悉度"],
+                suggestions: {
+                    work: ["利用新技术工具管理项目或学习计划", "在团队中快速传达任务与进展", "给复杂任务拆解阶段目标，结合技术追踪执行"],
+                    life: ["在家庭事务、出行或活动组织中运用技术工具安排日程", "用App或共享文档让家人或朋友的任务分配更清晰", "保留探索新工具的时间，尝试提高生活便利性"],
+                    social: ["利用线上工具快速分享信息、收集意见", "在聚会或活动筹备中用技术支持协调与沟通", "关注他人的使用习惯，确保沟通和协作对所有人都友好"],
+                    interest: ["用技术工具记录创意或学习笔记", "尝试将兴趣活动成果通过数字方式分享或展示", "利用App或在线资源不断扩展技能和兴趣边界"],
+                    longterm: ["定期检查自己是否过于依赖技术而忽略人际互动", "在生活中用技术创造便利，同时保留陪伴和人际互动", "将高效执行能力与沟通技巧结合"]
+                }
+            },
+            "沟通影响力 × 目标执行力 × 协作引领力": {
+                name: "桥梁型指挥官",
+                description: "你像一位既懂全局又能亲自上阵的指挥官，既能搭建沟通桥梁，又能让目标与行动高度一致。无论是在工作、学习还是生活中，你都能带动团队稳步前进。",
+                characteristics: ["表达清晰，能将复杂的想法或任务用简单明了的方式传达", "善于拆分目标并精准分配资源", "在多人协作中快速建立信任与凝聚力", "注重效率，能推动事情按时高质量完成"],
+                blindSpots: ["容易为了效率忽略他人的情绪节奏", "在沟通中过于直接，需要注意语气与方式"],
+                suggestions: {
+                    work: ["在团队项目中担任协调与推进角色", "在学习中为自己制定阶段目标，并用清晰的行动步骤执行", "在资源有限的情况下，优化流程、节省时间"],
+                    life: ["在家庭事务、旅行计划、活动组织中发挥统筹优势", "为大型生活任务制定时间表和分工计划", "适时关注家人或室友的情绪需求"],
+                    social: ["善于在不同朋友圈之间充当'连接器'", "在聚会、社区活动中主动承担组织者角色", "学会在高效推动事情的同时，给他人更多表达与参与机会"],
+                    interest: ["适合参与需要协作与目标感的兴趣活动", "在兴趣中设定小目标", "尝试记录和分享自己的组织经验"],
+                    longterm: ["定期反思自己的推动节奏是否过快", "在非工作场景中，也创造'价值感'时刻", "不仅在结果中寻找成就感，也学会在过程、陪伴与互动中获得满足"]
+                }
+            },
+            "沟通影响力 × 结构思维力 × 技术适应力": {
+                name: "逻辑型沟通师",
+                description: "你像一位'信息导航师'，能够把复杂、抽象的信息拆解成条理清晰、易于理解的内容，并灵活运用工具和技术手段提升沟通效率。你擅长让团队或个人快速理解观点。",
+                characteristics: ["能够把复杂概念结构化并清晰表达", "能通过逻辑和语言引导他人理解并接受观点", "擅长结合技术和工具让信息更直观有效", "能够在团队中担任信息桥梁角色"],
+                blindSpots: ["倾向过度依赖逻辑和技术工具", "注重内容准确性时，有时可能对情绪和人际温度投入不足"],
+                suggestions: {
+                    work: ["利用结构化思维和沟通能力承担信息整理和汇报任务", "在讨论和汇报中加入案例或比喻", "持续学习新兴工具，提高信息传递效率"],
+                    life: ["在日常沟通中练习用简洁、条理化语言解释复杂问题", "结合逻辑与故事化表达，使日常交流更生动有趣", "注意保持交流温度，在对话中加入共情和情绪反馈"],
+                    social: ["善用比喻、案例和可视化工具帮助他人理解复杂观点", "在社交场合既展示逻辑思维，也注意情绪感知和共情", "扮演'意见桥梁者'", "协调和整合不同观点"],
+                    interest: ["适合从事写作、讲解、教学、咨询或知识分享类活动", "尝试运营知识分享平台或制作学习资料", "练习即兴演讲或快速讲解"],
+                    longterm: ["平衡逻辑表达与情感共鸣", "通过帮助他人理解复杂问题和做出决策，获得持续的成就感", "把沟通视为桥梁而非单向输出"]
+                }
+            },
+            "沟通影响力 × 结构思维力 × 协作引领力": {
+                name: "组织型引导者",
+                description: "你像一位'团队的导航者'，能够用结构化思路引导团队或群体的沟通，并推动协作顺利进行。无论是在工作、学习还是生活中，你都能让流程清晰、高效。",
+                characteristics: ["能够把讨论内容快速整理成逻辑清晰的结论", "擅长引导团队或家庭达成共识", "在沟通中兼顾全局与细节", "擅长调和冲突，维护合作氛围"],
+                blindSpots: ["在结构化总结中可能过于简化复杂意见", "在追求一致性和高效执行时，可能限制创新和多样化思路"],
+                suggestions: {
+                    work: ["在团队项目中承担会议总结与任务分配角色", "利用结构化工具梳理复杂任务", "定期检查项目执行情况和计划对齐程度"],
+                    life: ["用清单或日程表安排家庭、旅行或日常活动", "在家庭讨论中梳理决策步骤", "留出空间接纳不同意见"],
+                    social: ["在聚会或社群活动中梳理流程和议程", "帮助不同背景的朋友理解共同规则或流程", "在关注效率的同时，兼顾情绪和节奏"],
+                    interest: ["在兴趣小组中承担组织或协调角色", "记录活动成果和改进点", "尝试多样化方式呈现成果"],
+                    longterm: ["反思是否过于追求一致和高效而忽略创新与多样性", "用结构化方式管理生活，同时保持灵活性", "在生活中平衡安排和陪伴"]
+                }
+            },
+            "沟通影响力 × 技术适应力 × 协作引领力": {
+                name: "链接型整合者",
+                description: "你擅长用技术和沟通将团队资源高效整合，让不同领域的人快速协同起来。无论是在大型项目、跨专业学习还是社区活动中，你都能成为信息与人之间的关键桥梁。",
+                characteristics: ["熟悉多种技术工具，让团队信息流更高效", "善于协调不同背景成员的沟通方式", "能在项目中找到技术与人之间的最佳衔接点", "推进过程中主动整合信息，减少重复和误解"],
+                blindSpots: ["容易在工具选择上投入过多时间", "可能低估团队对新工具的学习曲线", "过度依赖工具时，可能忽略人与人直接交流的温度"],
+                suggestions: {
+                    work: ["在引入新工具前先评估团队接受度与学习成本", "定期组织简短的工具培训或分享会", "在任务分配与信息传递中保持透明化与可追溯性"],
+                    life: ["用合适的工具管理家务、日程、预算等生活事务", "在家庭成员间建立简单易用的共享信息系统", "根据生活场景灵活调整工具与方法"],
+                    social: ["在跨圈层或跨兴趣小组中担任信息整合与沟通协调角色", "主动帮助朋友或同事快速上手新工具", "在技术沟通中保持耐心"],
+                    interest: ["适合参与需要信息整合与协作的兴趣项目", "尝试将兴趣与技术结合", "不断学习新技术和工具"],
+                    longterm: ["将技术与人文关怀结合", "避免过度依赖工具，保留人与人直接交流的温度", "定期优化自己的信息管理体系"]
+                }
+            },
+            "目标执行力 × 结构思维力 × 技术适应力": {
+                name: "精算型战略家",
+                description: "你像一位运筹帷幄的战略师，擅长用数据和结构化思维制定高效计划，并通过技术手段确保计划落地。无论是在项目管理、学业规划还是日常事务中，你都能找到最优路径。",
+                characteristics: ["能快速识别任务关键环节并制定高效可行的执行路径", "善用工具与技术提升效率与准确性", "注重过程与结果的双重质量，追求最佳成果", "能基于数据分析及时调整策略和方向"],
+                blindSpots: ["对不确定性和突发变化的包容度较低", "可能对执行方式的多样性不够开放", "高度追求完美执行时，可能影响团队节奏或个人压力"],
+                suggestions: {
+                    work: ["在项目初期通过数据和结构化分析找出关键路径", "善用数字化工具和自动化方法减少重复性任务", "在计划中预留缓冲时间", "主动与思维风格不同的同事或同学合作"],
+                    life: ["在家务、理财、旅行和健康管理等生活领域制定清晰流程", "使用日程表、清单或App优化日常事务安排", "在生活计划中留出弹性空间"],
+                    social: ["在多人活动中担任计划与后勤安排的核心角色", "用可视化或数据化方式帮助群体达成共识", "在社交互动中有意识留出讨论和即兴空间"],
+                    interest: ["适合参与需要策略与技术结合的兴趣", "为兴趣设立长期目标，并制定阶段计划", "尝试在兴趣中引入更多即兴创意"],
+                    longterm: ["练习在不确定环境中保持稳定心态", "结合数据和情感评估做出更全面的重大决策", "将结构化思维用于创造生活的长期价值"]
+                }
+            },
+            "目标执行力 × 结构思维力 × 协作引领力": {
+                name: "节奏型推进官",
+                description: "你像一位'时间和任务的指挥家'，能够精准掌握团队或群体的工作节奏，让结构与执行高效衔接。无论是在工作、学习还是生活中，你都能在多任务并行时保持顺畅高效。",
+                characteristics: ["善于分配任务并监控进度", "快速发现流程瓶颈并调整", "在团队结构与目标之间搭建清晰路径", "平衡速度与质量，确保成果按时交付"],
+                blindSpots: ["追求节奏时可能忽略创意和灵活性", "对节奏打乱或突发事件反应较慢"],
+                suggestions: {
+                    work: ["在项目中明确阶段目标，监控执行节奏", "建立任务优先级和时间表", "在推进中预留灵活调整空间", "定期复盘项目流程和节奏"],
+                    life: ["用时间表或共享工具管理家庭、旅行或搬家计划", "调整家庭成员或室友的分工节奏", "在任务推进中加入小奖励或鼓励"],
+                    social: ["协调社群活动流程", "在聚会或团队活动中掌控整体节奏", "关注参与者状态，适时调整进度"],
+                    interest: ["在兴趣项目中安排阶段性目标和执行计划", "保持创意探索时间", "定期复盘成果和节奏管理"],
+                    longterm: ["反思自己是否过度追求高效而忽略体验", "将节奏掌控与陪伴、生活乐趣结合", "在长期计划中兼顾目标达成和心理舒适"]
+                }
+            },
+            "目标执行力 × 技术适应力 × 协作引领力": {
+                name: "推进型整合官",
+                description: "你像一位能带队奔跑的'推进器'。你不仅能快速掌握新工具和方法，还能将团队力量高效整合，让任务顺利落地。你擅长把宏大目标转化为可执行行动。",
+                characteristics: ["对目标敏锐，善于分解任务并制定执行路径", "能熟练运用新技术提升效率", "快速适应变化", "擅长在团队中发挥协调作用，让不同成员的优势结合", "具备较强推动力，能带动他人加快进度"],
+                blindSpots: ["容易过度追求速度，忽略长期规划与细节完善", "在使用技术时，可能过度依赖工具而忽略思考本身"],
+                suggestions: {
+                    work: ["在团队项目中主动承担'推进者'角色", "学会选择合适的技术工具", "在执行前花时间做阶段性计划", "定期复盘执行过程"],
+                    life: ["用任务清单和提醒工具管理日常事务", "在家庭或社交活动中主动承担组织与落实角色", "遇到新事务时先试点小规模行动"],
+                    social: ["在带动他人时，学会根据对方节奏调整推进方式", "多给团队成员肯定与支持", "遇到阻力时，先沟通再行动"],
+                    interest: ["适合参与需要执行与统筹的兴趣活动", "学习项目管理或效率工具的进阶方法", "尝试在兴趣项目中担任'项目负责人'"],
+                    longterm: ["适合从事项目管理、产品运营、组织管理等职业方向", "学会在推进中留白", "将'把目标落地、推动进展'作为长期价值"]
+                }
+            },
+            "结构思维力 × 技术适应力 × 协作引领力": {
+                name: "统筹型协调员",
+                description: "你像一位有技术头脑的'流程建筑师'，擅长用结构化思路和数字化工具推动团队高效协作，让不同环节无缝衔接、稳步推进。无论是在工作、学习还是大型项目中，你都能将复杂流程拆解成清晰步骤。",
+                characteristics: ["善于为团队建立清晰的工作流程与分工", "利用技术工具减少信息延误与资源浪费", "主动协调成员节奏，确保整体进度", "具备前瞻性，能预防潜在问题"],
+                blindSpots: ["在强调结构时可能降低灵活性", "对随性或非计划型工作方式耐心不足", "高度关注流程可能让团队感到约束"],
+                suggestions: {
+                    work: ["负责跨部门或多任务项目的流程管理", "用项目管理工具保持团队节奏一致", "在计划中预留调整空间", "定期回顾流程效率"],
+                    life: ["在大型活动中担任组织与协调角色", "为家庭事务制定简单高效的分工方式", "在流程中加入小惊喜或互动环节"],
+                    social: ["做不同性格朋友间的'缓冲器'与'翻译员'", "倾听非结构化思路并融入计划中", "用轻松方式化解团队中的小摩擦"],
+                    interest: ["适合参与需要统筹和多方协作的项目", "尝试灵活化的管理方式", "学习情绪管理技巧"],
+                    longterm: ["在秩序与灵活之间找到平衡", "让技术与人际技巧互相加成", "把'稳中求进'的能力应用到生活的更多领域"]
+                }
+            }
+        };
+
+        let userAnswers = { part1: {}, part2: {}, raw: {} };
+        let currentStep = 1;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuestions();
+
+            // 检查URL参数中是否携带激活码（小程序通过WebView URL传入）
+            const urlCode = getURLParameter('code');
+            if (urlCode) {
+                const code = urlCode.trim().toUpperCase();
+                if (CONFIG.VALID_CODES.includes(code)) {
+                    // 激活码有效，自动跳过激活弹窗
+                    const modal = document.getElementById('activationModal');
+                    if (modal) {
+                        modal.style.display = 'none';
+                    }
+                    console.log('[URL] Activation code accepted from URL parameter');
+                } else {
+                    console.warn('[URL] Invalid activation code in URL:', urlCode);
+                }
+            }
+
+            const activationInput = document.getElementById('activationCode');
+            if(activationInput) {
+                activationInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') validateActivationCode();
+                });
+            }
+        });
+
+        function validateActivationCode() {
+            const input = document.getElementById('activationCode');
+            const errorElement = document.getElementById('activationError');
+            const modal = document.getElementById('activationModal');
+            if (!input || !modal) return;
+            const code = input.value.trim().toUpperCase();
+            if (CONFIG.VALID_CODES.includes(code)) {
+                input.style.borderColor = "#00b894";
+                errorElement.style.display = 'none';
+                modal.style.opacity = '0';
+                setTimeout(() => { modal.style.display = 'none'; }, 400);
+            } else {
+                errorElement.style.display = 'block';
+                input.style.borderColor = '#ff7675';
+            }
+        }
+
+        function initializeQuestions() {
+            // 选项顺序调整为：非常符合(5) -> 非常不符合(1)
+            const createOptions = (name, qIndex) => `
+                <div class="options">
+                    ${[5, 4, 3, 2, 1].map(score => `
+                        <label class="option">
+                            <input type="radio" name="${name}_${qIndex}" value="${score}">
+                            <span>${['非常不符','不太符合','一般','比较符合','非常符合'][score-1]}</span>
+                        </label>
+                    `).join('')}
+                </div>`;
+
+            const p1Container = document.getElementById('questions-part1');
+            let qIdx = 0;
+            dimensions.part1.forEach((dim) => {
+                dim.questions.forEach((q) => {
+                    const div = document.createElement('div');
+                    div.className = 'question';
+                    div.innerHTML = `<div class="question-text">${q}</div>${createOptions('p1', qIdx++)}`;
+                    p1Container.appendChild(div);
+                });
+            });
+
+            const p2Container = document.getElementById('questions-part2');
+            dimensions.part2.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `<div class="question-text">${item.question}</div>${createOptions('p2', idx)}`;
+                p2Container.appendChild(div);
+            });
+
+            document.body.addEventListener('change', e => {
+                if (e.target.type === 'radio' || e.target.type === 'checkbox') {
+                    const wrapper = e.target.closest('.option');
+                    if (e.target.type === 'radio') {
+                        const name = e.target.name;
+                        document.querySelectorAll(`input[name="${name}"]`).forEach(el => 
+                            el.closest('.option').classList.remove('selected'));
+                    }
+                    if (wrapper) {
+                        if (e.target.checked) wrapper.classList.add('selected');
+                        else wrapper.classList.remove('selected');
+                    }
+                }
+                const formGroup = e.target.closest('.form-group');
+                if(formGroup) formGroup.classList.remove('error');
+            });
+        }
+
+        function toggleLoading(step, isLoading) {
+            const loadingIcon = document.getElementById(`loading${step}`);
+            const btn = loadingIcon?.closest('.btn');
+            if(loadingIcon) loadingIcon.style.display = isLoading ? 'inline-block' : 'none';
+            if(btn) btn.disabled = isLoading;
+        }
+
+        function nextStep(step) {
+            toggleLoading(step, true);
+            setTimeout(() => {
+                let isValid = false;
+                switch(step) {
+                    case 1: isValid = true; break;
+                    case 2: isValid = validateConsent(); break;
+                    case 3: isValid = validateUserInfo(); break;
+                    case 4: 
+                        isValid = validateQuestions(); 
+                        if(isValid) {
+                            calculateScores();
+                            submitToGoogleSheets(); // 数据提交
+                            generateReport();
+                        }
+                        break;
+                }
+                if (isValid) {
+                    const currentEl = document.getElementById(`step${currentStep}`);
+                    const indicatorEl = document.getElementById(`step${currentStep}-indicator`);
+                    if(currentEl) currentEl.classList.remove('active');
+                    if(indicatorEl) indicatorEl.classList.remove('active');
+                    currentStep++;
+                    const nextEl = document.getElementById(`step${currentStep}`);
+                    const nextIndicatorEl = document.getElementById(`step${currentStep}-indicator`);
+                    if(nextEl) nextEl.classList.add('active');
+                    if(nextIndicatorEl) nextIndicatorEl.classList.add('active');
+                    if(currentStep === 5 && nextIndicatorEl) nextIndicatorEl.classList.add('completed');
+                    window.scrollTo({top: 0, behavior: 'smooth'});
+                }
+                toggleLoading(step, false);
+            }, 400);
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep}-indicator`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}-indicator`).classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function validateConsent() {
+            if (!document.getElementById('consentAgreement').checked) {
+                alert('请先勾选同意参与条款');
+                return false;
+            }
+            return true;
+        }
+
+        function validateUserInfo() {
+            let isValid = true;
+            document.querySelectorAll('.form-group.error').forEach(el => el.classList.remove('error'));
+            ['nickname', 'age', 'gender', 'current-focus'].forEach(id => {
+                if (!document.getElementById(id).value) {
+                    document.getElementById(id).closest('.form-group').classList.add('error');
+                    isValid = false;
+                }
+            });
+            if (document.querySelectorAll('input[name="status"]:checked').length === 0) {
+                document.querySelector('.status-options').closest('.form-group').classList.add('error');
+                isValid = false;
+            }
+            if (!isValid) document.querySelector('.form-group.error').scrollIntoView({behavior: 'smooth', block: 'center'});
+            return isValid;
+        }
+
+        function validateQuestions() {
+            const total = document.querySelectorAll('#questions-part1 .question').length + document.querySelectorAll('#questions-part2 .question').length;
+            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+            if (answered < total) {
+                const msg = document.getElementById('questionsError');
+                msg.style.display = 'block';
+                msg.textContent = `还有 ${total - answered} 道题未完成，请检查。`;
+                msg.scrollIntoView({behavior: 'smooth', block: 'center'});
+                return false;
+            }
+            return true;
+        }
+
+        function calculateScores() {
+            let qIdx = 0;
+            userAnswers.part1 = {};
+            userAnswers.raw = {}; 
+
+            dimensions.part1.forEach(dim => {
+                userAnswers.part1[dim.name] = [];
+                dim.questions.forEach(() => {
+                    const el = document.querySelector(`input[name="p1_${qIdx}"]:checked`);
+                    if(el) {
+                        const val = parseInt(el.value);
+                        userAnswers.part1[dim.name].push(val);
+                        userAnswers.raw[`p1_q${qIdx}`] = val; // Raw scores for P1
+                    }
+                    qIdx++;
+                });
+            });
+            userAnswers.part2 = {};
+            dimensions.part2.forEach((item, idx) => {
+                const el = document.querySelector(`input[name="p2_${idx}"]:checked`);
+                if(el) {
+                    const val = parseInt(el.value);
+                    if(!userAnswers.part2[item.dimension]) userAnswers.part2[item.dimension] = [];
+                    userAnswers.part2[item.dimension].push(val);
+                    userAnswers.raw[`p2_q${idx}`] = val; // Raw scores for P2
+                }
+            });
+
+            const part1Scores = {};
+            for(let key in userAnswers.part1) {
+                const arr = userAnswers.part1[key];
+                part1Scores[key] = ((arr.reduce((a,b)=>a+b,0) / (arr.length*5)) * 100).toFixed(1);
+            }
+            const part2Scores = {};
+            for(let key in userAnswers.part2) {
+                const arr = userAnswers.part2[key];
+                part2Scores[key] = (arr.reduce((a,b)=>a+b,0) / arr.length).toFixed(1);
+            }
+            
+            const top3 = Object.keys(part2Scores).sort((a,b) => part2Scores[b] - part2Scores[a]).slice(0,3);
+            
+            // 匹配逻辑
+            const roleMatch = findBestRoleMatch(top3, part2Scores);
+
+            window.reportData = {
+                part1Scores,
+                part2Scores,
+                top3,
+                roleData: roleMatch.role,
+                roleKey: roleMatch.key,
+                matchType: roleMatch.matchType,
+                userInfo: {
+                    nickname: document.getElementById('nickname').value,
+                    age: document.getElementById('age').value,
+                    gender: document.getElementById('gender').value,
+                    status: Array.from(document.querySelectorAll('input[name="status"]:checked')).map(c=>c.value),
+                    focus: document.getElementById('current-focus').value
+                },
+                rawAnswers: userAnswers.raw // 包含原始答案
+            };
+        }
+        
+        function findBestRoleMatch(top3Talents, scores) {
+            const exactMatch = top3Talents.join(' × ');
+            if (roleCards[exactMatch]) {
+                return { role: roleCards[exactMatch], key: exactMatch, matchType: "exact" };
+            }
+            
+            const allPermutations = generatePermutations(top3Talents);
+            for (let permutation of allPermutations) {
+                const permKey = permutation.join(' × ');
+                if (roleCards[permKey]) {
+                    return { role: roleCards[permKey], key: permKey, matchType: "permutation" };
+                }
+            }
+            
+            return findSimilarRole(top3Talents, scores);
+        }
+
+        function generatePermutations(arr) {
+            const result = [];
+            function permute(current, remaining) {
+                if (current.length === 3) {
+                    result.push([...current]);
+                    return;
+                }
+                for (let i = 0; i < remaining.length; i++) {
+                    permute([...current, remaining[i]], [...remaining.slice(0, i), ...remaining.slice(i + 1)]);
+                }
+            }
+            permute([], arr);
+            return result;
+        }
+
+        function findSimilarRole(top3Talents, scores) {
+            let bestMatch = null;
+            let bestScore = 0;
+            const talentWeights = {};
+            top3Talents.forEach((talent, index) => talentWeights[talent] = 3 - index);
+           
+            for (const [roleKey, roleData] of Object.entries(roleCards)) {
+                const roleTalents = roleKey.split(' × ');
+                let similarityScore = 0;
+                roleTalents.forEach(talent => {
+                    if (talentWeights[talent]) similarityScore += talentWeights[talent];
+                });
+               
+                if (similarityScore > bestScore) {
+                    bestScore = similarityScore;
+                    bestMatch = { role: roleData, key: roleKey, matchType: "similar", similarity: similarityScore };
+                }
+            }
+           
+            if (bestMatch && bestScore >= 2) return bestMatch;
+           
+            return {
+                role: {
+                    name: "综合型人才",
+                    description: "你具备多方面的天赋潜能，能够在不同领域发挥自己的优势。你的天赋组合比较独特，显示出你在多个维度都有不错的表现。",
+                    characteristics: ["具备全面的能力素质", "适应性强", "学习能力突出"],
+                    blindSpots: ["可能缺乏特别突出的专长", "需要更多时间探索"],
+                    suggestions: {
+                        work: ["多尝试不同领域", "选择1-2个深度发展"],
+                        life: ["保持探索精神", "建立多元生活体验"],
+                        social: ["与不同专长人合作", "建立广泛网络"],
+                        interest: ["广泛涉猎", "将兴趣转化为技能"],
+                        longterm: ["持续探索", "建立个人品牌"]
+                    }
+                },
+                key: top3Talents.join(' × '),
+                matchType: "default"
+            };
+        }
+
+        // ================= 核心修复：使用 POST 提交数据 =================
+        function submitToGoogleSheets() {
+            if (!CONFIG.GOOGLE_SCRIPT_URL) return;
+            const data = window.reportData;
+            if (!data) return;
+
+            const formData = new FormData();
+            
+            // 1. 基础信息
+            formData.append('nickname', data.userInfo.nickname || '');
+            formData.append('age', data.userInfo.age || '');
+            formData.append('gender', data.userInfo.gender || '');
+            formData.append('status', (data.userInfo.status || []).join(', '));
+            formData.append('focus', data.userInfo.focus || '');
+            
+            // 2. 分数数据
+            formData.append('part1Scores', JSON.stringify(data.part1Scores || {}));
+            formData.append('part2Scores', JSON.stringify(data.part2Scores || {}));
+            
+            // 3. 结果
+            formData.append('top3', (data.top3 || []).join(', '));
+            formData.append('role', data.roleData.name || '');
+            formData.append('roleKey', data.roleKey || '');
+            
+            // 4. 原始题目答案 (关键数据)
+            formData.append('rawAnswers', JSON.stringify(data.rawAnswers || {}));
+            
+            // 5. 时间戳
+            formData.append('timestamp', new Date().toISOString());
+
+            // 使用 POST 请求发送
+            fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // 必须使用 no-cors 以避免跨域错误
+                body: formData
+            })
+            .then(() => {
+                console.log("Data submitted successfully via POST");
+                // 提交成功后，向小程序发送数据
+                postMessageToMiniProgram({
+                    type: 'data_submitted',
+                    data: {
+                        talentType: data.roleData.name,
+                        top3: data.top3,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Submission failed:", error);
+            });
+        }
+
+        function generateReport() {
+            const container = document.getElementById('report-content');
+            const data = window.reportData;
+            const role = data.roleData;
+           
+            let matchNote = "";
+            if (data.matchType === "permutation" || data.matchType === "similar") {
+                matchNote = `<p class="quote" style="font-size:0.9em; padding:15px; margin:20px 0;"><i class="fas fa-info-circle"></i> 注：系统为您匹配了最契合的"${role.name}"角色卡。</p>`;
+            }
+
+            // --- 第一部分：潜能校准 ---
+            let part1HTML = '';
+            const p1_learn = parseFloat(data.part1Scores['学习感知力']);
+            const text_learn = p1_learn > 50 
+                ? '你当前的主要任务激发了较高的学习能力。你能深入理解事物的原理，而不仅停留在执行层面。你擅长将知识迁移到不同场景，遇到新问题时能迅速联想、灵活应对，并对细节保持敏锐观察。这种"触类旁通、举一反三"的能力，是持续成长和跨界发展的核心优势。'
+                : '你当前的主要任务未能充分激发学习能力。你可能更关注"完成"而非"理解"，习惯依赖既定流程或他人指导。面对新挑战时容易无从下手，缺乏主动探索和反思。建议你从记录思考、查阅资料、尝试向别人解释等方式入手，培养更深层次的认知与学习习惯。';
+            
+            const p1_create = parseFloat(data.part1Scores['创意活跃度']);
+            const text_create = p1_create > 50
+                ? '你当前的主要任务激发了较高的创造能力。你能不断提出新想法，乐于改进和优化方案，对单调、重复的事务容易感到乏味，因此本能地寻找更有趣、更高效的解决方式。这种思维方式让你的工作和生活充满活力，也能带动他人看到新的可能。'
+                : '你当前的主要任务对你的创造能力激发不足。你可能更倾向于按部就班，缺少尝试不同做法的意愿。面对变化时容易陷入惯性思维。建议你多关注跨领域的新鲜事，练习头脑风暴，从小处着手培养创意火花。';
+
+            const p1_drive = parseFloat(data.part1Scores['内驱动状态']);
+            const text_drive = p1_drive > 50
+                ? '你当前的主要任务激发了较高的行为动力。你能在兴趣和价值认同的驱动下保持长期专注，具备较强的责任感和主动性。遇到困难时，你会寻找解决方法并坚持推进，这让你在长期成长中更有韧性。'
+                : '你当前的主要任务对你的行动能力激发不足。你可能容易因为外部压力、焦虑或缺乏兴趣而缺少行动动力，启动任务时经常需要"逼自己一把"，而一旦遇到困难或枯燥，很容易选择逃避或半途而废。这种状态会影响效率与自信。建议设定小目标、找到任务的内在意义，并通过阶段性反馈逐步培养持续动力。';
+
+            part1HTML += renderPart1Card("学习感知力", p1_learn, text_learn);
+            part1HTML += renderPart1Card("创意活跃度", p1_create, text_create);
+            part1HTML += renderPart1Card("内驱动状态", p1_drive, text_drive);
+
+            function renderPart1Card(title, score, text) {
+                return `
+                <div style="background:#fff; padding:20px; border-radius:12px; box-shadow:var(--shadow-sm); border:1px solid #eee;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <strong>${title}</strong>
+                        <span style="color:var(--primary-color); font-weight:bold;">${score}%</span>
+                    </div>
+                    <div style="height:8px; background:#f0f0f0; border-radius:4px; overflow:hidden;">
+                        <div style="height:100%; width:${score}%; background:var(--gradient);"></div>
+                    </div>
+                    <p style="font-size:0.85em; color:#666; margin-top:10px; line-height:1.6;">${text}</p>
+                </div>`;
+            }
+
+            // --- 组装完整报告 ---
+            let html = `
+                <div style="text-align:center; margin-bottom:40px;">
+                    <h1 style="font-size:2em; margin-bottom:10px;">个人天赋潜能报告</h1>
+                    <p style="color:#666;">为 <strong>${data.userInfo.nickname}</strong> 专属生成</p>
+                </div>
+                ${matchNote}
+                <div class="section" style="background:#fff; border-left:4px solid var(--primary-color);">
+                    <p>每个人都拥有独特的天赋，但往往被忙碌遮蔽。这份报告旨在帮你重新发现那些让你"毫不费力却做得比别人好"的领域。</p>
+                </div>
+
+                <h2>第一部分：潜能校准</h2>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px; margin-bottom:30px;">
+                    ${part1HTML}
+                </div>
+
+                <h2>第二部分：天赋探索</h2>
+                <table class="keyword-table">
+                    <thead><tr><th>潜能维度</th><th>得分</th></tr></thead>
+                    <tbody>`;
+            for(let key in data.part2Scores) {
+                html += `<tr><td><strong>${key}</strong></td><td><span style="background:var(--light-color); padding:4px 8px; border-radius:4px;">${data.part2Scores[key]} / 5</span></td></tr>`;
+            }
+            html += `</tbody></table>
+
+                <h3 style="margin-top:40px; text-align:center; color:var(--primary-color);">🌟 你的核心优势 Top 3</h3>
+                <div style="margin-top:20px;">`;
+            
+            // Top 3 详情
+            data.top3.forEach((talent, index) => {
+                const detail = talentDetails[talent] || {};
+                html += `
+                    <div class="talent-card">
+                        <h3 style="margin-top:0; color:var(--primary-color);"><span style="background:var(--primary-color); color:white; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:14px; margin-right:10px;">${index+1}</span>${talent}</h3>
+                        <p style="margin-bottom:15px; line-height:1.8;">${detail.description || ''}</p>
+                        <div style="background:var(--light-color); padding:15px; border-radius:12px; margin-bottom:15px;">
+                            <strong>💡 关键词：</strong>
+                            <ul style="margin-top:10px; padding-left:20px;">${(detail.keywords||[]).map(k => `<li style="margin-bottom:5px;"><strong>${k.keyword}</strong>: ${k.interpretation}</li>`).join('')}</ul>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                            <div><h4 style="font-size:1em; margin-bottom:10px;">📚 学习建议</h4><ul class="suggestion-list" style="font-size:0.9em;">${(detail.learning||[]).map(l => `<li>${l}</li>`).join('')}</ul></div>
+                            <div><h4 style="font-size:1em; margin-bottom:10px;">💼 职业方向</h4><ul class="suggestion-list" style="font-size:0.9em;">${(detail.career||[]).map(c => `<li>${c}</li>`).join('')}</ul></div>
+                        </div>
+                    </div>`;
+            });
+
+            // 角色卡
+            html += `
+                <div class="role-card" style="border:2px solid var(--primary-light); background:#fff;">
+                    <div style="text-align:center; margin-bottom:30px;">
+                        <h2 style="color:var(--primary-color); margin-bottom:5px;">${role.name}</h2>
+                        <span style="background:var(--primary-light); color:white; padding:4px 12px; border-radius:20px; font-size:0.9em;">${data.roleKey}</span>
+                    </div>
+                    <p style="font-size:1.1em; line-height:1.8; margin-bottom:30px;">${role.description}</p>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:25px;">
+                        <div><h4 style="color:var(--accent-color); border-bottom:2px solid var(--accent-color); padding-bottom:8px;">✨ 你的超能力</h4><ul class="suggestion-list">${(role.characteristics||[]).map(c => `<li>${c}</li>`).join('')}</ul></div>
+                        <div><h4 style="color:#ff7675; border-bottom:2px solid #ff7675; padding-bottom:8px;">⚠️ 潜在盲区</h4><ul class="suggestion-list">${(role.blindSpots||[]).map(b => `<li>${b}</li>`).join('')}</ul></div>
+                    </div>
+                    <h4 style="margin-top:30px; border-left:4px solid var(--primary-color); padding-left:10px;">🚀 行动指南</h4>
+                    <div style="background:var(--light-color); padding:20px; border-radius:16px;">
+                        <h5 style="margin-top:0;">工作与学业</h5><ul class="suggestion-list">${(role.suggestions?.work||[]).map(s => `<li>${s}</li>`).join('')}</ul>
+                        <h5>日常生活</h5><ul class="suggestion-list">${(role.suggestions?.life||[]).map(s => `<li>${s}</li>`).join('')}</ul>
+                        <h5>社交与人际</h5><ul class="suggestion-list">${(role.suggestions?.social||[]).map(s => `<li>${s}</li>`).join('')}</ul>
+                        <h5>兴趣成长</h5><ul class="suggestion-list">${(role.suggestions?.interest||[]).map(s => `<li>${s}</li>`).join('')}</ul>
+                        <h5>长期发展</h5><ul class="suggestion-list">${(role.suggestions?.longterm||[]).map(s => `<li>${s}</li>`).join('')}</ul>
+                    </div>
+                </div>
+                <div style="text-align:center; margin-top:40px; color:#999; font-size:0.8em;"><p>Talent Unlimited Lab · 天赋潜能测评系统</p><p>报告生成时间：${new Date().toLocaleString()}</p></div>`;
+            
+            container.innerHTML = html;
+
+            // 报告生成完成后，向小程序发送完整测评结果
+            postMessageToMiniProgram({
+                type: 'assessment_complete',
+                data: {
+                    talentType: window.reportData.roleData.name,
+                    top3: window.reportData.top3,
+                    part1Scores: window.reportData.part1Scores,
+                    part2Scores: window.reportData.part2Scores,
+                    roleData: window.reportData.roleData,
+                    roleKey: window.reportData.roleKey,
+                    matchType: window.reportData.matchType,
+                    userInfo: window.reportData.userInfo,
+                    rawAnswers: window.reportData.rawAnswers,
+                    returnTarget: 'report',
+                    timestamp: new Date().toISOString()
+                }
+            });
+        }
+
+        function downloadReport() {
+            const loading = document.getElementById('loadingPdf');
+            const btn = loading.closest('.btn');
+            loading.style.display = 'inline-block';
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading" style="display:inline-block"></span> 正在生成高清报告...`;
+            const element = document.getElementById('report-content');
+            setTimeout(() => {
+                html2canvas(element, { scale: 2, useCORS: true, logging: false, scrollY: -window.scrollY, windowWidth: document.documentElement.offsetWidth }).then(canvas => {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+                    const imgWidth = 210;
+                    const pageHeight = 297;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                    pdf.save(`天赋报告_${window.reportData.userInfo.nickname}.pdf`);
+                }).finally(() => {
+                    loading.style.display = 'none';
+                    btn.disabled = false;
+                    btn.innerHTML = `<i class="fas fa-download"></i> 下载PDF报告`;
+                });
+            }, 500);
+        }
+    </script>
+</body>
+</html>

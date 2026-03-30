@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>测评反馈 · Talent Unlimited</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #6C5CE7;
+    --purple-l: #A29BFE;
+    --purple-bg: #F0EDFF;
+    --teal: #00897B;
+    --teal-bg: #E8F5F3;
+    --orange: #E67E22;
+    --orange-bg: #FEF9F3;
+    --ink: #1A1410;
+    --grey: #6B7280;
+    --grey-l: #F9FAFB;
+    --grey-m: #E5E7EB;
+    --white: #FFFFFF;
+    --radius: 12px;
+    --shadow: 0 4px 24px rgba(108,92,231,0.08);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: linear-gradient(145deg, #F8F7FF 0%, #F0EDFF 40%, #E8F5F3 100%);
+    background-attachment: fixed;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── HEADER ── */
+  .survey-header {
+    background: var(--purple);
+    padding: 32px 24px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .survey-header::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 140px; height: 140px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+  }
+  .survey-header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 100px; height: 100px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .header-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .header-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .header-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-wrap {
+    background: white;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--grey-m);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .progress-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--grey-m);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--purple-l));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .progress-text {
+    font-size: 12px;
+    color: var(--grey);
+    white-space: nowrap;
+    min-width: 48px;
+    text-align: right;
+  }
+
+  /* ── CONTAINER ── */
+  .container { max-width: 640px; margin: 0 auto; padding: 0 16px; }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-top: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(108,92,231,0.06);
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .q-card.visible { opacity: 1; transform: translateY(0); }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .q-num {
+    background: var(--purple);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .q-tag {
+    font-size: 11px;
+    color: var(--purple);
+    background: var(--purple-bg);
+    padding: 2px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+  .q-required {
+    font-size: 11px;
+    color: var(--orange);
+    margin-left: auto;
+  }
+
+  .q-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .q-hint {
+    font-size: 12px;
+    color: var(--grey);
+    margin-bottom: 18px;
+    line-height: 1.6;
+  }
+
+  /* ── OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--grey-m);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    line-height: 1.5;
+  }
+  .option-label:hover {
+    border-color: var(--purple-l);
+    background: var(--purple-bg);
+  }
+  .option-label input { display: none; }
+  .option-label.selected {
+    border-color: var(--purple);
+    background: var(--purple-bg);
+  }
+
+  .option-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--grey-m);
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .option-label.selected .option-dot {
+    border-color: var(--purple);
+    background: var(--purple);
+  }
+  .option-label.selected .option-dot::after {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .option-check {
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    border: 2px solid var(--grey-m);
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .option-label.selected .option-check {
+    border-color: var(--purple);
+    background: var(--purple);
+  }
+  .option-label.selected .option-check::after {
+    content: '✓';
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .option-text { font-size: 14px; color: var(--ink); flex: 1; }
+  .option-label.selected .option-text { color: var(--purple); font-weight: 500; }
+
+  /* ── CONDITIONAL ── */
+  .conditional {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+  }
+  .conditional.open { max-height: 300px; opacity: 1; }
+  .conditional-inner {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--grey-m);
+  }
+  .conditional-q {
+    font-size: 13px;
+    color: var(--grey);
+    margin-bottom: 8px;
+  }
+
+  /* ── TEXTAREA & INPUT ── */
+  textarea, input[type="text"] {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--grey-m);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+    background: var(--grey-l);
+    resize: vertical;
+    transition: all 0.2s;
+    line-height: 1.6;
+  }
+  textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--purple);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.1);
+  }
+  textarea::placeholder, input::placeholder { color: #B0B7C3; }
+
+  /* ── SCALE ── */
+  .scale-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--grey);
+    padding: 0 4px;
+  }
+  .scale-options {
+    display: flex;
+    gap: 8px;
+  }
+  .scale-option {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+  }
+  .scale-option input { display: none; }
+  .scale-btn {
+    width: 100%;
+    padding: 10px 4px;
+    border: 1.5px solid var(--grey-m);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--grey);
+    background: white;
+    transition: all 0.2s;
+    display: block;
+    cursor: pointer;
+  }
+  .scale-option.selected .scale-btn {
+    border-color: var(--purple);
+    background: var(--purple);
+    color: white;
+  }
+  .scale-option:hover .scale-btn {
+    border-color: var(--purple-l);
+    background: var(--purple-bg);
+    color: var(--purple);
+  }
+
+  /* ── SPECIAL CARD: Q3 痛点 ── */
+  .pain-card {
+    background: linear-gradient(135deg, var(--orange-bg), white);
+    border: 1.5px solid rgba(230,126,34,0.2);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .pain-card-label {
+    font-size: 11px;
+    color: var(--orange);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .pain-card-text {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.6;
+  }
+
+  /* ── WECHAT CARD ── */
+  .wechat-card {
+    background: linear-gradient(135deg, #07C160 0%, #06B057 100%);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    color: white;
+  }
+  .wechat-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wechat-card-desc { font-size: 13px; opacity: 0.85; line-height: 1.6; }
+  .wechat-input {
+    margin-top: 14px;
+    background: rgba(255,255,255,0.95) !important;
+    border-color: rgba(255,255,255,0.5) !important;
+    color: var(--ink) !important;
+  }
+  .wechat-input:focus {
+    background: white !important;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.3) !important;
+    border-color: white !important;
+  }
+
+  /* ── SUBMIT ── */
+  .submit-wrap {
+    padding: 32px 0 0;
+    text-align: center;
+  }
+  .submit-btn {
+    background: linear-gradient(135deg, var(--purple), var(--purple-l));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 48px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(108,92,231,0.35);
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 1px;
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(108,92,231,0.4); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .loading-ring {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .submit-note {
+    font-size: 12px;
+    color: var(--grey);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  /* ── SUCCESS ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 24px 40px;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--purple-bg);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+  }
+  .success-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .success-desc {
+    font-size: 14px;
+    color: var(--grey);
+    line-height: 1.8;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  .success-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-top: 24px;
+    border: 1px solid var(--grey-m);
+    text-align: left;
+  }
+  .success-card-label { font-size: 11px; color: var(--purple); font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .success-card-text { font-size: 13px; color: var(--grey); line-height: 1.7; }
+
+  /* ── ERROR ── */
+  .error-msg {
+    font-size: 12px;
+    color: #EF4444;
+    margin-top: 6px;
+    display: none;
+    padding-left: 4px;
+  }
+  .q-card.has-error { border-color: #FCA5A5; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 4px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease 0.2s;
+  }
+  .section-divider.visible { opacity: 1; transform: translateY(0); }
+  .divider-line { flex: 1; height: 1px; background: var(--grey-m); }
+  .divider-label {
+    font-size: 11px;
+    color: var(--grey);
+    letter-spacing: 3px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 400px) {
+    .q-text { font-size: 15px; }
+    .q-card { padding: 22px 18px; }
+    .scale-options { gap: 5px; }
+    .scale-btn { font-size: 12px; padding: 9px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="survey-header">
+  <div class="header-tag">TALENT FEEDBACK</div>
+  <div class="header-title">测评完成！花3分钟告诉我你的感受</div>
+  <div class="header-sub">你的反馈会帮助我把解读做得更准<br>认真填写的你，我会认真回应</div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="progress-text" id="progressText">0 / 8</div>
+</div>
+
+<!-- FORM -->
+<div class="container" id="formWrap">
+  <form id="surveyForm" novalidate>
+
+    <!-- SECTION 1 -->
+    <div class="section-divider" id="div1">
+      <div class="divider-line"></div>
+      <div class="divider-label">测评体验</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Q1 准确度 -->
+    <div class="q-card" id="card1">
+      <div class="q-meta">
+        <div class="q-num">1</div>
+        <div class="q-tag">准确度感知</div>
+        <div class="q-required">必填</div>
+      </div>
+      <div class="q-text">看完你的报告，整体感觉有多准？</div>
+      <div class="q-hint">第一感觉就好，不用想太多</div>
+      <div class="options" id="q1-options">
+        <label class="option-label" data-q="q1" data-val="非常准，说出了我自己都没意识到的东西">
+          <input type="radio" name="q1" value="非常准，说出了我自己都没意识到的东西">
+          <div class="option-dot"></div>
+          <div class="option-text">非常准，说出了我自己都没意识到的东西</div>
+        </label>
+        <label class="option-label" data-q="q1" data-val="大部分准，有几个地方特别对">
+          <input type="radio" name="q1" value="大部分准，有几个地方特别对">
+          <div class="option-dot"></div>
+          <div class="option-text">大部分准，有几个地方特别对</div>
+        </label>
+        <label class="option-label" data-q="q1" data-val="一半一半，有些准有些感觉一般">
+          <input type="radio" name="q1" value="一半一半，有些准有些感觉一般">
+          <div class="option-dot"></div>
+          <div class="option-text">一半一半，有些准有些感觉一般</div>
+        </label>
+        <label class="option-label" data-q="q1" data-val="准确度不高，感觉不太像我">
+          <input type="radio" name="q1" value="准确度不高，感觉不太像我">
+          <div class="option-dot"></div>
+          <div class="option-text">准确度不高，感觉不太像我</div>
+        </label>
+      </div>
+      <div class="error-msg" id="err1">请选择一项</div>
+    </div>
+
+    <!-- Q2 共鸣峰值 -->
+    <div class="q-card" id="card2">
+      <div class="q-meta">
+        <div class="q-num">2</div>
+        <div class="q-tag">共鸣时刻</div>
+        <div class="q-required">必填</div>
+      </div>
+      <div class="q-text">报告里哪句话让你觉得「这说的就是我」？</div>
+      <div class="q-hint">可以直接复制粘贴，或者用自己的话说——哪怕一两个词也行</div>
+      <textarea name="q2" id="q2" rows="3" placeholder="比如：「你是那种有了大方向但细节会拖的人」……" required></textarea>
+      <div class="error-msg" id="err2">请填写这道题</div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section-divider" id="div2">
+      <div class="divider-line"></div>
+      <div class="divider-label">你现在的处境</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Q3 真实痛点 -->
+    <div class="q-card" id="card3">
+      <div class="q-meta">
+        <div class="q-num">3</div>
+        <div class="q-tag">真实困惑</div>
+        <div class="q-required">必填</div>
+      </div>
+      <div class="q-text">你现在最想搞清楚的一件事是什么？</div>
+      <div class="pain-card">
+        <div class="pain-card-label">可以是……</div>
+        <div class="pain-card-text">方向选择 · 要不要转行 · 不知道自己适合什么 · 做了但没感觉 · 职业规划 · 任何让你困扰的事</div>
+      </div>
+      <textarea name="q3" id="q3" rows="3" placeholder="用自己的话说就好，不需要很完整……" required></textarea>
+      <div class="error-msg" id="err3">请填写这道题</div>
+    </div>
+
+    <!-- Q4 做题体验 -->
+    <div class="q-card" id="card4">
+      <div class="q-meta">
+        <div class="q-num">4</div>
+        <div class="q-tag">做题体验</div>
+        <div class="q-required">必填</div>
+      </div>
+      <div class="q-text">做测评的过程感觉怎么样？</div>
+      <div class="q-hint">选最接近你感受的那个</div>
+      <div class="options" id="q4-options">
+        <label class="option-label" data-q="q4" data-val="很顺畅，题目清晰好理解">
+          <input type="radio" name="q4" value="很顺畅，题目清晰好理解">
+          <div class="option-dot"></div>
+          <div class="option-text">很顺畅，题目清晰好理解</div>
+        </label>
+        <label class="option-label" data-q="q4" data-val="还好，有个别题目有点费解">
+          <input type="radio" name="q4" value="还好，有个别题目有点费解">
+          <div class="option-dot"></div>
+          <div class="option-text">还好，有个别题目有点费解</div>
+        </label>
+        <label class="option-label" data-q="q4" data-val="题目有点多，做到后面开始随机选">
+          <input type="radio" name="q4" value="题目有点多，做到后面开始随机选">
+          <div class="option-dot"></div>
+          <div class="option-text">题目有点多，做到后面开始随机选</div>
+        </label>
+        <label class="option-label" data-q="q4" data-val="有些题目感觉和我没什么关系">
+          <input type="radio" name="q4" value="有些题目感觉和我没什么关系">
+          <div class="option-dot"></div>
+          <div class="option-text">有些题目感觉和我没什么关系</div>
+        </label>
+      </div>
+      <div class="error-msg" id="err4">请选择一项</div>
+    </div>
+
+    <!-- Q5 报告阅读深度 -->
+    <div class="q-card" id="card5">
+      <div class="q-meta">
+        <div class="q-num">5</div>
+        <div class="q-tag">报告阅读</div>
+      </div>
+      <div class="q-text">你把报告看完了吗？</div>
+      <div class="options" id="q5-options">
+        <label class="option-label" data-q="q5" data-val="全部仔细看完了">
+          <input type="radio" name="q5" value="全部仔细看完了">
+          <div class="option-dot"></div>
+          <div class="option-text">全部仔细看完了</div>
+        </label>
+        <label class="option-label" data-q="q5" data-val="大部分看了，跳过了一些">
+          <input type="radio" name="q5" value="大部分看了，跳过了一些">
+          <div class="option-dot"></div>
+          <div class="option-text">大部分看了，跳过了一些</div>
+        </label>
+        <label class="option-label" data-q="q5" data-val="只看了天赋类型和Top3">
+          <input type="radio" name="q5" value="只看了天赋类型和Top3">
+          <div class="option-dot"></div>
+          <div class="option-text">只看了天赋类型和 Top3</div>
+        </label>
+        <label class="option-label" data-q="q5" data-val="扫了一眼，大部分没看">
+          <input type="radio" name="q5" value="扫了一眼，大部分没看">
+          <div class="option-dot"></div>
+          <div class="option-text">扫了一眼，大部分没看</div>
+        </label>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section-divider" id="div3">
+      <div class="divider-line"></div>
+      <div class="divider-label">解读需求</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Q6 解读需求 -->
+    <div class="q-card" id="card6">
+      <div class="q-meta">
+        <div class="q-num">6</div>
+        <div class="q-tag">深聊意愿</div>
+        <div class="q-required">必填</div>
+      </div>
+      <div class="q-text">看完报告你有没有想过：「这个我还想再深聊一下」？</div>
+      <div class="q-hint">报告只是开始，有人根据你的报告帮你解读会更准</div>
+      <div class="options" id="q6-options">
+        <label class="option-label" data-q="q6" data-val="有！很多地方想聊清楚">
+          <input type="radio" name="q6" value="有！很多地方想聊清楚">
+          <div class="option-dot"></div>
+          <div class="option-text">有！很多地方想聊清楚</div>
+        </label>
+        <label class="option-label" data-q="q6" data-val="有一两个点想多了解">
+          <input type="radio" name="q6" value="有一两个点想多了解">
+          <div class="option-dot"></div>
+          <div class="option-text">有一两个点想多了解</div>
+        </label>
+        <label class="option-label" data-q="q6" data-val="暂时没有，自己看看就好">
+          <input type="radio" name="q6" value="暂时没有，自己看看就好">
+          <div class="option-dot"></div>
+          <div class="option-text">暂时没有，自己看看就好</div>
+        </label>
+        <label class="option-label" data-q="q6" data-val="没有，报告已经说得很清楚了">
+          <input type="radio" name="q6" value="没有，报告已经说得很清楚了">
+          <div class="option-dot"></div>
+          <div class="option-text">没有，报告已经说得很清楚了</div>
+        </label>
+      </div>
+      <div class="error-msg" id="err6">请选择一项</div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section-divider" id="div4">
+      <div class="divider-line"></div>
+      <div class="divider-label">传播意愿</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Q7 转介绍 -->
+    <div class="q-card" id="card7">
+      <div class="q-meta">
+        <div class="q-num">7</div>
+        <div class="q-tag">推荐意愿</div>
+      </div>
+      <div class="q-text">你会把这个测评推荐给身边的朋友吗？</div>
+      <div class="options" id="q7-options">
+        <label class="option-label" data-q="q7" data-val="会，已经想好要发给谁了">
+          <input type="radio" name="q7" value="会，已经想好要发给谁了">
+          <div class="option-dot"></div>
+          <div class="option-text">会，已经想好要发给谁了</div>
+        </label>
+        <label class="option-label" data-q="q7" data-val="会，但要看他们有没有需要">
+          <input type="radio" name="q7" value="会，但要看他们有没有需要">
+          <div class="option-dot"></div>
+          <div class="option-text">会，但要看他们有没有需要</div>
+        </label>
+        <label class="option-label" data-q="q7" data-val="可能不会，感觉不是每个人都适合">
+          <input type="radio" name="q7" value="可能不会，感觉不是每个人都适合">
+          <div class="option-dot"></div>
+          <div class="option-text">可能不会，感觉不是每个人都适合</div>
+        </label>
+        <label class="option-label" data-q="q7" data-val="不会">
+          <input type="radio" name="q7" value="不会">
+          <div class="option-dot"></div>
+          <div class="option-text">不会</div>
+        </label>
+      </div>
+      <!-- Conditional: 会推荐时显示 -->
+      <div class="conditional" id="q7-cond">
+        <div class="conditional-inner">
+          <div class="conditional-q">你会怎么跟朋友介绍这个测评？（一句话就行）</div>
+          <textarea name="q7_reason" id="q7_reason" rows="2" placeholder="比如：「做了挺准的，你也去试试」……"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section-divider" id="div5">
+      <div class="divider-line"></div>
+      <div class="divider-label">预约解读（选填）</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Q8 留微信 -->
+    <div class="q-card" id="card8">
+      <div class="q-meta">
+        <div class="q-num">8</div>
+        <div class="q-tag">专属解读</div>
+      </div>
+      <div class="wechat-card">
+        <div class="wechat-card-title">💬 想要1v1专属解读？</div>
+        <div class="wechat-card-desc">根据你的报告做一次深度解读，大约45-60分钟。目前免费，我会在24小时内联系你。</div>
+        <input type="text" name="wechat" id="wechat" class="wechat-input" placeholder="留下你的微信号（选填）">
+      </div>
+      <div style="font-size:12px; color:var(--grey); line-height:1.6; padding: 0 4px;">
+        没有留也完全没关系，报告是你的，随时可以回来看。
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-wrap">
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <div class="loading-ring" id="loadingRing"></div>
+        <span id="submitText">提交反馈</span>
+        <span>→</span>
+      </button>
+      <div class="submit-note">提交后数据将用于改进测评体验，不会对外公开</div>
+    </div>
+
+  </form>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✨</div>
+    <div class="success-title">谢谢你认真填完</div>
+    <div class="success-desc">
+      你的反馈我都收到了。<br><br>
+      如果你留了微信，我会在24小时内联系你。<br>
+      如果没留也没关系——报告是你的，随时可以回来看。
+    </div>
+    <div class="success-card">
+      <div class="success-card-label">接下来</div>
+      <div class="success-card-text">
+        测评不是终点，而是认识自己的起点。<br>
+        带着今天的发现，去观察哪些时刻你最有能量——那里藏着你最真实的天赋。
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ══════════════════════════════════════════════════════
+// MINIPROGRAM ENVIRONMENT DETECTION
+// ══════════════════════════════════════════════════════
+const isMiniProgram = window.__wxjs_environment === 'miniprogram';
+
+// ══════════════════════════════════════════════════════
+// CONFIG — 替换这里
+// ══════════════════════════════════════════════════════
+const CONFIG = {
+  // 将你的 Google Apps Script Web App URL 粘贴到这里
+  GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbz8yzoNeZiN7NqoWPMls8ew7VtKBQWwjQnUNnLRgv1eOUau3ET4vJUrVKFiKzTp5q6Qpw/exec',
+};
+
+// ══════════════════════════════════════════════════════
+// PROGRESS TRACKING
+// ══════════════════════════════════════════════════════
+const REQUIRED = ['q1','q2','q3','q4','q6'];
+const TOTAL_Q = 8;
+
+function updateProgress() {
+  let filled = 0;
+  // radio
+  ['q1','q4','q5','q6','q7'].forEach(n => {
+    if (document.querySelector(`input[name="${n}"]:checked`)) filled++;
+  });
+  // text
+  ['q2','q3'].forEach(id => {
+    if (document.getElementById(id)?.value.trim()) filled++;
+  });
+  // wechat (optional, count if filled)
+  if (document.getElementById('wechat')?.value.trim()) filled++;
+
+  const pct = Math.min(100, Math.round((filled / TOTAL_Q) * 100));
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = filled + ' / ' + TOTAL_Q;
+}
+
+// ══════════════════════════════════════════════════════
+// OPTION CLICKS
+// ══════════════════════════════════════════════════════
+document.querySelectorAll('.option-label').forEach(label => {
+  label.addEventListener('click', function() {
+    const q = this.dataset.q;
+    // deselect siblings
+    document.querySelectorAll(`.option-label[data-q="${q}"]`).forEach(l => l.classList.remove('selected'));
+    this.classList.add('selected');
+    this.querySelector('input').checked = true;
+
+    // clear error
+    const card = this.closest('.q-card');
+    if (card) card.classList.remove('has-error');
+
+    // conditional for q7
+    if (q === 'q7') {
+      const val = this.dataset.val;
+      const cond = document.getElementById('q7-cond');
+      if (val.startsWith('会')) {
+        cond.classList.add('open');
+      } else {
+        cond.classList.remove('open');
+      }
+    }
+
+    updateProgress();
+  });
+});
+
+// text inputs
+document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
+  el.addEventListener('input', () => {
+    const card = el.closest('.q-card');
+    if (card) card.classList.remove('has-error');
+    updateProgress();
+  });
+});
+
+// ══════════════════════════════════════════════════════
+// SCROLL REVEAL
+// ══════════════════════════════════════════════════════
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.q-card, .section-divider').forEach(el => observer.observe(el));
+
+// ══════════════════════════════════════════════════════
+// VALIDATION
+// ══════════════════════════════════════════════════════
+function validate() {
+  let ok = true;
+
+  // radio required
+  ['q1','q4','q6'].forEach(n => {
+    const checked = document.querySelector(`input[name="${n}"]:checked`);
+    const errId = 'err' + n.replace('q','');
+    const cardId = 'card' + n.replace('q','');
+    if (!checked) {
+      document.getElementById(errId).style.display = 'block';
+      document.getElementById(cardId).classList.add('has-error');
+      ok = false;
+    } else {
+      document.getElementById(errId).style.display = 'none';
+    }
+  });
+
+  // text required
+  ['q2','q3'].forEach(id => {
+    const val = document.getElementById(id)?.value.trim();
+    const num = id.replace('q','');
+    const errId = 'err' + num;
+    const cardId = 'card' + num;
+    if (!val) {
+      document.getElementById(errId).style.display = 'block';
+      document.getElementById(cardId).classList.add('has-error');
+      ok = false;
+    } else {
+      document.getElementById(errId).style.display = 'none';
+    }
+  });
+
+  return ok;
+}
+
+// ══════════════════════════════════════════════════════
+// SUBMIT
+// ══════════════════════════════════════════════════════
+document.getElementById('surveyForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!validate()) {
+    // scroll to first error
+    const firstErr = document.querySelector('.q-card.has-error');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  const ring = document.getElementById('loadingRing');
+  const txt = document.getElementById('submitText');
+  btn.disabled = true;
+  ring.style.display = 'block';
+  txt.textContent = '提交中…';
+
+  // Collect data
+  const data = {
+    timestamp:    new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }),
+    q1_accuracy:  document.querySelector('input[name="q1"]:checked')?.value || '',
+    q2_resonance: document.getElementById('q2').value.trim(),
+    q3_pain:      document.getElementById('q3').value.trim(),
+    q4_experience:document.querySelector('input[name="q4"]:checked')?.value || '',
+    q5_reading:   document.querySelector('input[name="q5"]:checked')?.value || '',
+    q6_deepchat:  document.querySelector('input[name="q6"]:checked')?.value || '',
+    q7_referral:  document.querySelector('input[name="q7"]:checked')?.value || '',
+    q7_how:       document.getElementById('q7_reason')?.value.trim() || '',
+    wechat:       document.getElementById('wechat').value.trim(),
+  };
+
+  // Submit to Google Sheets
+const encoded = Object.entries(data)
+  .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+  .join('&');
+
+try {
+  await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: encoded,
+  });
+} catch (err) {
+  console.warn('fetch error:', err);
+}
+
+  // Send feedback data to miniprogram via postMessage
+  if (isMiniProgram) {
+    try {
+      wx.miniProgram.postMessage({
+        data: {
+          type: 'feedback_submitted',
+          data: {
+            accuracy: data.q1_accuracy,
+            resonance: data.q2_resonance,
+            painPoint: data.q3_pain,
+            experience: data.q4_experience,
+            readingDepth: data.q5_reading,
+            deepChatIntent: data.q6_deepchat,
+            referralWillingness: data.q7_referral,
+            wechatContact: data.wechat,
+            timestamp: new Date().toISOString()
+          }
+        }
+      });
+      wx.miniProgram.navigateBack();
+    } catch (mpErr) {
+      console.warn('miniProgram postMessage error:', mpErr);
+    }
+  }
+
+  // Show success
+  document.getElementById('formWrap').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.getElementById('successScreen').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+</body>
+</html>
