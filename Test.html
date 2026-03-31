@@ -1283,6 +1283,7 @@
         const isMiniProgram = window.__wxjs_environment === 'miniprogram';
         const isDebugMode = getURLParameter('debug') === '1';
         const isReportMode = getURLParameter('mode') === 'report';
+        const resumeRequested = getURLParameter('resume') === '1';
         const questionRegistry = [];
         let questionValidationTriggered = false;
 
@@ -1306,6 +1307,112 @@
                     console.warn('[MiniProgram] postMessage failed:', e);
                 }
             }
+        }
+
+        function getDraftStorageKey() {
+            const activationCode = (getURLParameter('activationCode') || getURLParameter('code') || 'default').trim().toUpperCase();
+            return `talent-assessment-draft:${activationCode}`;
+        }
+
+        function getDraftPayload() {
+            try {
+                const raw = localStorage.getItem(getDraftStorageKey());
+                return raw ? JSON.parse(raw) : null;
+            } catch (error) {
+                console.warn('[Draft] read failed:', error);
+                return null;
+            }
+        }
+
+        function collectDraftUserInfo() {
+            return {
+                nickname: document.getElementById('nickname')?.value || '',
+                age: document.getElementById('age')?.value || '',
+                gender: document.getElementById('gender')?.value || '',
+                focus: document.getElementById('current-focus')?.value || '',
+                status: Array.from(document.querySelectorAll('input[name="status"]:checked')).map(item => item.value),
+                consent: !!document.getElementById('consentAgreement')?.checked
+            };
+        }
+
+        function persistDraftState() {
+            if (isReportMode) return;
+
+            try {
+                localStorage.setItem(getDraftStorageKey(), JSON.stringify({
+                    step: currentStep,
+                    questionIndex: currentQuestionIndex,
+                    questionAnswers,
+                    userInfo: collectDraftUserInfo(),
+                    updatedAt: new Date().toISOString()
+                }));
+            } catch (error) {
+                console.warn('[Draft] save failed:', error);
+            }
+        }
+
+        function clearDraftState() {
+            try {
+                localStorage.removeItem(getDraftStorageKey());
+            } catch (error) {
+                console.warn('[Draft] clear failed:', error);
+            }
+        }
+
+        function bindDraftPersistence() {
+            ['nickname', 'age', 'gender', 'current-focus', 'consentAgreement'].forEach((id) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('input', persistDraftState);
+                el.addEventListener('change', persistDraftState);
+            });
+
+            document.querySelectorAll('input[name="status"]').forEach((input) => {
+                input.addEventListener('change', persistDraftState);
+            });
+        }
+
+        function restoreDraftState() {
+            const draft = getDraftPayload();
+            if (!draft) {
+                return false;
+            }
+
+            const userInfo = draft.userInfo || {};
+            const nicknameInput = document.getElementById('nickname');
+            const ageInput = document.getElementById('age');
+            const genderInput = document.getElementById('gender');
+            const focusInput = document.getElementById('current-focus');
+            const consentInput = document.getElementById('consentAgreement');
+
+            if (nicknameInput) nicknameInput.value = userInfo.nickname || '';
+            if (ageInput) ageInput.value = userInfo.age || '';
+            if (genderInput) genderInput.value = userInfo.gender || '';
+            if (focusInput) focusInput.value = userInfo.focus || '';
+            if (consentInput) consentInput.checked = !!userInfo.consent;
+
+            document.querySelectorAll('input[name="status"]').forEach((input) => {
+                input.checked = Array.isArray(userInfo.status) && userInfo.status.includes(input.value);
+                const label = input.closest('.status-option');
+                if (label) {
+                    label.classList.toggle('selected', input.checked);
+                }
+            });
+
+            Object.keys(questionAnswers).forEach((key) => delete questionAnswers[key]);
+            Object.assign(questionAnswers, draft.questionAnswers || {});
+
+            const targetStep = Math.max(1, Math.min(Number(draft.step) || 1, 3));
+            if (targetStep > 1) {
+                switchStep(1, targetStep);
+            }
+
+            if (targetStep >= 3) {
+                currentQuestionIndex = Math.max(0, Math.min(Number(draft.questionIndex) || 0, allQuestions.length - 1));
+                showQuestion(currentQuestionIndex);
+            }
+
+            return true;
         }
 
         function parseReportDataFromURL() {
@@ -1844,6 +1951,7 @@
         // ================= Initialize =================
         document.addEventListener('DOMContentLoaded', function() {
             buildAllQuestions();
+            bindDraftPersistence();
 
             const modal = document.getElementById('activationModal');
 
@@ -1878,6 +1986,11 @@
 
             if (isReportMode) {
                 openReportMode();
+                return;
+            }
+
+            if (resumeRequested) {
+                restoreDraftState();
             }
         });
 
@@ -1941,6 +2054,7 @@
             if (toEl) toEl.classList.add('active');
             currentStep = to;
             window.scrollTo({ top: 0, behavior: 'auto' });
+            persistDraftState();
         }
 
         function goToStep2() {
@@ -1954,8 +2068,9 @@
         function goToQuestions() {
             if (!validateUserInfo()) return;
             switchStep(2, 3);
-            currentQuestionIndex = 0;
-            showQuestion(0);
+            const existingAnswers = Object.keys(questionAnswers).length;
+            currentQuestionIndex = existingAnswers ? currentQuestionIndex : 0;
+            showQuestion(currentQuestionIndex);
         }
 
         function validateConsent() {
@@ -2039,6 +2154,7 @@
             card.style.animation = 'none';
             card.offsetHeight; // trigger reflow
             card.style.animation = 'fadeIn 0.3s ease';
+            persistDraftState();
         }
 
         function selectOption(name, value, element) {
@@ -2054,6 +2170,8 @@
                 if (currentQuestionIndex < allQuestions.length - 1) {
                     currentQuestionIndex++;
                     showQuestion(currentQuestionIndex);
+                } else {
+                    persistDraftState();
                 }
                 // On last question, don't auto-advance - user clicks submit
             }, 300);
@@ -2092,6 +2210,7 @@
                 calculateScores();
                 submitToGoogleSheets();
                 generateReport();
+                clearDraftState();
                 switchStep(3, 4);
             }
         }
@@ -2136,6 +2255,7 @@
                 // Clear error
                 const formGroup = label.closest('.form-group');
                 if (formGroup) formGroup.classList.remove('error');
+                persistDraftState();
             }, 0);
         }
 
