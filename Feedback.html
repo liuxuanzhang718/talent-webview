@@ -824,21 +824,10 @@ function updateProgress() {
 function openReportShortcut() {
   if (isMiniProgram) {
     try {
-      if (reportPageUrl) {
-        wx.miniProgram.navigateTo({
-          url: `/pages/webview/index?type=report&url=${encodeURIComponent(reportPageUrl)}`
-        });
-        return;
-      }
-
-      wx.miniProgram.postMessage({
-        data: {
-          type: 'open_report_request',
-          data: {
-            source: 'feedback'
-          }
-        }
+      wx.miniProgram.navigateTo({
+        url: '/pages/webview/index?type=report'
       });
+      return;
     } catch (err) {
       console.warn('miniProgram open report error:', err);
     }
@@ -893,7 +882,7 @@ document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
 
 const viewReportBtn = document.getElementById('viewReportBtn');
 if (viewReportBtn) {
-  if (reportPageUrl || reportUrl) {
+  if (isMiniProgram || reportPageUrl || reportUrl) {
     viewReportBtn.classList.add('visible');
     viewReportBtn.addEventListener('click', openReportShortcut);
   }
