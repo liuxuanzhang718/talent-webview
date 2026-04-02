@@ -7,27 +7,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --purple: #6C5CE7;
-    --purple-l: #A29BFE;
-    --purple-bg: #F0EDFF;
-    --teal: #00897B;
-    --teal-bg: #E8F5F3;
-    --orange: #E67E22;
-    --orange-bg: #FEF9F3;
-    --ink: #1A1410;
-    --grey: #6B7280;
-    --grey-l: #F9FAFB;
-    --grey-m: #E5E7EB;
+    --gold: #C4A35A;
+    --gold-l: #E7CE92;
+    --gold-bg: #FBF7ED;
+    --teal: #2D6A5C;
+    --teal-l: #3E8B79;
+    --teal-bg: #EAF3F0;
+    --accent: #B8773C;
+    --accent-bg: #F7EEE4;
+    --ink: #171311;
+    --grey: #6F6A62;
+    --grey-l: #F7F4EE;
+    --grey-m: #E6DED0;
     --white: #FFFFFF;
     --radius: 12px;
-    --shadow: 0 4px 24px rgba(108,92,231,0.08);
+    --shadow: 0 10px 30px rgba(23,19,17,0.08);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
   body {
-    background: linear-gradient(145deg, #F8F7FF 0%, #F0EDFF 40%, #E8F5F3 100%);
-    background-attachment: fixed;
+    background:
+      radial-gradient(circle at top right, rgba(196,163,90,0.12), transparent 24%),
+      linear-gradient(180deg, #110F0F 0, #110F0F 200px, #F4EFE6 200px, #F7F4EE 100%);
     font-family: 'Noto Sans SC', sans-serif;
     color: var(--ink);
     min-height: 100vh;
@@ -36,7 +38,7 @@
 
   /* ── HEADER ── */
   .survey-header {
-    background: var(--purple);
+    background: #110F0F;
     padding: 32px 24px 28px;
     text-align: center;
     position: relative;
@@ -60,13 +62,14 @@
   }
   .header-tag {
     display: inline-block;
-    background: rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.9);
+    background: rgba(196,163,90,0.14);
+    color: var(--gold-l);
     font-size: 11px;
     letter-spacing: 3px;
     padding: 4px 14px;
     border-radius: 20px;
     margin-bottom: 12px;
+    border: 1px solid rgba(196,163,90,0.24);
   }
   .header-title {
     font-family: 'Noto Serif SC', serif;
@@ -78,7 +81,7 @@
   }
   .header-sub {
     font-size: 13px;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.64);
     line-height: 1.6;
   }
 
@@ -104,7 +107,7 @@
   }
   .progress-bar-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--purple), var(--purple-l));
+    background: linear-gradient(90deg, var(--gold), var(--gold-l));
     border-radius: 2px;
     transition: width 0.5s ease;
   }
@@ -126,7 +129,7 @@
     padding: 28px 24px;
     margin-top: 20px;
     box-shadow: var(--shadow);
-    border: 1px solid rgba(108,92,231,0.06);
+    border: 1px solid rgba(196,163,90,0.08);
     opacity: 0;
     transform: translateY(16px);
     transition: opacity 0.4s ease, transform 0.4s ease;
@@ -140,8 +143,8 @@
     margin-bottom: 14px;
   }
   .q-num {
-    background: var(--purple);
-    color: white;
+    background: var(--gold);
+    color: #171311;
     font-size: 11px;
     font-weight: 700;
     width: 24px; height: 24px;
@@ -151,15 +154,15 @@
   }
   .q-tag {
     font-size: 11px;
-    color: var(--purple);
-    background: var(--purple-bg);
+    color: #8D6A25;
+    background: var(--gold-bg);
     padding: 2px 10px;
     border-radius: 20px;
     letter-spacing: 1px;
   }
   .q-required {
     font-size: 11px;
-    color: var(--orange);
+    color: var(--teal);
     margin-left: auto;
   }
 
@@ -194,13 +197,13 @@
     line-height: 1.5;
   }
   .option-label:hover {
-    border-color: var(--purple-l);
-    background: var(--purple-bg);
+    border-color: rgba(196,163,90,0.36);
+    background: var(--gold-bg);
   }
   .option-label input { display: none; }
   .option-label.selected {
-    border-color: var(--purple);
-    background: var(--purple-bg);
+    border-color: var(--gold);
+    background: var(--gold-bg);
   }
 
   .option-dot {
@@ -213,8 +216,8 @@
     display: flex; align-items: center; justify-content: center;
   }
   .option-label.selected .option-dot {
-    border-color: var(--purple);
-    background: var(--purple);
+    border-color: var(--gold);
+    background: var(--gold);
   }
   .option-label.selected .option-dot::after {
     content: '';
@@ -233,8 +236,8 @@
     display: flex; align-items: center; justify-content: center;
   }
   .option-label.selected .option-check {
-    border-color: var(--purple);
-    background: var(--purple);
+    border-color: var(--gold);
+    background: var(--gold);
   }
   .option-label.selected .option-check::after {
     content: '✓';
@@ -244,7 +247,7 @@
   }
 
   .option-text { font-size: 14px; color: var(--ink); flex: 1; }
-  .option-label.selected .option-text { color: var(--purple); font-weight: 500; }
+  .option-label.selected .option-text { color: #7B5B20; font-weight: 500; }
 
   /* ── CONDITIONAL ── */
   .conditional {
@@ -281,9 +284,9 @@
   }
   textarea:focus, input[type="text"]:focus {
     outline: none;
-    border-color: var(--purple);
+    border-color: var(--gold);
     background: white;
-    box-shadow: 0 0 0 3px rgba(108,92,231,0.1);
+    box-shadow: 0 0 0 3px rgba(196,163,90,0.12);
   }
   textarea::placeholder, input::placeholder { color: #B0B7C3; }
 
@@ -320,27 +323,27 @@
     cursor: pointer;
   }
   .scale-option.selected .scale-btn {
-    border-color: var(--purple);
-    background: var(--purple);
-    color: white;
+    border-color: var(--gold);
+    background: var(--gold);
+    color: #171311;
   }
   .scale-option:hover .scale-btn {
-    border-color: var(--purple-l);
-    background: var(--purple-bg);
-    color: var(--purple);
+    border-color: rgba(196,163,90,0.36);
+    background: var(--gold-bg);
+    color: #8D6A25;
   }
 
   /* ── SPECIAL CARD: Q3 痛点 ── */
   .pain-card {
-    background: linear-gradient(135deg, var(--orange-bg), white);
-    border: 1.5px solid rgba(230,126,34,0.2);
+    background: linear-gradient(135deg, var(--accent-bg), white);
+    border: 1.5px solid rgba(184,119,60,0.2);
     border-radius: var(--radius);
     padding: 16px;
     margin-bottom: 12px;
   }
   .pain-card-label {
     font-size: 11px;
-    color: var(--orange);
+    color: var(--accent);
     font-weight: 700;
     letter-spacing: 2px;
     margin-bottom: 6px;
@@ -351,33 +354,29 @@
     line-height: 1.6;
   }
 
-  /* ── WECHAT CARD ── */
-  .wechat-card {
-    background: linear-gradient(135deg, #07C160 0%, #06B057 100%);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-    color: white;
-  }
-  .wechat-card-title {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 6px;
+  .report-shortcut-row {
     display: flex;
+    justify-content: flex-start;
+    margin: 0 0 14px;
+  }
+  .view-report-btn {
+    display: none;
     align-items: center;
     gap: 8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(196,163,90,0.28);
+    background: rgba(196,163,90,0.08);
+    color: #8D6A25;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
   }
-  .wechat-card-desc { font-size: 13px; opacity: 0.85; line-height: 1.6; }
-  .wechat-input {
-    margin-top: 14px;
-    background: rgba(255,255,255,0.95) !important;
-    border-color: rgba(255,255,255,0.5) !important;
-    color: var(--ink) !important;
+  .view-report-btn.visible {
+    display: inline-flex;
   }
-  .wechat-input:focus {
-    background: white !important;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.3) !important;
-    border-color: white !important;
+  .view-report-btn:hover {
+    background: rgba(196,163,90,0.14);
   }
 
   /* ── SUBMIT ── */
@@ -386,7 +385,7 @@
     text-align: center;
   }
   .submit-btn {
-    background: linear-gradient(135deg, var(--purple), var(--purple-l));
+    background: linear-gradient(135deg, var(--teal), var(--teal-l));
     color: white;
     border: none;
     border-radius: 50px;
@@ -395,14 +394,14 @@
     font-weight: 700;
     font-family: 'Noto Sans SC', sans-serif;
     cursor: pointer;
-    box-shadow: 0 8px 24px rgba(108,92,231,0.35);
+    box-shadow: 0 8px 24px rgba(45,106,92,0.26);
     transition: all 0.3s;
     display: inline-flex;
     align-items: center;
     gap: 10px;
     letter-spacing: 1px;
   }
-  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(108,92,231,0.4); }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(45,106,92,0.32); }
   .submit-btn:active { transform: translateY(0); }
   .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
@@ -432,7 +431,7 @@
   .success-screen.show { display: block; }
   .success-icon {
     width: 72px; height: 72px;
-    background: var(--purple-bg);
+    background: var(--gold-bg);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 20px;
@@ -460,7 +459,7 @@
     border: 1px solid var(--grey-m);
     text-align: left;
   }
-  .success-card-label { font-size: 11px; color: var(--purple); font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+  .success-card-label { font-size: 11px; color: #8D6A25; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
   .success-card-text { font-size: 13px; color: var(--grey); line-height: 1.7; }
 
   /* ── ERROR ── */
@@ -471,7 +470,7 @@
     display: none;
     padding-left: 4px;
   }
-  .q-card.has-error { border-color: #FCA5A5; }
+  .q-card.has-error { border-color: #E0A28E; }
 
   /* ── DIVIDER ── */
   .section-divider {
@@ -514,7 +513,7 @@
   <div class="progress-bar-bg">
     <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
   </div>
-  <div class="progress-text" id="progressText">0 / 8</div>
+  <div class="progress-text" id="progressText">0 / 7</div>
 </div>
 
 <!-- FORM -->
@@ -571,6 +570,9 @@
       </div>
       <div class="q-text">报告里哪句话让你觉得「这说的就是我」？</div>
       <div class="q-hint">可以直接复制粘贴，或者用自己的话说——哪怕一两个词也行</div>
+      <div class="report-shortcut-row">
+        <button type="button" class="view-report-btn" id="viewReportBtn">查看我的报告</button>
+      </div>
       <textarea name="q2" id="q2" rows="3" placeholder="比如：「你是那种有了大方向但细节会拖的人」……" required></textarea>
       <div class="error-msg" id="err2">请填写这道题</div>
     </div>
@@ -749,29 +751,6 @@
       </div>
     </div>
 
-    <!-- SECTION 5 -->
-    <div class="section-divider" id="div5">
-      <div class="divider-line"></div>
-      <div class="divider-label">预约解读（选填）</div>
-      <div class="divider-line"></div>
-    </div>
-
-    <!-- Q8 留微信 -->
-    <div class="q-card" id="card8">
-      <div class="q-meta">
-        <div class="q-num">8</div>
-        <div class="q-tag">专属解读</div>
-      </div>
-      <div class="wechat-card">
-        <div class="wechat-card-title">💬 想要1v1专属解读？</div>
-        <div class="wechat-card-desc">根据你的报告做一次深度解读，大约45-60分钟。目前免费，我会在24小时内联系你。</div>
-        <input type="text" name="wechat" id="wechat" class="wechat-input" placeholder="留下你的微信号（选填）">
-      </div>
-      <div style="font-size:12px; color:var(--grey); line-height:1.6; padding: 0 4px;">
-        没有留也完全没关系，报告是你的，随时可以回来看。
-      </div>
-    </div>
-
     <!-- SUBMIT -->
     <div class="submit-wrap">
       <button type="submit" class="submit-btn" id="submitBtn">
@@ -790,8 +769,8 @@
     <div class="success-title">谢谢你认真填完</div>
     <div class="success-desc">
       你的反馈我都收到了。<br><br>
-      如果你留了微信，我会在24小时内联系你。<br>
-      如果没留也没关系——报告是你的，随时可以回来看。
+      这些反馈会直接用于优化题目与报告表达。<br>
+      你的报告会一直保留，之后也可以随时回来再看。
     </div>
     <div class="success-card">
       <div class="success-card-label">接下来</div>
@@ -809,6 +788,8 @@
 // MINIPROGRAM ENVIRONMENT DETECTION
 // ══════════════════════════════════════════════════════
 const isMiniProgram = window.__wxjs_environment === 'miniprogram';
+const query = new URLSearchParams(window.location.search);
+const reportUrl = query.get('reportUrl') || '';
 
 // ══════════════════════════════════════════════════════
 // CONFIG — 替换这里
@@ -821,8 +802,7 @@ const CONFIG = {
 // ══════════════════════════════════════════════════════
 // PROGRESS TRACKING
 // ══════════════════════════════════════════════════════
-const REQUIRED = ['q1','q2','q3','q4','q6'];
-const TOTAL_Q = 8;
+const TOTAL_Q = 7;
 
 function updateProgress() {
   let filled = 0;
@@ -834,12 +814,32 @@ function updateProgress() {
   ['q2','q3'].forEach(id => {
     if (document.getElementById(id)?.value.trim()) filled++;
   });
-  // wechat (optional, count if filled)
-  if (document.getElementById('wechat')?.value.trim()) filled++;
 
   const pct = Math.min(100, Math.round((filled / TOTAL_Q) * 100));
   document.getElementById('progressBar').style.width = pct + '%';
   document.getElementById('progressText').textContent = filled + ' / ' + TOTAL_Q;
+}
+
+function openReportShortcut() {
+  if (isMiniProgram) {
+    try {
+      wx.miniProgram.postMessage({
+        data: {
+          type: 'open_report_request',
+          data: {
+            source: 'feedback'
+          }
+        }
+      });
+    } catch (err) {
+      console.warn('miniProgram open report error:', err);
+    }
+    return;
+  }
+
+  if (reportUrl) {
+    window.open(reportUrl, '_blank', 'noopener,noreferrer');
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -880,6 +880,14 @@ document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
     updateProgress();
   });
 });
+
+const viewReportBtn = document.getElementById('viewReportBtn');
+if (viewReportBtn) {
+  if (isMiniProgram || reportUrl) {
+    viewReportBtn.classList.add('visible');
+    viewReportBtn.addEventListener('click', openReportShortcut);
+  }
+}
 
 // ══════════════════════════════════════════════════════
 // SCROLL REVEAL
@@ -962,7 +970,6 @@ document.getElementById('surveyForm').addEventListener('submit', async function(
     q6_deepchat:  document.querySelector('input[name="q6"]:checked')?.value || '',
     q7_referral:  document.querySelector('input[name="q7"]:checked')?.value || '',
     q7_how:       document.getElementById('q7_reason')?.value.trim() || '',
-    wechat:       document.getElementById('wechat').value.trim(),
   };
 
   // Submit to Google Sheets
@@ -995,7 +1002,6 @@ try {
             readingDepth: data.q5_reading,
             deepChatIntent: data.q6_deepchat,
             referralWillingness: data.q7_referral,
-            wechatContact: data.wechat,
             timestamp: new Date().toISOString()
           }
         }
