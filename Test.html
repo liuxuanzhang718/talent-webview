@@ -1459,9 +1459,34 @@
             return parseReportDataFromURL();
         }
 
+        function renderReportLoadError() {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+
+            const reportStep = document.getElementById('step4');
+            const reportContent = document.getElementById('report-content');
+            const downloadButton = document.querySelector('.report-navigation .btn-teal');
+
+            if (reportStep) reportStep.classList.add('active');
+            if (reportContent) {
+                reportContent.innerHTML = `
+                    <div class="report-header">
+                        <div class="brand-label">REPORT UNAVAILABLE</div>
+                        <h1>完整报告暂时加载失败</h1>
+                        <p>请返回小程序后重试。如果问题持续，请重新进入报告页。</p>
+                    </div>
+                `;
+            }
+            if (downloadButton) {
+                downloadButton.style.display = 'none';
+            }
+            currentStep = 4;
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+
         async function openReportMode() {
             const reportData = await resolveReportData();
             if (!reportData || !reportData.roleData || !reportData.roleData.name) {
+                renderReportLoadError();
                 return false;
             }
 

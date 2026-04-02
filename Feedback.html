@@ -790,6 +790,7 @@
 const isMiniProgram = window.__wxjs_environment === 'miniprogram';
 const query = new URLSearchParams(window.location.search);
 const reportUrl = query.get('reportUrl') || '';
+const reportPageUrl = query.get('reportPageUrl') || '';
 
 // ══════════════════════════════════════════════════════
 // CONFIG — 替换这里
@@ -823,6 +824,13 @@ function updateProgress() {
 function openReportShortcut() {
   if (isMiniProgram) {
     try {
+      if (reportPageUrl) {
+        wx.miniProgram.navigateTo({
+          url: `/pages/webview/index?type=report&url=${encodeURIComponent(reportPageUrl)}`
+        });
+        return;
+      }
+
       wx.miniProgram.postMessage({
         data: {
           type: 'open_report_request',
@@ -837,7 +845,9 @@ function openReportShortcut() {
     return;
   }
 
-  if (reportUrl) {
+  if (reportPageUrl) {
+    window.open(reportPageUrl, '_blank', 'noopener,noreferrer');
+  } else if (reportUrl) {
     window.open(reportUrl, '_blank', 'noopener,noreferrer');
   }
 }
@@ -883,7 +893,7 @@ document.querySelectorAll('textarea, input[type="text"]').forEach(el => {
 
 const viewReportBtn = document.getElementById('viewReportBtn');
 if (viewReportBtn) {
-  if (isMiniProgram || reportUrl) {
+  if (reportPageUrl || reportUrl) {
     viewReportBtn.classList.add('visible');
     viewReportBtn.addEventListener('click', openReportShortcut);
   }
@@ -972,22 +982,6 @@ document.getElementById('surveyForm').addEventListener('submit', async function(
     q7_how:       document.getElementById('q7_reason')?.value.trim() || '',
   };
 
-  // Submit to Google Sheets
-const encoded = Object.entries(data)
-  .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
-  .join('&');
-
-try {
-  await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: encoded,
-  });
-} catch (err) {
-  console.warn('fetch error:', err);
-}
-
   // Send feedback data to miniprogram via postMessage
   if (isMiniProgram) {
     try {
@@ -1009,7 +1003,29 @@ try {
       wx.miniProgram.navigateBack();
     } catch (mpErr) {
       console.warn('miniProgram postMessage error:', mpErr);
+      btn.disabled = false;
+      ring.style.display = 'none';
+      txt.textContent = '提交反馈';
+      return;
     }
+
+    return;
+  }
+
+  // Submit to Google Sheets
+  const encoded = Object.entries(data)
+    .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+    .join('&');
+
+  try {
+    await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: encoded,
+    });
+  } catch (err) {
+    console.warn('fetch error:', err);
   }
 
   // Show success
