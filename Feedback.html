@@ -822,8 +822,16 @@ function updateProgress() {
 }
 
 function openReportShortcut() {
+  console.log('[feedback] openReportShortcut clicked', {
+    isMiniProgram,
+    reportPageUrl,
+    reportUrl,
+    href: window.location.href
+  });
+
   if (isMiniProgram) {
     try {
+      console.log('[feedback] navigateTo report webview');
       wx.miniProgram.navigateTo({
         url: '/pages/webview/index?type=report'
       });
