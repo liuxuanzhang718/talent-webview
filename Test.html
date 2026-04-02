@@ -1415,15 +1415,43 @@
             return true;
         }
 
+        function normalizeRoleData(parsed) {
+            const rawRoleData = parsed.roleData || parsed.role_data || null;
+            const roleKey = (rawRoleData && rawRoleData.role_key) || parsed.roleKey || '';
+            const fallbackRole = roleKey && roleCards[roleKey] ? roleCards[roleKey] : null;
+            const roleName = (rawRoleData && rawRoleData.name) || (fallbackRole && fallbackRole.name) || parsed.talentType || '';
+
+            if (rawRoleData && rawRoleData.name && rawRoleData.description) {
+                return rawRoleData;
+            }
+
+            if (fallbackRole) {
+                return fallbackRole;
+            }
+
+            if (!roleName) {
+                return null;
+            }
+
+            return {
+                name: roleName,
+                description: '',
+                characteristics: [],
+                blindSpots: [],
+                suggestions: {}
+            };
+        }
+
         function normalizeReportPayload(parsed) {
             if (!parsed) return null;
+            const normalizedRoleData = normalizeRoleData(parsed);
             return {
                 part1Scores: parsed.part1Scores || parsed.part1_scores || {},
                 part2Scores: parsed.part2Scores || parsed.part2_scores || {},
                 top3: Array.isArray(parsed.top3) ? parsed.top3.map(item => typeof item === 'string' ? item : item.name).filter(Boolean) : [],
-                roleData: parsed.roleData || parsed.role_data || {},
-                roleKey: (parsed.roleData && parsed.roleData.role_key) || (parsed.role_data && parsed.role_data.role_key) || parsed.roleKey || '',
-                matchType: (parsed.roleData && parsed.roleData.match_type) || (parsed.role_data && parsed.role_data.match_type) || parsed.matchType || '',
+                roleData: normalizedRoleData || {},
+                roleKey: (normalizedRoleData && normalizedRoleData.role_key) || (parsed.roleData && parsed.roleData.role_key) || (parsed.role_data && parsed.role_data.role_key) || parsed.roleKey || '',
+                matchType: (normalizedRoleData && normalizedRoleData.match_type) || (parsed.roleData && parsed.roleData.match_type) || (parsed.role_data && parsed.role_data.match_type) || parsed.matchType || '',
                 userInfo: parsed.userInfo || parsed.user_info || {},
                 rawAnswers: parsed.rawAnswers || parsed.raw_answers || {},
                 reportId: parsed.reportId || parsed.report_id || '',
