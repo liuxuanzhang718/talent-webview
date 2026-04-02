@@ -1415,29 +1415,52 @@
             return true;
         }
 
+        function normalizeReportPayload(parsed) {
+            if (!parsed) return null;
+            return {
+                part1Scores: parsed.part1Scores || parsed.part1_scores || {},
+                part2Scores: parsed.part2Scores || parsed.part2_scores || {},
+                top3: Array.isArray(parsed.top3) ? parsed.top3.map(item => typeof item === 'string' ? item : item.name).filter(Boolean) : [],
+                roleData: parsed.roleData || parsed.role_data || {},
+                roleKey: (parsed.roleData && parsed.roleData.role_key) || (parsed.role_data && parsed.role_data.role_key) || parsed.roleKey || '',
+                matchType: (parsed.roleData && parsed.roleData.match_type) || (parsed.role_data && parsed.role_data.match_type) || parsed.matchType || '',
+                userInfo: parsed.userInfo || parsed.user_info || {},
+                rawAnswers: parsed.rawAnswers || parsed.raw_answers || {},
+                reportId: parsed.reportId || parsed.report_id || '',
+                completedAt: parsed.completedAt || parsed.completed_at || ''
+            };
+        }
+
         function parseReportDataFromURL() {
             const raw = getURLParameter('reportData');
             if (!raw) return null;
             try {
-                const parsed = JSON.parse(raw);
-                return {
-                    part1Scores: parsed.part1Scores || parsed.part1_scores || {},
-                    part2Scores: parsed.part2Scores || parsed.part2_scores || {},
-                    top3: Array.isArray(parsed.top3) ? parsed.top3.map(item => typeof item === 'string' ? item : item.name).filter(Boolean) : [],
-                    roleData: parsed.roleData || parsed.role_data || {},
-                    roleKey: (parsed.roleData && parsed.roleData.role_key) || (parsed.role_data && parsed.role_data.role_key) || parsed.roleKey || '',
-                    matchType: (parsed.roleData && parsed.roleData.match_type) || (parsed.role_data && parsed.role_data.match_type) || parsed.matchType || '',
-                    userInfo: parsed.userInfo || parsed.user_info || {},
-                    rawAnswers: parsed.rawAnswers || parsed.raw_answers || {}
-                };
+                return normalizeReportPayload(JSON.parse(raw));
             } catch (error) {
                 console.warn('[ReportMode] parse reportData failed:', error);
                 return null;
             }
         }
 
-        function openReportMode() {
-            const reportData = parseReportDataFromURL();
+        async function resolveReportData() {
+            const reportUrl = getURLParameter('reportUrl');
+            if (reportUrl) {
+                try {
+                    const response = await fetch(reportUrl, { cache: 'no-store' });
+                    if (!response.ok) {
+                        throw new Error(`request failed: ${response.status}`);
+                    }
+                    return normalizeReportPayload(await response.json());
+                } catch (error) {
+                    console.warn('[ReportMode] fetch reportUrl failed:', error);
+                }
+            }
+
+            return parseReportDataFromURL();
+        }
+
+        async function openReportMode() {
+            const reportData = await resolveReportData();
             if (!reportData || !reportData.roleData || !reportData.roleData.name) {
                 return false;
             }
@@ -1454,33 +1477,14 @@
         }
 
         function backToMiniProgram() {
-            if (!window.reportData) {
-                return;
-            }
-
-            postMessageToMiniProgram({
-                type: 'assessment_complete',
-                data: {
-                    talentType: window.reportData.roleData.name,
-                    top3: window.reportData.top3,
-                    part1Scores: window.reportData.part1Scores,
-                    part2Scores: window.reportData.part2Scores,
-                    roleData: window.reportData.roleData,
-                    roleKey: window.reportData.roleKey,
-                    matchType: window.reportData.matchType,
-                    userInfo: window.reportData.userInfo,
-                    rawAnswers: window.reportData.rawAnswers,
-                    returnTarget: 'report',
-                    timestamp: new Date().toISOString()
-                }
-            });
-
             if (isMiniProgram) {
                 try {
                     wx.miniProgram.navigateBack();
                 } catch (e) {
                     console.warn('[MiniProgram] navigateBack failed:', e);
                 }
+            } else if (window.history.length > 1) {
+                window.history.back();
             }
         }
 
@@ -1949,7 +1953,7 @@
         let currentStep = 1;
 
         // ================= Initialize =================
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             buildAllQuestions();
             bindDraftPersistence();
 
@@ -1985,7 +1989,7 @@
             }
 
             if (isReportMode) {
-                openReportMode();
+                await openReportMode();
                 return;
             }
 
