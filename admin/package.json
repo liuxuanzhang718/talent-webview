@@ -1,0 +1,8 @@
+{
+  "name": "talent-admin-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/app.js && node --check src/lib/api.js && node --check src/lib/cloudbase.js"
+  }
+}
