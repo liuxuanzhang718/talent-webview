@@ -1,4 +1,4 @@
-import { callAdminFunction, uploadCloudFile } from './cloudbase.js'
+import { callAdminFunction, uploadCloudFile } from './cloudbase.js?v=20260405-admin-cachefix-1'
 
 const SESSION_KEY = 'talent_admin_session_token'
 
