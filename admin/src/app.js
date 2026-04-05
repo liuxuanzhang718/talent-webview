@@ -23,7 +23,7 @@ import {
   updateBookingStatus,
   uploadAdminFile,
   upsertPlanReport
-} from './lib/api.js?v=20260405-admin-cachefix-1'
+} from './lib/api.js?v=20260405-admin-cachefix-2'
 
 const appNode = document.getElementById('app')
 
