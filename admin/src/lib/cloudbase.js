@@ -1,14 +1,44 @@
 const ENV_ID = 'cloud1-5gv1lgzd5ce068c7'
 const REGION = 'ap-shanghai'
 const CLOUD_FUNCTION_NAME = 'admin'
-const SDK_URL = 'https://cdn.jsdelivr.net/npm/@cloudbase/js-sdk/+esm'
+const SDK_URL = 'https://static.cloudbase.net/cloudbase-js-sdk/3.0.1/cloudbase.full.js'
 
 let appPromise = null
 let authReadyPromise = null
 
-async function loadSdk() {
-  const sdkModule = await import(SDK_URL)
-  return sdkModule.default || sdkModule
+function loadSdk() {
+  if (window.cloudbase) {
+    return Promise.resolve(window.cloudbase)
+  }
+
+  if (window.__talentCloudbaseSdkPromise) {
+    return window.__talentCloudbaseSdkPromise
+  }
+
+  window.__talentCloudbaseSdkPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[data-cloudbase-sdk="true"]')
+    if (existing) {
+      existing.addEventListener('load', () => resolve(window.cloudbase))
+      existing.addEventListener('error', () => reject(new Error('CloudBase SDK 加载失败')))
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = SDK_URL
+    script.async = true
+    script.dataset.cloudbaseSdk = 'true'
+    script.onload = () => {
+      if (!window.cloudbase) {
+        reject(new Error('CloudBase SDK 未初始化'))
+        return
+      }
+      resolve(window.cloudbase)
+    }
+    script.onerror = () => reject(new Error('CloudBase SDK 加载失败'))
+    document.head.appendChild(script)
+  })
+
+  return window.__talentCloudbaseSdkPromise
 }
 
 export async function getCloudbaseApp() {
