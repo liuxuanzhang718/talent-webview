@@ -1351,6 +1351,7 @@
         const isDebugMode = getURLParameter('debug') === '1';
         const isReportMode = getURLParameter('mode') === 'report';
         const resumeRequested = getURLParameter('resume') === '1';
+        const retakeRequested = getURLParameter('retake') === '1';
         const questionRegistry = [];
         let questionValidationTriggered = false;
 
@@ -2115,7 +2116,9 @@
                 return;
             }
 
-            if (resumeRequested) {
+            if (retakeRequested) {
+                clearDraftState();
+            } else if (resumeRequested) {
                 restoreDraftState();
             }
         });
