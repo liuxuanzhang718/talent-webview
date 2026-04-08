@@ -1382,6 +1382,25 @@
             return `talent-assessment-draft:${activationCode}`;
         }
 
+        function getCurrentActivationCode() {
+            return (getURLParameter('activationCode') || getURLParameter('code') || '').trim().toUpperCase();
+        }
+
+        function syncDraftStateToMiniProgram(hasDraft) {
+            const activationCode = getCurrentActivationCode();
+            if (!activationCode) {
+                return;
+            }
+
+            postMessageToMiniProgram({
+                type: 'assessment_draft_state',
+                data: {
+                    activationCode,
+                    hasDraft: !!hasDraft
+                }
+            });
+        }
+
         function getDraftPayload() {
             try {
                 const raw = localStorage.getItem(getDraftStorageKey());
@@ -1414,6 +1433,7 @@
                     userInfo: collectDraftUserInfo(),
                     updatedAt: new Date().toISOString()
                 }));
+                syncDraftStateToMiniProgram(true);
             } catch (error) {
                 console.warn('[Draft] save failed:', error);
             }
@@ -1422,6 +1442,7 @@
         function clearDraftState() {
             try {
                 localStorage.removeItem(getDraftStorageKey());
+                syncDraftStateToMiniProgram(false);
             } catch (error) {
                 console.warn('[Draft] clear failed:', error);
             }
