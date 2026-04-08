@@ -683,11 +683,14 @@
             font-size: 15px;
             color: #333333;
             background: #FAFAFA;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .q-option:hover {
-            border-color: #C4A35A;
-            background: rgba(196, 163, 90, 0.04);
+        @media (hover: hover) {
+            .q-option:hover {
+                border-color: #C4A35A;
+                background: rgba(196, 163, 90, 0.04);
+            }
         }
 
         .q-option.selected {
