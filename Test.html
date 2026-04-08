@@ -693,7 +693,25 @@
             }
         }
 
+        .mini-program-mode .q-option {
+            cursor: default;
+        }
+
+        .mini-program-mode .q-option:hover,
+        .mini-program-mode .q-option:active {
+            border-color: #E8E8E8;
+            background: #FAFAFA;
+        }
+
         .q-option.selected {
+            border-color: #C4A35A;
+            background: rgba(196, 163, 90, 0.08);
+            color: #333;
+        }
+
+        .mini-program-mode .q-option.selected,
+        .mini-program-mode .q-option.selected:hover,
+        .mini-program-mode .q-option.selected:active {
             border-color: #C4A35A;
             background: rgba(196, 163, 90, 0.08);
             color: #333;
@@ -1351,6 +1369,7 @@
     <script>
         // ================= 小程序环境检测 =================
         const isMiniProgram = window.__wxjs_environment === 'miniprogram';
+        document.documentElement.classList.toggle('mini-program-mode', isMiniProgram);
         const isDebugMode = getURLParameter('debug') === '1';
         const isReportMode = getURLParameter('mode') === 'report';
         const resumeRequested = getURLParameter('resume') === '1';
