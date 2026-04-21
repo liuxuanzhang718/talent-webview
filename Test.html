@@ -1374,8 +1374,10 @@
         const isReportMode = getURLParameter('mode') === 'report';
         const resumeRequested = getURLParameter('resume') === '1';
         const retakeRequested = getURLParameter('retake') === '1';
+        const requestedStartStep = Number(getURLParameter('startStep') || 0);
         const questionRegistry = [];
         let questionValidationTriggered = false;
+        let prefilledUserInfoExtras = {};
 
         // Question navigation state
         let currentQuestionIndex = 0;
@@ -1406,6 +1408,60 @@
 
         function getCurrentActivationCode() {
             return (getURLParameter('activationCode') || getURLParameter('code') || '').trim().toUpperCase();
+        }
+
+        function getPrefillUserInfoFromUrl() {
+            const raw = getURLParameter('prefillData');
+            if (!raw) {
+                return null;
+            }
+
+            try {
+                const parsed = JSON.parse(raw);
+                return parsed && typeof parsed === 'object' ? parsed : null;
+            } catch (error) {
+                console.warn('[Prefill] parse failed:', error);
+                return null;
+            }
+        }
+
+        function applyUserInfoToForm(userInfo = {}) {
+            const nicknameInput = document.getElementById('nickname');
+            const ageInput = document.getElementById('age');
+            const genderInput = document.getElementById('gender');
+            const focusInput = document.getElementById('current-focus');
+            const consentInput = document.getElementById('consentAgreement');
+
+            if (nicknameInput) nicknameInput.value = userInfo.nickname || '';
+            if (ageInput) ageInput.value = userInfo.age || '';
+            if (genderInput) genderInput.value = userInfo.gender || '';
+            if (focusInput) focusInput.value = userInfo.focus || '';
+            if (consentInput) consentInput.checked = userInfo.consent !== false;
+
+            document.querySelectorAll('input[name="status"]').forEach((input) => {
+                input.checked = Array.isArray(userInfo.status) && userInfo.status.includes(input.value);
+                const label = input.closest('.status-option');
+                if (label) {
+                    label.classList.toggle('selected', input.checked);
+                }
+            });
+
+            prefilledUserInfoExtras = {
+                statusDetails: userInfo.statusDetails || {},
+                statusDetailList: Array.isArray(userInfo.statusDetailList) ? userInfo.statusDetailList : []
+            };
+        }
+
+        function hasCompleteUserInfo(userInfo = {}) {
+            return Boolean(
+                userInfo &&
+                userInfo.nickname &&
+                userInfo.age &&
+                userInfo.gender &&
+                Array.isArray(userInfo.status) &&
+                userInfo.status.length > 0 &&
+                userInfo.focus
+            );
         }
 
         function syncDraftStateToMiniProgram(hasDraft) {
@@ -1440,6 +1496,8 @@
                 gender: document.getElementById('gender')?.value || '',
                 focus: document.getElementById('current-focus')?.value || '',
                 status: Array.from(document.querySelectorAll('input[name="status"]:checked')).map(item => item.value),
+                statusDetails: prefilledUserInfoExtras.statusDetails || {},
+                statusDetailList: prefilledUserInfoExtras.statusDetailList || [],
                 consent: !!document.getElementById('consentAgreement')?.checked
             };
         }
@@ -1490,25 +1548,7 @@
             }
 
             const userInfo = draft.userInfo || {};
-            const nicknameInput = document.getElementById('nickname');
-            const ageInput = document.getElementById('age');
-            const genderInput = document.getElementById('gender');
-            const focusInput = document.getElementById('current-focus');
-            const consentInput = document.getElementById('consentAgreement');
-
-            if (nicknameInput) nicknameInput.value = userInfo.nickname || '';
-            if (ageInput) ageInput.value = userInfo.age || '';
-            if (genderInput) genderInput.value = userInfo.gender || '';
-            if (focusInput) focusInput.value = userInfo.focus || '';
-            if (consentInput) consentInput.checked = !!userInfo.consent;
-
-            document.querySelectorAll('input[name="status"]').forEach((input) => {
-                input.checked = Array.isArray(userInfo.status) && userInfo.status.includes(input.value);
-                const label = input.closest('.status-option');
-                if (label) {
-                    label.classList.toggle('selected', input.checked);
-                }
-            });
+            applyUserInfoToForm(userInfo);
 
             Object.keys(questionAnswers).forEach((key) => delete questionAnswers[key]);
             Object.assign(questionAnswers, draft.questionAnswers || {});
@@ -2122,6 +2162,7 @@
         document.addEventListener('DOMContentLoaded', async function() {
             buildAllQuestions();
             bindDraftPersistence();
+            const prefillUserInfo = getPrefillUserInfoFromUrl();
 
             const modal = document.getElementById('activationModal');
 
@@ -2162,7 +2203,20 @@
             if (retakeRequested) {
                 clearDraftState();
             } else if (resumeRequested) {
-                restoreDraftState();
+                const restored = restoreDraftState();
+                if (restored) {
+                    return;
+                }
+            }
+
+            if (prefillUserInfo) {
+                applyUserInfoToForm(prefillUserInfo);
+            }
+
+            if (requestedStartStep >= 3 && hasCompleteUserInfo(prefillUserInfo || {})) {
+                switchStep(1, 3);
+                currentQuestionIndex = 0;
+                showQuestion(currentQuestionIndex);
             }
         });
 
@@ -2487,7 +2541,9 @@
                     age: document.getElementById('age').value,
                     gender: document.getElementById('gender').value,
                     status: Array.from(document.querySelectorAll('input[name="status"]:checked')).map(c=>c.value),
-                    focus: document.getElementById('current-focus').value
+                    focus: document.getElementById('current-focus').value,
+                    statusDetails: prefilledUserInfoExtras.statusDetails || {},
+                    statusDetailList: prefilledUserInfoExtras.statusDetailList || []
                 },
                 rawAnswers: userAnswers.raw
             };
