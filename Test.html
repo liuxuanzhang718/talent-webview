@@ -589,9 +589,106 @@
         /* ========== Question Screen (Step 3) ========== */
         .question-screen {
             min-height: 100vh;
-            display: flex;
+            display: none;
             flex-direction: column;
             padding-bottom: 20px;
+        }
+
+        .question-screen.active {
+            display: flex;
+        }
+
+        .part-intro-screen {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 36px 0 40px;
+        }
+
+        .part-intro-screen.active {
+            display: flex;
+        }
+
+        .part-intro-card {
+            width: 100%;
+            background: linear-gradient(180deg, rgba(22, 20, 18, 0.96) 0%, rgba(13, 12, 11, 0.98) 100%);
+            border: 1px solid rgba(196, 163, 90, 0.18);
+            border-radius: 24px;
+            padding: 32px 24px 28px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .part-intro-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at top right, rgba(196, 163, 90, 0.18), transparent 38%),
+                linear-gradient(180deg, rgba(255,255,255,0.02), transparent 55%);
+            pointer-events: none;
+        }
+
+        .part-intro-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .part-intro-eyebrow {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: #C4A35A;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            font-weight: 600;
+        }
+
+        .part-intro-title {
+            font-size: 30px;
+            line-height: 1.28;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-bottom: 18px;
+        }
+
+        .part-intro-desc {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #C8C2B7;
+            margin-bottom: 14px;
+        }
+
+        .part-intro-desc strong {
+            color: #F3D18C;
+            font-weight: 700;
+        }
+
+        .part-intro-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(196, 163, 90, 0.12);
+            color: #F3D18C;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 10px 0 22px;
+        }
+
+        .part-intro-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .part-intro-actions .btn-gold,
+        .part-intro-actions .btn-outline {
+            max-width: 100%;
+            width: 100%;
         }
 
         .question-header {
@@ -1179,6 +1276,19 @@
                 padding: 24px 18px;
             }
 
+            .part-intro-card {
+                padding: 28px 20px 24px;
+                border-radius: 22px;
+            }
+
+            .part-intro-title {
+                font-size: 26px;
+            }
+
+            .part-intro-desc {
+                font-size: 14px;
+            }
+
             .question-card {
                 padding: 24px 18px;
             }
@@ -1319,7 +1429,52 @@
 
         <!-- Step 3: Questions (one at a time) -->
         <div class="step" id="step3">
-            <div class="question-screen">
+            <div class="part-intro-screen" id="partIntro1">
+                <div class="part-intro-card">
+                    <div class="part-intro-content">
+                        <div class="part-intro-eyebrow">PART 01</div>
+                        <div class="part-intro-title">第一部分：潜能校准</div>
+                        <div class="part-intro-desc">
+                            请在心中默念你刚才填写的答案
+                            <strong>（你当前的正业）</strong>，然后回答以下问题。
+                        </div>
+                        <div class="part-intro-desc">
+                            我们将一起看看，你的日常是否足够激发你的潜能。
+                        </div>
+                        <div class="part-intro-actions">
+                            <button class="btn-gold" onclick="startQuestionPart(1)">
+                                开始第一部分 <span>→</span>
+                            </button>
+                            <button class="btn-outline" onclick="backToInfoStep()">
+                                返回修改信息
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="part-intro-screen" id="partIntro2">
+                <div class="part-intro-card">
+                    <div class="part-intro-content">
+                        <div class="part-intro-eyebrow">PART 02</div>
+                        <div class="part-intro-title">第二部分：优势潜能探索</div>
+                        <div class="part-intro-note">第一部分完成了 ✓</div>
+                        <div class="part-intro-desc">
+                            现在我们往深一层走。
+                        </div>
+                        <div class="part-intro-desc">
+                            接下来的题目会从六个不同的维度来认识你，找到你的独特优势。帮助你更好地调整职业方向、培养兴趣，以及优化日常安排。
+                        </div>
+                        <div class="part-intro-actions">
+                            <button class="btn-gold" onclick="startQuestionPart(2)">
+                                进入第二部分 <span>→</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-screen active" id="questionScreen">
                 <div class="question-header">
                     <div class="progress-bar-container">
                         <div class="progress-bar-track">
@@ -1378,6 +1533,9 @@
         const questionRegistry = [];
         let questionValidationTriggered = false;
         let prefilledUserInfoExtras = {};
+        let questionStageView = 'question';
+        let part1QuestionCount = 0;
+        let part2StartIndex = 0;
 
         // Question navigation state
         let currentQuestionIndex = 0;
@@ -1502,12 +1660,24 @@
             };
         }
 
+        function setQuestionStage(view) {
+            questionStageView = view;
+            const questionScreen = document.getElementById('questionScreen');
+            const partIntro1 = document.getElementById('partIntro1');
+            const partIntro2 = document.getElementById('partIntro2');
+
+            if (questionScreen) questionScreen.classList.toggle('active', view === 'question');
+            if (partIntro1) partIntro1.classList.toggle('active', view === 'intro1');
+            if (partIntro2) partIntro2.classList.toggle('active', view === 'intro2');
+        }
+
         function persistDraftState() {
             if (isReportMode) return;
 
             try {
                 localStorage.setItem(getDraftStorageKey(), JSON.stringify({
                     step: currentStep,
+                    questionStageView,
                     questionIndex: currentQuestionIndex,
                     questionAnswers,
                     userInfo: collectDraftUserInfo(),
@@ -1559,8 +1729,15 @@
             }
 
             if (targetStep >= 3) {
+                const draftStageView = draft.questionStageView;
                 currentQuestionIndex = Math.max(0, Math.min(Number(draft.questionIndex) || 0, allQuestions.length - 1));
-                showQuestion(currentQuestionIndex);
+                if (draftStageView === 'intro2') {
+                    setQuestionStage('intro2');
+                } else if (draftStageView === 'intro1') {
+                    setQuestionStage('intro1');
+                } else {
+                    showQuestion(currentQuestionIndex);
+                }
             }
 
             return true;
@@ -2216,7 +2393,8 @@
             if (requestedStartStep >= 3 && hasCompleteUserInfo(prefillUserInfo || {})) {
                 switchStep(1, 3);
                 currentQuestionIndex = 0;
-                showQuestion(currentQuestionIndex);
+                setQuestionStage('intro1');
+                persistDraftState();
             }
         });
 
@@ -2258,18 +2436,22 @@
                 });
             });
 
+            part1QuestionCount = displayIndex - 1;
+
             // Part 2
             dimensions.part2.forEach((item, idx) => {
                 allQuestions.push({
                     name: `p2_${idx}`,
                     text: item.question,
                     part: 2,
-                    partLabel: '第二部分 · 天赋探索',
+                    partLabel: '第二部分 · 优势潜能探索',
                     number: displayIndex
                 });
                 questionRegistry.push({ name: `p2_${idx}`, number: displayIndex });
                 displayIndex++;
             });
+
+            part2StartIndex = part1QuestionCount;
         }
 
         // ================= Navigation =================
@@ -2294,8 +2476,22 @@
         function goToQuestions() {
             if (!validateUserInfo()) return;
             switchStep(2, 3);
-            const existingAnswers = Object.keys(questionAnswers).length;
-            currentQuestionIndex = existingAnswers ? currentQuestionIndex : 0;
+            currentQuestionIndex = 0;
+            setQuestionStage('intro1');
+            persistDraftState();
+        }
+
+        function backToInfoStep() {
+            switchStep(3, 2);
+        }
+
+        function startQuestionPart(part) {
+            if (part === 2) {
+                currentQuestionIndex = Math.max(part2StartIndex, 0);
+            } else if (currentQuestionIndex >= part2StartIndex) {
+                currentQuestionIndex = 0;
+            }
+
             showQuestion(currentQuestionIndex);
         }
 
@@ -2333,6 +2529,7 @@
 
         function showQuestion(index) {
             if (index < 0 || index >= allQuestions.length) return;
+            setQuestionStage('question');
 
             const q = allQuestions[index];
             const total = allQuestions.length;
@@ -2394,13 +2591,25 @@
             // Auto-advance after 300ms
             setTimeout(() => {
                 if (currentQuestionIndex < allQuestions.length - 1) {
-                    currentQuestionIndex++;
-                    showQuestion(currentQuestionIndex);
+                    advanceQuestionFlow();
                 } else {
                     persistDraftState();
                 }
                 // On last question, don't auto-advance - user clicks submit
             }, 300);
+        }
+
+        function advanceQuestionFlow() {
+            const nextIndex = currentQuestionIndex + 1;
+            if (nextIndex === part2StartIndex) {
+                currentQuestionIndex = nextIndex;
+                setQuestionStage('intro2');
+                persistDraftState();
+                return;
+            }
+
+            currentQuestionIndex = nextIndex;
+            showQuestion(currentQuestionIndex);
         }
 
         function nextQuestion() {
@@ -2417,8 +2626,7 @@
             }
 
             if (currentQuestionIndex < allQuestions.length - 1) {
-                currentQuestionIndex++;
-                showQuestion(currentQuestionIndex);
+                advanceQuestionFlow();
             } else {
                 // Last question - validate all and submit
                 const unanswered = allQuestions.filter(q => !questionAnswers[q.name]);
