@@ -601,24 +601,53 @@
         .part-intro-screen {
             min-height: 100vh;
             display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 36px 0 40px;
+            align-items: stretch;
+            justify-content: flex-start;
+            padding: 28px 0 24px;
+            position: relative;
         }
 
         .part-intro-screen.active {
             display: flex;
         }
 
+        .part-intro-screen::before,
+        .part-intro-screen::after {
+            content: '';
+            position: absolute;
+            pointer-events: none;
+            border-radius: 999px;
+            filter: blur(80px);
+            opacity: 0.6;
+        }
+
+        .part-intro-screen::before {
+            width: 180px;
+            height: 180px;
+            top: 18px;
+            right: -56px;
+            background: rgba(196, 163, 90, 0.16);
+        }
+
+        .part-intro-screen::after {
+            width: 140px;
+            height: 140px;
+            left: -48px;
+            bottom: 80px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .part-intro-card {
             width: 100%;
-            background: linear-gradient(180deg, rgba(22, 20, 18, 0.96) 0%, rgba(13, 12, 11, 0.98) 100%);
+            min-height: calc(100vh - 52px);
+            background: linear-gradient(180deg, rgba(24, 22, 19, 0.98) 0%, rgba(14, 13, 12, 0.98) 56%, rgba(10, 10, 9, 1) 100%);
             border: 1px solid rgba(196, 163, 90, 0.18);
-            border-radius: 24px;
-            padding: 32px 24px 28px;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+            border-radius: 28px;
+            padding: 28px 22px 24px;
+            box-shadow: 0 28px 72px rgba(0, 0, 0, 0.34);
             position: relative;
             overflow: hidden;
+            display: flex;
         }
 
         .part-intro-card::before {
@@ -626,14 +655,32 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(circle at top right, rgba(196, 163, 90, 0.18), transparent 38%),
+                radial-gradient(circle at top right, rgba(196, 163, 90, 0.22), transparent 34%),
                 linear-gradient(180deg, rgba(255,255,255,0.02), transparent 55%);
+            pointer-events: none;
+        }
+
+        .part-intro-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.03), transparent 28%),
+                linear-gradient(180deg, transparent 72%, rgba(196, 163, 90, 0.06) 100%);
             pointer-events: none;
         }
 
         .part-intro-content {
             position: relative;
             z-index: 1;
+            width: 100%;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .part-intro-header-block {
+            margin-bottom: 24px;
         }
 
         .part-intro-eyebrow {
@@ -641,28 +688,16 @@
             letter-spacing: 4px;
             color: #C4A35A;
             text-transform: uppercase;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
             font-weight: 600;
         }
 
         .part-intro-title {
-            font-size: 30px;
-            line-height: 1.28;
+            font-size: 31px;
+            line-height: 1.24;
             font-weight: 800;
             color: #FFFFFF;
-            margin-bottom: 18px;
-        }
-
-        .part-intro-desc {
-            font-size: 15px;
-            line-height: 1.9;
-            color: #C8C2B7;
-            margin-bottom: 14px;
-        }
-
-        .part-intro-desc strong {
-            color: #F3D18C;
-            font-weight: 700;
+            margin-bottom: 0;
         }
 
         .part-intro-note {
@@ -675,14 +710,62 @@
             color: #F3D18C;
             font-size: 13px;
             font-weight: 600;
-            margin: 10px 0 22px;
+            margin: 18px 0 0;
+            align-self: flex-start;
+        }
+
+        .part-intro-body {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 18px;
+        }
+
+        .part-intro-context {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 14px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #F0E6D4;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .part-intro-context strong {
+            color: #F3D18C;
+            font-weight: 700;
+        }
+
+        .part-intro-desc {
+            font-size: 15px;
+            line-height: 1.95;
+            color: #C8C2B7;
+            margin-bottom: 14px;
+        }
+
+        .part-intro-desc strong {
+            color: #F3D18C;
+            font-weight: 700;
+        }
+
+        .part-intro-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 6px;
+            font-size: 13px;
+            color: #A99E8B;
+            line-height: 1.7;
         }
 
         .part-intro-actions {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 12px;
+            margin-top: auto;
+            padding-top: 26px;
         }
 
         .part-intro-actions .btn-gold,
@@ -1277,12 +1360,13 @@
             }
 
             .part-intro-card {
-                padding: 28px 20px 24px;
-                border-radius: 22px;
+                min-height: calc(100vh - 44px);
+                padding: 26px 20px 22px;
+                border-radius: 24px;
             }
 
             .part-intro-title {
-                font-size: 26px;
+                font-size: 27px;
             }
 
             .part-intro-desc {
@@ -1432,14 +1516,20 @@
             <div class="part-intro-screen" id="partIntro1">
                 <div class="part-intro-card">
                     <div class="part-intro-content">
-                        <div class="part-intro-eyebrow">PART 01</div>
-                        <div class="part-intro-title">第一部分：潜能校准</div>
-                        <div class="part-intro-desc">
-                            请在心中默念你刚才填写的答案
-                            <strong>（你当前的正业）</strong>，然后回答以下问题。
+                        <div class="part-intro-header-block">
+                            <div class="part-intro-eyebrow">PART 01</div>
+                            <div class="part-intro-title">第一部分：潜能校准</div>
                         </div>
-                        <div class="part-intro-desc">
-                            我们将一起看看，你的日常是否足够激发你的潜能。
+                        <div class="part-intro-body">
+                            <div class="part-intro-context" id="partIntroFocus"></div>
+                            <div class="part-intro-desc">
+                                请在心中默念你刚才填写的答案
+                                <strong>（你当前的正业）</strong>，然后回答以下问题。
+                            </div>
+                            <div class="part-intro-desc">
+                                我们将一起看看，你的日常是否足够激发你的潜能。
+                            </div>
+                            <div class="part-intro-meta" id="partIntroMeta1"></div>
                         </div>
                         <div class="part-intro-actions">
                             <button class="btn-gold" onclick="startQuestionPart(1)">
@@ -1456,14 +1546,19 @@
             <div class="part-intro-screen" id="partIntro2">
                 <div class="part-intro-card">
                     <div class="part-intro-content">
-                        <div class="part-intro-eyebrow">PART 02</div>
-                        <div class="part-intro-title">第二部分：优势潜能探索</div>
-                        <div class="part-intro-note">第一部分完成了 ✓</div>
-                        <div class="part-intro-desc">
-                            现在我们往深一层走。
+                        <div class="part-intro-header-block">
+                            <div class="part-intro-eyebrow">PART 02</div>
+                            <div class="part-intro-title">第二部分：优势潜能探索</div>
+                            <div class="part-intro-note">第一部分完成了 ✓</div>
                         </div>
-                        <div class="part-intro-desc">
-                            接下来的题目会从六个不同的维度来认识你，找到你的独特优势。帮助你更好地调整职业方向、培养兴趣，以及优化日常安排。
+                        <div class="part-intro-body">
+                            <div class="part-intro-desc">
+                                现在我们往深一层走。
+                            </div>
+                            <div class="part-intro-desc">
+                                接下来的题目会从六个不同的维度来认识你，找到你的独特优势。帮助你更好地调整职业方向、培养兴趣，以及优化日常安排。
+                            </div>
+                            <div class="part-intro-meta" id="partIntroMeta2"></div>
                         </div>
                         <div class="part-intro-actions">
                             <button class="btn-gold" onclick="startQuestionPart(2)">
@@ -1610,6 +1705,8 @@
                 statusDetails: userInfo.statusDetails || {},
                 statusDetailList: Array.isArray(userInfo.statusDetailList) ? userInfo.statusDetailList : []
             };
+
+            updatePartIntroContext();
         }
 
         function hasCompleteUserInfo(userInfo = {}) {
@@ -1662,6 +1759,21 @@
             };
         }
 
+        function updatePartIntroContext() {
+            const introFocus = document.getElementById('partIntroFocus');
+            const focus = (document.getElementById('current-focus')?.value || '').trim();
+            if (!introFocus) return;
+
+            if (!focus) {
+                introFocus.style.display = 'none';
+                introFocus.textContent = '';
+                return;
+            }
+
+            introFocus.style.display = 'inline-flex';
+            introFocus.innerHTML = `<strong>你当前的正业</strong><span>${focus}</span>`;
+        }
+
         function setQuestionStage(view) {
             questionStageView = view;
             const questionScreen = document.getElementById('questionScreen');
@@ -1707,6 +1819,12 @@
                 el.addEventListener('input', persistDraftState);
                 el.addEventListener('change', persistDraftState);
             });
+
+            const focusInput = document.getElementById('current-focus');
+            if (focusInput) {
+                focusInput.addEventListener('input', updatePartIntroContext);
+                focusInput.addEventListener('change', updatePartIntroContext);
+            }
 
             document.querySelectorAll('input[name="status"]').forEach((input) => {
                 input.addEventListener('change', persistDraftState);
@@ -2470,6 +2588,18 @@
             });
 
             part2StartIndex = part1QuestionCount;
+
+            const partIntroMeta1 = document.getElementById('partIntroMeta1');
+            const partIntroMeta2 = document.getElementById('partIntroMeta2');
+            const part2QuestionCount = Math.max(allQuestions.length - part1QuestionCount, 0);
+
+            if (partIntroMeta1) {
+                partIntroMeta1.textContent = `本部分 ${part1QuestionCount} 题 · 请按第一反应作答`;
+            }
+
+            if (partIntroMeta2) {
+                partIntroMeta2.textContent = `本部分 ${part2QuestionCount} 题 · 六个维度深入认识你`;
+            }
         }
 
         // ================= Navigation =================
@@ -2493,6 +2623,7 @@
 
         function goToQuestions() {
             if (!validateUserInfo()) return;
+            updatePartIntroContext();
             switchStep(2, 3);
             currentQuestionIndex = 0;
             setQuestionStage('intro1');
