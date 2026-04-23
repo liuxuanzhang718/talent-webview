@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="./report-role-cards.js"></script>
 <style>
 :root {
   --ink:       #0F0E0C;
@@ -33,8 +34,22 @@ body {
   background: var(--ink);
   font-family: 'Noto Sans SC', 'PingFang SC', sans-serif;
   color: var(--white);
-  max-width: 820px;
+  max-width: 920px;
   margin: 0 auto;
+}
+
+body.pdf-exporting * {
+  animation: none !important;
+  transition: none !important;
+}
+
+body.pdf-exporting .fade-in,
+body.pdf-exporting .delay-1,
+body.pdf-exporting .delay-2,
+body.pdf-exporting .delay-3,
+body.pdf-exporting .delay-4 {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* ── fade-in animation ── */
@@ -53,7 +68,7 @@ body {
 ══════════════════════════════════════ */
 .cover {
   background: var(--ink);
-  padding: 72px 56px 64px;
+  padding: 60px 56px 56px;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid rgba(200,151,58,0.2);
@@ -77,101 +92,146 @@ body {
   pointer-events: none;
 }
 .cover-eyebrow {
+  display: block;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; letter-spacing: 5px;
+  font-size: clamp(6px, 1.2vw, 8px);
+  letter-spacing: 2.1px;
   color: var(--gold);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   opacity: 0.9;
+  white-space: nowrap;
+  text-transform: uppercase;
 }
 .cover-title {
   font-family: 'Noto Serif SC', serif;
-  font-size: 36px; font-weight: 700;
+  font-size: 34px; font-weight: 700;
   color: var(--white);
-  letter-spacing: 5px;
+  letter-spacing: 3px;
   line-height: 1.2;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .cover-sub {
-  font-size: 13px;
-  color: rgba(255,255,255,0.35);
-  letter-spacing: 3px;
-  margin-bottom: 48px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.42);
+  letter-spacing: 2px;
+  margin-bottom: 32px;
   font-family: 'JetBrains Mono', monospace;
 }
 /* Role card large hero */
 .cover-card-wrap {
-  display: flex;
-  gap: 48px;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 228px minmax(0, 1fr);
+  gap: 44px;
+  align-items: start;
 }
 .cover-role-card {
   flex-shrink: 0;
-  width: 200px;
-  height: 260px;
+  width: 228px;
+  aspect-ratio: 3 / 4;
   background: var(--white);
-  border: 1px solid rgba(200,151,58,0.3);
+  border-radius: 20px;
+  border: 1px solid rgba(200,151,58,0.22);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(200,151,58,0.15);
+  box-shadow: 0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px rgba(200,151,58,0.1);
 }
 .cover-role-card-top {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #E8EAF6;
   position: relative;
 }
 .cover-role-card-top::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  content: none;
 }
-.cover-role-card-top svg { width: 140px; height: 140px; }
+.cover-role-card-top svg { width: 150px; height: 150px; }
 .cover-role-card-bottom {
-  background: var(--ink);
-  padding: 14px 16px 16px;
+  background: var(--white);
+  padding: 13px 16px 16px;
   text-align: center;
   flex-shrink: 0;
+  border-top: 1px solid rgba(15,14,12,0.05);
 }
 .cover-role-name-zh {
-  font-family: 'Noto Serif SC', serif;
-  font-size: 16px; font-weight: 700;
-  color: var(--white);
-  letter-spacing: 2px;
-  margin-bottom: 3px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
 }
 .cover-role-name-en {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 8px; letter-spacing: 3px;
-  color: var(--gold);
+  font-size: 8px;
+  letter-spacing: 2.4px;
+  color: #B8B2AA;
   margin-bottom: 10px;
 }
-.cover-role-dims {
-  display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
-}
-.cover-dim-tag {
-  background: rgba(200,151,58,0.1);
-  border: 1px solid rgba(200,151,58,0.25);
-  color: var(--gold-l);
-  font-size: 9px;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.5px;
-  padding: 2px 7px;
+.cover-role-tagline-mini {
+  max-width: 174px;
+  margin: 0 auto;
+  font-size: 8.6px;
+  color: #6E655C;
+  line-height: 1.68;
 }
 .cover-text { flex: 1; }
 .cover-tagline {
   font-family: 'Noto Serif SC', serif;
-  font-size: 18px; font-weight: 600;
+  max-width: 470px;
+  font-size: 21px; font-weight: 600;
   color: var(--white);
-  line-height: 1.9;
+  line-height: 1.72;
   margin-bottom: 24px;
   border-left: 3px solid var(--gold);
   padding-left: 20px;
+}
+.cover-rank-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.cover-rank-chip {
+  min-width: 0;
+  padding: 11px 12px 10px;
+  border: 1px solid rgba(200,151,58,0.24);
+  background: linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.02) 100%);
+}
+.cover-rank-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.cover-rank-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
+.cover-rank-index,
+.cover-rank-score {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--gold-l);
+}
+.cover-rank-index {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.cover-rank-score {
+  font-size: 11px;
+}
+.cover-rank-bar {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+}
+.cover-rank-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-l));
 }
 .cover-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .cover-chip {
@@ -193,7 +253,7 @@ body {
    SECTION SHARED
 ══════════════════════════════════════ */
 .section {
-  padding: 52px 56px;
+  padding: 48px 56px;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   background: var(--ink);
 }
@@ -220,7 +280,7 @@ body {
 .section-sub {
   font-size: 12px;
   color: rgba(255,255,255,0.3);
-  margin-bottom: 36px;
+  margin-bottom: 30px;
   letter-spacing: 1px;
   font-family: 'JetBrains Mono', monospace;
 }
@@ -231,20 +291,46 @@ body {
 ══════════════════════════════════════ */
 .radar-layout {
   display: flex;
-  gap: 48px;
-  align-items: flex-start;
+  gap: 32px;
+  align-items: stretch;
 }
-.radar-svg-wrap { flex-shrink: 0; }
-.bars-wrap { flex: 1; padding-top: 8px; }
-.bar-row { margin-bottom: 20px; }
+.radar-svg-wrap {
+  flex-shrink: 0;
+  width: 386px;
+  padding: 24px 18px 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(200,151,58,0.16);
+  background:
+    radial-gradient(circle at top, rgba(200,151,58,0.1), transparent 52%),
+    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%);
+  overflow: hidden;
+}
+.bars-wrap {
+  flex: 1;
+  padding: 24px 22px 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(200,151,58,0.14);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%);
+}
+.bar-row {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.045);
+}
+.bar-row:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
 .bar-meta {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 .bar-name {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: var(--white);
   display: flex;
@@ -262,20 +348,31 @@ body {
 .bar-score {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  color: var(--ink-light);
+  color: rgba(255,255,255,0.48);
 }
 .bar-track {
-  height: 4px;
+  height: 5px;
   background: rgba(255,255,255,0.07);
   position: relative;
+  border-radius: 999px;
+  overflow: hidden;
 }
 .bar-fill {
   height: 100%;
   background: linear-gradient(90deg, rgba(200,151,58,0.5), var(--gold));
   position: relative;
+  border-radius: 999px;
 }
 .bar-fill.top {
   background: linear-gradient(90deg, var(--gold), var(--gold-l));
+}
+.radar-note {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.045);
+  font-size: 11px;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.78;
 }
 .section.light .bar-name { color: var(--ink); }
 .section.light .bar-track { background: var(--border); }
@@ -762,18 +859,22 @@ body {
   .cover,
   .section,
   .report-error {
-    padding: 44px 24px;
+    padding: 44px 22px;
   }
   .flow-divider,
   .arc-strip,
   .report-footer,
   .report-navigation {
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 22px;
+    padding-right: 22px;
   }
   .cover-title {
-    font-size: 30px;
+    font-size: 29px;
     letter-spacing: 2px;
+  }
+  .cover-eyebrow {
+    font-size: 6px;
+    letter-spacing: 1.6px;
   }
   .cover-sub {
     font-size: 11px;
@@ -782,24 +883,39 @@ body {
   }
   .cover-card-wrap,
   .radar-layout {
-    flex-direction: column;
     gap: 28px;
     align-items: stretch;
   }
+  .cover-card-wrap {
+    grid-template-columns: 1fr;
+  }
   .cover-role-card {
     width: 100%;
-    max-width: 260px;
-    height: auto;
+    max-width: 248px;
     margin: 0 auto;
   }
   .cover-role-card-top {
     min-height: 200px;
+  }
+  .cover-rank-chip {
+    min-width: 0;
+  }
+  .cover-rank-list {
+    grid-template-columns: 1fr 1fr;
+  }
+  .radar-svg-wrap {
+    width: 100%;
+    padding: 18px 10px 14px;
   }
   .section-title {
     font-size: 20px;
   }
   .section-sub {
     margin-bottom: 28px;
+  }
+  .cover-tagline {
+    max-width: none;
+    font-size: 19px;
   }
   .two-col,
   .power-blind-grid,
@@ -843,6 +959,7 @@ body {
 
 <script>
 const isMiniProgram = window.__wxjs_environment === 'miniprogram';
+const ROLE_CARD_LIBRARY = window.REPORT_ROLE_CARDS || {};
 
 const TALENT_EN_MAP = {
   '火花型合作者': 'SPARK COLLABORATOR',
@@ -1037,9 +1154,27 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function normalizeTop3(top3 = []) {
+function normalizeTop3(top3 = [], scoreMap = {}) {
   if (!Array.isArray(top3)) return [];
-  return top3.map((item) => typeof item === 'string' ? item : item && item.name).filter(Boolean);
+  return top3
+    .map((item) => {
+      if (typeof item === 'string') {
+        return {
+          name: item,
+          score: Number(scoreMap[item] || 0)
+        };
+      }
+      if (item && item.name) {
+        return {
+          name: item.name,
+          score: Number(item.score != null ? item.score : scoreMap[item.name] || 0)
+        };
+      }
+      return null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.name);
 }
 
 function normalizePart1Scores(rawScores = {}) {
@@ -1086,7 +1221,7 @@ function normalizeReportPayload(parsed) {
   const rawRole = normalizeRoleData(parsed.roleData || parsed.role_data || {});
   const rawUser = parsed.userInfo || parsed.user_info || {};
   const part2Scores = parsed.part2Scores || parsed.part2_scores || {};
-  const normalizedTop3 = normalizeTop3(parsed.top3);
+  const normalizedTop3 = normalizeTop3(parsed.top3, part2Scores);
   const computedTop3 = normalizedTop3.length
     ? normalizedTop3
     : Object.keys(part2Scores)
@@ -1175,7 +1310,79 @@ function getOrderedDimensionItems(scoreMap = {}, top3 = []) {
   })).sort((a, b) => b.value - a.value);
 }
 
+function stripHtmlTags(value = '') {
+  return String(value).replace(/<[^>]+>/g, '');
+}
+
+function extractDimensionNames(items = []) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => {
+      if (typeof item === 'string') return item.trim();
+      if (item && typeof item === 'object' && typeof item.name === 'string') {
+        return item.name.trim();
+      }
+      return '';
+    })
+    .filter(Boolean);
+}
+
+function buildDimensionComboKey(items = []) {
+  return items
+    .filter((item) => DIMENSION_ORDER.includes(item))
+    .sort((a, b) => DIMENSION_ORDER.indexOf(a) - DIMENSION_ORDER.indexOf(b))
+    .join('|');
+}
+
+function getRoleCardIndex() {
+  if (window.__REPORT_ROLE_CARD_INDEX) {
+    return window.__REPORT_ROLE_CARD_INDEX;
+  }
+  const index = {
+    byName: {},
+    byCombo: {}
+  };
+  Object.values(ROLE_CARD_LIBRARY).forEach((card) => {
+    if (!card || !card.name) return;
+    index.byName[card.name] = card;
+    const combo = buildDimensionComboKey(
+      stripHtmlTags(card.dimsHtml)
+        .split('×')
+        .map((item) => item.trim())
+    );
+    if (combo) {
+      index.byCombo[combo] = card;
+    }
+  });
+  window.__REPORT_ROLE_CARD_INDEX = index;
+  return index;
+}
+
+function getRoleCardData(roleName, data = null) {
+  const index = getRoleCardIndex();
+  if (roleName && index.byName[roleName]) {
+    return index.byName[roleName];
+  }
+  const roleKeyCombo = buildDimensionComboKey(
+    stripHtmlTags((data && (data.roleKey || (data.roleData && data.roleData.role_key))) || '')
+      .split('×')
+      .map((item) => item.trim())
+  );
+  if (roleKeyCombo && index.byCombo[roleKeyCombo]) {
+    return index.byCombo[roleKeyCombo];
+  }
+  const top3Combo = buildDimensionComboKey(extractDimensionNames(data && data.top3));
+  if (top3Combo && index.byCombo[top3Combo]) {
+    return index.byCombo[top3Combo];
+  }
+  return null;
+}
+
 function buildRoleTagline(data) {
+  const roleCard = getRoleCardData(data.roleData.name || '', data);
+  if (roleCard && roleCard.tagline) {
+    return roleCard.tagline;
+  }
   const roleDescription = data.roleData.description || '';
   if (roleDescription) {
     const sentence = roleDescription.split('。').find(Boolean) || roleDescription;
@@ -1186,6 +1393,21 @@ function buildRoleTagline(data) {
     return `${escapeHtml(data.top3[0])} × ${escapeHtml(data.top3[1] || '')}<br>与 ${escapeHtml(data.top3[2] || '')} 共同形成<br>你的专属优势结构`;
   }
   return '你的独特优势组合<br>正在被重新看见<br>并逐步点亮。';
+}
+
+function buildCoverLead(data) {
+  const roleDescription = (data.roleData && data.roleData.description) || '';
+  if (roleDescription) {
+    const sentence = roleDescription
+      .split('。')
+      .map((item) => item.trim())
+      .filter(Boolean)[0] || '';
+    if (sentence) {
+      const parts = sentence.replace(/，/g, '，<br>').split('<br>');
+      return parts.slice(0, 3).join('<br>');
+    }
+  }
+  return buildRoleTagline(data);
 }
 
 function buildCoverArtworkSvg(data) {
@@ -1245,16 +1467,23 @@ function buildCoverArtworkSvg(data) {
 }
 
 function buildRadarSvg(data) {
-  const centerX = 130;
-  const centerY = 106;
-  const radius = 92;
+  const centerX = 188;
+  const centerY = 138;
   const positions = {
-    '创意表达力': [130, 14],
-    '沟通影响力': [210, 60],
-    '技术适应力': [210, 152],
-    '结构思维力': [130, 198],
-    '协作引领力': [50, 152],
-    '目标执行力': [50, 60]
+    '创意表达力': [188, 38],
+    '沟通影响力': [286, 92],
+    '技术适应力': [286, 196],
+    '结构思维力': [188, 252],
+    '协作引领力': [90, 196],
+    '目标执行力': [90, 92]
+  };
+  const labelLayouts = {
+    '创意表达力': { x: 188, y: 10, anchor: 'middle', width: 128, height: 40 },
+    '沟通影响力': { x: 306, y: 74, anchor: 'start', width: 96, height: 38 },
+    '技术适应力': { x: 306, y: 184, anchor: 'start', width: 96, height: 38 },
+    '结构思维力': { x: 188, y: 262, anchor: 'middle', width: 128, height: 38 },
+    '协作引领力': { x: 70, y: 184, anchor: 'end', width: 96, height: 38 },
+    '目标执行力': { x: 70, y: 74, anchor: 'end', width: 96, height: 38 }
   };
   const scoreItems = getOrderedDimensionItems(data.part2Scores, data.top3);
   const scoreLookup = scoreItems.reduce((acc, item) => {
@@ -1267,46 +1496,74 @@ function buildRadarSvg(data) {
     const rate = score / 100;
     return `${centerX + (x - centerX) * rate},${centerY + (y - centerY) * rate}`;
   }).join(' ');
-  const rings = [1, 0.75, 0.5, 0.25].map((ratio) => {
+  const rings = [1, 0.8, 0.6, 0.4, 0.2].map((ratio, index) => {
     const points = DIMENSION_ORDER.map((name) => {
       const [x, y] = positions[name];
       return `${centerX + (x - centerX) * ratio},${centerY + (y - centerY) * ratio}`;
     }).join(' ');
-    return `<polygon points="${points}" fill="none" stroke="rgba(200,151,58,0.12)" stroke-width="0.9" />`;
+    return `<polygon points="${points}" fill="${index % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'rgba(200,151,58,0.02)'}" stroke="rgba(200,151,58,0.14)" stroke-width="0.9" />`;
   }).join('');
   const axisLines = DIMENSION_ORDER.map((name) => {
     const [x, y] = positions[name];
-    return `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="rgba(200,151,58,0.14)" stroke-width="0.9" />`;
+    return `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="rgba(200,151,58,0.16)" stroke-width="0.9" />`;
   }).join('');
   const labels = DIMENSION_ORDER.map((name) => {
-    const [x, y] = positions[name];
-    const isLeft = x < centerX - 10;
-    const isRight = x > centerX + 10;
-    const anchor = isLeft ? 'end' : isRight ? 'start' : 'middle';
-    const offsetX = isLeft ? -10 : isRight ? 10 : 0;
-    const offsetY = y < centerY - 40 ? -8 : y > centerY + 40 ? 18 : 4;
-    const color = data.top3.includes(name) ? '#E8C878' : 'rgba(255,255,255,0.4)';
-    const star = data.top3.includes(name) ? `<text x="${x + offsetX}" y="${y + offsetY + 12}" font-size="10" fill="#C8973A" text-anchor="${anchor}">★</text>` : '';
+    const item = scoreLookup[name] || {};
+    const layout = labelLayouts[name];
+    const isLeft = layout.anchor === 'end';
+    const width = layout.width;
+    const height = layout.height;
+    const rectX = layout.anchor === 'middle' ? layout.x - width / 2 : isLeft ? layout.x - width : layout.x;
+    const rectY = layout.y;
+    const textX = layout.anchor === 'middle' ? layout.x : isLeft ? layout.x - 12 : layout.x + 12;
+    const textAnchor = layout.anchor === 'middle' ? 'middle' : isLeft ? 'end' : 'start';
+    const bg = item.isTop ? 'rgba(232,200,120,0.13)' : 'rgba(255,255,255,0.04)';
+    const stroke = item.isTop ? 'rgba(232,200,120,0.45)' : 'rgba(255,255,255,0.08)';
+    const rank = item.isTop
+      ? `<text x="${textX}" y="${rectY + 29}" font-size="8" fill="#C8973A" text-anchor="${textAnchor}" font-family="JetBrains Mono, monospace">TOP ${item.topIndex + 1}</text>`
+      : '';
     return `
-      <text x="${x + offsetX}" y="${y + offsetY}" font-size="10" fill="${color}" text-anchor="${anchor}" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
-      ${star}
+      <g>
+        <rect x="${rectX}" y="${rectY}" width="${width}" height="${height}" rx="${height / 2}" fill="${bg}" stroke="${stroke}" />
+        <text x="${textX}" y="${rectY + 16}" font-size="10.5" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.78)'}" text-anchor="${textAnchor}" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
+        <text x="${rectX + width - 12}" y="${rectY + 16}" font-size="10.5" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.78)'}" text-anchor="end" font-family="JetBrains Mono, monospace">${item.value ? item.value.toFixed(1) : '0.0'}</text>
+        ${rank}
+      </g>
     `;
   }).join('');
   const nodes = DIMENSION_ORDER.map((name) => {
-    const [x, y] = positions[name];
     const item = scoreLookup[name] || {};
-    const fill = item.isTop ? '#E8C878' : '#C8973A';
-    const radiusValue = item.isTop ? 5 : 4;
+    const [x, y] = positions[name];
     const px = centerX + (x - centerX) * (item.percent || 0) / 100;
     const py = centerY + (y - centerY) * (item.percent || 0) / 100;
-    return `<circle cx="${px}" cy="${py}" r="${radiusValue}" fill="${fill}" />`;
+    const badge = item.isTop
+      ? `
+        <circle cx="${px + 12}" cy="${py - 12}" r="9" fill="#0F0E0C" stroke="#E8C878" stroke-width="1.5" />
+        <text x="${px + 12}" y="${py - 9}" font-size="8" fill="#E8C878" text-anchor="middle" font-family="JetBrains Mono, monospace">${item.topIndex + 1}</text>
+      `
+      : '';
+    return `
+      <g>
+        <circle cx="${px}" cy="${py}" r="${item.isTop ? 7 : 5}" fill="${item.isTop ? '#F4DEA4' : '#C8973A'}" stroke="#0F0E0C" stroke-width="1.6" />
+        ${badge}
+      </g>
+    `;
   }).join('');
 
   return `
-    <svg viewBox="0 0 260 230" width="240" height="240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <svg viewBox="0 0 410 312" width="410" height="312" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
+      <defs>
+        <linearGradient id="radarFillGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(232,200,120,0.30)" />
+          <stop offset="100%" stop-color="rgba(200,151,58,0.08)" />
+        </linearGradient>
+      </defs>
       ${rings}
       ${axisLines}
-      <polygon points="${polygonPoints}" fill="rgba(200,151,58,0.14)" stroke="#C8973A" stroke-width="1.8" />
+      <polygon points="${polygonPoints}" fill="url(#radarFillGradient)" stroke="#E8C878" stroke-width="2.2" />
+      <circle cx="${centerX}" cy="${centerY}" r="20" fill="#0F0E0C" stroke="rgba(232,200,120,0.28)" stroke-width="1.4" />
+      <text x="${centerX}" y="${centerY - 3}" font-size="8" fill="#E8C878" text-anchor="middle" font-family="JetBrains Mono, monospace">RADAR</text>
+      <text x="${centerX}" y="${centerY + 10}" font-size="15" fill="#FFFFFF" text-anchor="middle" font-family="JetBrains Mono, monospace">6D</text>
       ${nodes}
       ${labels}
     </svg>
@@ -1364,8 +1621,10 @@ function buildActivationInsight(data, dimensionItems) {
 }
 
 function renderCoverSection(data) {
-  const roleName = data.roleData.name || '综合型人才';
-  const roleEn = TALENT_EN_MAP[roleName] || roleName.toUpperCase();
+  const roleCard = getRoleCardData(data.roleData.name || '', data);
+  const roleName = (roleCard && roleCard.name) || data.roleData.name || '综合型人才';
+  const roleEn = (roleCard && roleCard.en) || TALENT_EN_MAP[roleName] || roleName.toUpperCase();
+  const rankedTop3 = getOrderedDimensionItems(data.part2Scores, data.top3).slice(0, 3);
   return `
     <div class="cover fade-in">
       <div class="cover-eyebrow">TALENT UNLIMITED LAB · 个人天赋潜能报告</div>
@@ -1373,19 +1632,29 @@ function renderCoverSection(data) {
       <div class="cover-sub">为 ${escapeHtml(data.userInfo.nickname || '你')} 专属生成 · ${formatDisplayDate(data.completedAt)}</div>
       <div class="cover-card-wrap">
         <div class="cover-role-card fade-in delay-1">
-          <div class="cover-role-card-top">
-            ${buildCoverArtworkSvg(data)}
+          <div class="cover-role-card-top" style="background:${roleCard ? roleCard.bg : '#E8EAF6'};">
+            ${roleCard ? roleCard.svg : buildCoverArtworkSvg(data)}
           </div>
           <div class="cover-role-card-bottom">
             <div class="cover-role-name-zh">${escapeHtml(roleName)}</div>
             <div class="cover-role-name-en">${escapeHtml(roleEn)}</div>
-            <div class="cover-role-dims">
-              ${data.top3.slice(0, 3).map((name) => `<span class="cover-dim-tag">${escapeHtml(name)}</span>`).join('')}
-            </div>
+            <div class="cover-role-tagline-mini">${escapeHtml((roleCard && roleCard.tagline) || buildRoleTagline(data))}</div>
           </div>
         </div>
         <div class="cover-text fade-in delay-2">
-          <div class="cover-tagline">${buildRoleTagline(data)}</div>
+          <div class="cover-tagline">${buildCoverLead(data)}</div>
+          <div class="cover-rank-list">
+            ${rankedTop3.map((item) => `
+              <div class="cover-rank-chip">
+                <div class="cover-rank-label">
+                  <span class="cover-rank-index">TOP ${item.topIndex + 1}</span>
+                  <span class="cover-rank-score">${item.value.toFixed(1)}</span>
+                </div>
+                <div class="cover-rank-name">${escapeHtml(item.name)}</div>
+                <div class="cover-rank-bar"><div class="cover-rank-bar-fill" style="width:${item.percent}%"></div></div>
+              </div>
+            `).join('')}
+          </div>
           <div class="cover-chips">
             <span class="cover-chip gold">✦ 系统匹配角色</span>
             <span class="cover-chip">20 型人格之一</span>
@@ -1414,7 +1683,10 @@ function renderTalentMatrixSection(data) {
       <div class="section-title">你的天赋组合</div>
       <div class="section-sub">六维潜能雷达 · 优势三维交叉形成你的专属类型</div>
       <div class="radar-layout">
-        <div class="radar-svg-wrap">${buildRadarSvg(data)}</div>
+        <div class="radar-svg-wrap">
+          ${buildRadarSvg(data)}
+          <div class="radar-note">从强到弱排序后的六维能力，会同时影响你的角色匹配、表达方式和现实投入感。</div>
+        </div>
         <div class="bars-wrap">${bars}</div>
       </div>
     </div>
@@ -1705,57 +1977,69 @@ function backToMiniProgram() {
 
 async function createPdfDocument() {
   const element = document.getElementById('reportMount');
+  document.body.classList.add('pdf-exporting');
+  await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   await document.fonts.ready;
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#0F0E0C',
-    logging: false,
-    scrollX: 0,
-    scrollY: -window.scrollY,
-    windowWidth: element.scrollWidth,
-    windowHeight: element.scrollHeight
-  });
+  try {
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#0F0E0C',
+      logging: false,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
+    });
 
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF('p', 'mm', 'a4');
-  const pageWidth = 210;
-  const pageHeight = 297;
-  const sliceHeightPx = Math.floor(canvas.width * (pageHeight / pageWidth));
-  const pageCanvas = document.createElement('canvas');
-  const pageContext = pageCanvas.getContext('2d');
-  pageCanvas.width = canvas.width;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const sliceHeightPx = Math.floor(canvas.width * (pageHeight / pageWidth));
+    const pageCanvas = document.createElement('canvas');
+    const pageContext = pageCanvas.getContext('2d');
+    pageCanvas.width = canvas.width;
 
-  let renderedHeight = 0;
-  let pageIndex = 0;
+    let renderedHeight = 0;
+    let pageIndex = 0;
 
-  while (renderedHeight < canvas.height) {
-    const currentSliceHeight = Math.min(sliceHeightPx, canvas.height - renderedHeight);
-    pageCanvas.height = currentSliceHeight;
-    pageContext.clearRect(0, 0, pageCanvas.width, currentSliceHeight);
-    pageContext.drawImage(
-      canvas,
-      0,
-      renderedHeight,
-      canvas.width,
-      currentSliceHeight,
-      0,
-      0,
-      canvas.width,
-      currentSliceHeight
-    );
+    while (renderedHeight < canvas.height) {
+      const currentSliceHeight = Math.min(sliceHeightPx, canvas.height - renderedHeight);
+      pageCanvas.height = currentSliceHeight;
+      pageContext.fillStyle = '#0F0E0C';
+      pageContext.fillRect(0, 0, pageCanvas.width, currentSliceHeight);
+      pageContext.drawImage(
+        canvas,
+        0,
+        renderedHeight,
+        canvas.width,
+        currentSliceHeight,
+        0,
+        0,
+        canvas.width,
+        currentSliceHeight
+      );
 
-    if (pageIndex > 0) {
-      pdf.addPage();
+      if (pageIndex > 0) {
+        pdf.addPage();
+      }
+
+      pdf.setFillColor(15, 14, 12);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+
+      const imageHeightMm = currentSliceHeight * pageWidth / canvas.width;
+      pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, pageWidth, imageHeightMm, undefined, 'FAST');
+      renderedHeight += currentSliceHeight;
+      pageIndex += 1;
     }
 
-    const imageHeightMm = currentSliceHeight * pageWidth / canvas.width;
-    pdf.addImage(pageCanvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, pageWidth, imageHeightMm, undefined, 'FAST');
-    renderedHeight += currentSliceHeight;
-    pageIndex += 1;
+    return pdf;
+  } finally {
+    document.body.classList.remove('pdf-exporting');
   }
-
-  return pdf;
 }
 
 async function downloadReport() {
