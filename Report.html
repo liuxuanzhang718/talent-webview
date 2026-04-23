@@ -120,25 +120,26 @@ body.pdf-exporting .delay-4 {
 /* Role card large hero */
 .cover-card-wrap {
   display: grid;
-  grid-template-columns: 228px minmax(0, 1fr);
-  gap: 44px;
-  align-items: start;
+  grid-template-columns: 216px minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
 }
 .cover-role-card {
-  flex-shrink: 0;
-  width: 228px;
-  aspect-ratio: 3 / 4;
-  background: var(--white);
-  border-radius: 20px;
-  border: 1px solid rgba(200,151,58,0.22);
+  width: 216px;
+  min-height: 236px;
+  border-radius: 28px;
+  border: 1px solid rgba(200,151,58,0.24);
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
   position: relative;
-  box-shadow: 0 18px 52px rgba(0,0,0,0.28), 0 0 0 1px rgba(200,151,58,0.1);
+  overflow: hidden;
+  box-shadow: 0 24px 54px rgba(0,0,0,0.24), 0 0 0 1px rgba(200,151,58,0.08);
 }
 .cover-role-card-top {
-  flex: 1;
+  width: 100%;
+  min-height: 188px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,43 +148,47 @@ body.pdf-exporting .delay-4 {
 .cover-role-card-top::after {
   content: none;
 }
-.cover-role-card-top svg { width: 150px; height: 150px; }
-.cover-role-card-bottom {
-  background: var(--white);
-  padding: 13px 16px 16px;
-  text-align: center;
-  flex-shrink: 0;
-  border-top: 1px solid rgba(15,14,12,0.05);
+.cover-role-card-top svg {
+  width: 154px;
+  height: 154px;
+  display: block;
 }
-.cover-role-name-zh {
-  font-size: 16px;
+.cover-role-meta {
+  margin-bottom: 18px;
+}
+.cover-role-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 28px;
   font-weight: 700;
-  color: #1A1A1A;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
+  color: var(--white);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
 }
-.cover-role-name-en {
+.cover-role-en {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 2.4px;
-  color: #B8B2AA;
-  margin-bottom: 10px;
+  font-size: 10px;
+  letter-spacing: 3.2px;
+  color: rgba(255,255,255,0.42);
+  text-transform: uppercase;
 }
-.cover-role-tagline-mini {
-  max-width: 174px;
-  margin: 0 auto;
-  font-size: 8.6px;
-  color: #6E655C;
-  line-height: 1.68;
+.cover-dims {
+  font-size: 12px;
+  color: rgba(255,255,255,0.48);
+  line-height: 1.85;
+  margin-bottom: 20px;
 }
-.cover-text { flex: 1; }
+.cover-dims b {
+  color: var(--gold-l);
+  font-weight: 600;
+}
+.cover-text { flex: 1; min-width: 0; }
 .cover-tagline {
   font-family: 'Noto Serif SC', serif;
   max-width: 470px;
   font-size: 21px; font-weight: 600;
   color: var(--white);
   line-height: 1.72;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   border-left: 3px solid var(--gold);
   padding-left: 20px;
 }
@@ -298,16 +303,16 @@ body.pdf-exporting .delay-4 {
 .radar-layout {
   display: flex;
   gap: 32px;
-  align-items: flex-start;
+  align-items: center;
 }
 .radar-svg-wrap {
   flex-shrink: 0;
-  width: 386px;
-  padding: 20px 18px 18px;
+  width: 418px;
+  padding: 18px 12px 12px;
   border-radius: 18px;
   border: 1px solid rgba(200,151,58,0.16);
   background:
-    radial-gradient(circle at top, rgba(200,151,58,0.1), transparent 52%),
+    radial-gradient(circle at center, rgba(200,151,58,0.08), transparent 58%),
     linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%);
   overflow: hidden;
   align-self: flex-start;
@@ -895,14 +900,23 @@ body.pdf-exporting .delay-4 {
     margin: 0 auto;
   }
   .cover-role-card-top {
-    min-height: 200px;
+    min-height: 180px;
   }
   .cover-rank-chip {
     min-width: 0;
   }
   .radar-svg-wrap {
     width: 100%;
-    padding: 18px 10px 14px;
+    padding: 16px 6px 10px;
+    align-self: auto;
+  }
+  .radar-layout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .bars-wrap {
+    width: 100%;
+    padding: 18px 16px 12px;
   }
   .cover-chips {
     gap: 6px;
@@ -921,6 +935,13 @@ body.pdf-exporting .delay-4 {
   .cover-tagline {
     max-width: none;
     font-size: 19px;
+  }
+  .cover-role-name {
+    font-size: 24px;
+  }
+  .cover-dims {
+    font-size: 11px;
+    margin-bottom: 16px;
   }
   .two-col,
   .power-blind-grid,
@@ -1478,23 +1499,23 @@ function buildCoverArtworkSvg(data) {
 }
 
 function buildRadarSvg(data) {
-  const centerX = 188;
-  const centerY = 136;
+  const centerX = 210;
+  const centerY = 158;
   const positions = {
-    '创意表达力': [188, 52],
-    '沟通影响力': [288, 96],
-    '技术适应力': [288, 194],
-    '结构思维力': [188, 240],
-    '协作引领力': [88, 194],
-    '目标执行力': [88, 96]
+    '创意表达力': [210, 68],
+    '沟通影响力': [302, 112],
+    '技术适应力': [302, 208],
+    '结构思维力': [210, 252],
+    '协作引领力': [118, 208],
+    '目标执行力': [118, 112]
   };
   const labelLayouts = {
-    '创意表达力': { x: 188, y: 4, anchor: 'middle', width: 128, height: 42 },
-    '沟通影响力': { x: 308, y: 74, anchor: 'start', width: 96, height: 42 },
-    '技术适应力': { x: 308, y: 178, anchor: 'start', width: 96, height: 42 },
-    '结构思维力': { x: 188, y: 250, anchor: 'middle', width: 136, height: 42 },
-    '协作引领力': { x: 68, y: 178, anchor: 'end', width: 96, height: 42 },
-    '目标执行力': { x: 68, y: 74, anchor: 'end', width: 96, height: 42 }
+    '创意表达力': { x: 210, y: 12, anchor: 'middle', width: 132, height: 44 },
+    '沟通影响力': { x: 316, y: 84, anchor: 'start', width: 108, height: 44 },
+    '技术适应力': { x: 316, y: 188, anchor: 'start', width: 108, height: 44 },
+    '结构思维力': { x: 210, y: 268, anchor: 'middle', width: 132, height: 44 },
+    '协作引领力': { x: 104, y: 188, anchor: 'end', width: 108, height: 44 },
+    '目标执行力': { x: 104, y: 84, anchor: 'end', width: 108, height: 44 }
   };
   const scoreItems = getOrderedDimensionItems(data.part2Scores, data.top3);
   const scoreLookup = scoreItems.reduce((acc, item) => {
@@ -1534,8 +1555,8 @@ function buildRadarSvg(data) {
     return `
       <g>
         <rect x="${rectX}" y="${rectY}" width="${width}" height="${height}" rx="${height / 2}" fill="${bg}" stroke="${stroke}" />
-        <text x="${textX}" y="${rectY + 16}" font-size="10" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.78)'}" text-anchor="${textAnchor}" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
-        <text x="${textX}" y="${rectY + 29}" font-size="8" fill="${item.isTop ? '#C8973A' : 'rgba(255,255,255,0.4)'}" text-anchor="${textAnchor}" font-family="JetBrains Mono, monospace">${escapeHtml(secondary)}</text>
+        <text x="${textX}" y="${rectY + 17}" font-size="10.5" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.78)'}" text-anchor="${textAnchor}" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
+        <text x="${textX}" y="${rectY + 31}" font-size="8.5" fill="${item.isTop ? '#C8973A' : 'rgba(255,255,255,0.4)'}" text-anchor="${textAnchor}" font-family="JetBrains Mono, monospace">${escapeHtml(secondary)}</text>
       </g>
     `;
   }).join('');
@@ -1552,7 +1573,7 @@ function buildRadarSvg(data) {
   }).join('');
 
   return `
-    <svg viewBox="0 0 410 312" width="410" height="312" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
+    <svg viewBox="0 0 424 326" width="424" height="326" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
       <defs>
         <linearGradient id="radarFillGradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="rgba(232,200,120,0.30)" />
@@ -1625,25 +1646,25 @@ function renderCoverSection(data) {
   const roleCard = getRoleCardData(data.roleData.name || '', data);
   const roleName = (roleCard && roleCard.name) || data.roleData.name || '综合型人才';
   const roleEn = (roleCard && roleCard.en) || TALENT_EN_MAP[roleName] || roleName.toUpperCase();
-  const rankedTop3 = getOrderedDimensionItems(data.part2Scores, data.top3).slice(0, 3);
+  const roleDims = (roleCard && roleCard.dimsHtml) || data.top3.map((item) => `<b>${escapeHtml(item)}</b>`).join(' × ');
   return `
     <div class="cover fade-in">
       <div class="cover-eyebrow">TALENT UNLIMITED LAB · 个人天赋潜能报告</div>
       <div class="cover-title">天赋潜能报告</div>
       <div class="cover-sub">为 ${escapeHtml(data.userInfo.nickname || '你')} 专属生成 · ${formatDisplayDate(data.completedAt)}</div>
       <div class="cover-card-wrap">
-        <div class="cover-role-card fade-in delay-1">
-          <div class="cover-role-card-top" style="background:${roleCard ? roleCard.bg : '#E8EAF6'};">
+        <div class="cover-role-card fade-in delay-1" style="background:${roleCard ? roleCard.bg : '#E8EAF6'};">
+          <div class="cover-role-card-top">
             ${roleCard ? roleCard.svg : buildCoverArtworkSvg(data)}
-          </div>
-          <div class="cover-role-card-bottom">
-            <div class="cover-role-name-zh">${escapeHtml(roleName)}</div>
-            <div class="cover-role-name-en">${escapeHtml(roleEn)}</div>
-            <div class="cover-role-tagline-mini">${escapeHtml((roleCard && roleCard.tagline) || buildRoleTagline(data))}</div>
           </div>
         </div>
         <div class="cover-text fade-in delay-2">
+          <div class="cover-role-meta">
+            <div class="cover-role-name">${escapeHtml(roleName)}</div>
+            <div class="cover-role-en">${escapeHtml(roleEn)}</div>
+          </div>
           <div class="cover-tagline">${buildCoverLead(data)}</div>
+          <div class="cover-dims">${roleDims}</div>
           <div class="cover-chips">
             <span class="cover-chip gold">✦ 系统匹配角色</span>
             <span class="cover-chip">20 型人格之一</span>
