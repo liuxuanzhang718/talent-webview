@@ -302,24 +302,21 @@ body.pdf-exporting .delay-4 {
 ══════════════════════════════════════ */
 .radar-layout {
   display: flex;
-  gap: 32px;
-  align-items: center;
+  gap: 28px;
+  align-items: flex-start;
 }
 .radar-svg-wrap {
   flex-shrink: 0;
-  width: 418px;
-  padding: 18px 12px 12px;
-  border-radius: 18px;
-  border: 1px solid rgba(200,151,58,0.16);
-  background:
-    radial-gradient(circle at center, rgba(200,151,58,0.08), transparent 58%),
-    linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.015) 100%);
-  overflow: hidden;
+  width: min(440px, 100%);
+  padding: 0;
+  border: none;
+  background: none;
+  overflow: visible;
   align-self: flex-start;
 }
 .bars-wrap {
   flex: 1;
-  padding: 22px 22px 12px;
+  padding: 22px 24px 14px;
   border-radius: 18px;
   border: 1px solid rgba(200,151,58,0.14);
   background:
@@ -342,7 +339,7 @@ body.pdf-exporting .delay-4 {
   margin-bottom: 8px;
 }
 .bar-name {
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--white);
   display: flex;
@@ -683,34 +680,42 @@ body.pdf-exporting .delay-4 {
 /* ══════════════════════════════════════
    NARRATIVE ARC FOOTER
 ══════════════════════════════════════ */
-.arc-strip {
-  padding: 28px 56px;
+.quick-nav {
+  padding: 26px 56px 30px;
   background: var(--ink);
   border-top: 1px solid rgba(200,151,58,0.15);
+}
+.quick-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.quick-nav-link {
+  appearance: none;
+  text-decoration: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  color: rgba(255,255,255,0.5);
+  min-height: 44px;
+  white-space: nowrap;
+  padding: 0 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0;
-  flex-wrap: wrap;
+  background: rgba(255,255,255,0.02);
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
-.arc-node {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.3);
-  white-space: nowrap;
-  padding: 6px 12px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-.arc-node.active {
+.quick-nav-link.active,
+.quick-nav-link:hover {
   color: var(--gold-l);
   border-color: rgba(200,151,58,0.3);
   background: rgba(200,151,58,0.06);
 }
-.arc-arrow {
-  color: var(--gold);
-  font-size: 11px;
-  opacity: 0.4;
-  padding: 0 4px;
+.quick-nav-link:active {
+  transform: translateY(1px);
 }
 
 /* ══════════════════════════════════════
@@ -867,7 +872,7 @@ body.pdf-exporting .delay-4 {
     padding: 44px 22px;
   }
   .flow-divider,
-  .arc-strip,
+  .quick-nav,
   .report-footer,
   .report-navigation {
     padding-left: 22px;
@@ -907,7 +912,6 @@ body.pdf-exporting .delay-4 {
   }
   .radar-svg-wrap {
     width: 100%;
-    padding: 16px 6px 10px;
     align-self: auto;
   }
   .radar-layout {
@@ -931,6 +935,16 @@ body.pdf-exporting .delay-4 {
   }
   .section-sub {
     margin-bottom: 28px;
+  }
+  .quick-nav-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .quick-nav-link {
+    min-height: 42px;
+    font-size: 9px;
+    letter-spacing: 1.2px;
+    padding: 0 10px;
   }
   .cover-tagline {
     max-width: none;
@@ -1338,8 +1352,14 @@ function getOrderedDimensionItems(scoreMap = {}, top3 = []) {
     value: toFiveScore(scoreMap[name]),
     percent: Math.round((toFiveScore(scoreMap[name]) / 5) * 100),
     isTop: top3.includes(name),
-    topIndex: top3.indexOf(name)
-  })).sort((a, b) => b.value - a.value);
+    topIndex: top3.indexOf(name),
+    originIndex: DIMENSION_ORDER.indexOf(name)
+  })).sort((a, b) => {
+    if (b.value !== a.value) return b.value - a.value;
+    if (Number(b.isTop) !== Number(a.isTop)) return Number(b.isTop) - Number(a.isTop);
+    if (a.isTop && b.isTop && a.topIndex !== b.topIndex) return a.topIndex - b.topIndex;
+    return a.originIndex - b.originIndex;
+  });
 }
 
 function stripHtmlTags(value = '') {
@@ -1499,23 +1519,23 @@ function buildCoverArtworkSvg(data) {
 }
 
 function buildRadarSvg(data) {
-  const centerX = 210;
-  const centerY = 158;
+  const centerX = 220;
+  const centerY = 176;
   const positions = {
-    '创意表达力': [210, 68],
-    '沟通影响力': [302, 112],
-    '技术适应力': [302, 208],
-    '结构思维力': [210, 252],
-    '协作引领力': [118, 208],
-    '目标执行力': [118, 112]
+    '创意表达力': [220, 78],
+    '沟通影响力': [312, 126],
+    '技术适应力': [312, 226],
+    '结构思维力': [220, 274],
+    '协作引领力': [128, 226],
+    '目标执行力': [128, 126]
   };
   const labelLayouts = {
-    '创意表达力': { x: 210, y: 12, anchor: 'middle', width: 132, height: 44 },
-    '沟通影响力': { x: 316, y: 84, anchor: 'start', width: 108, height: 44 },
-    '技术适应力': { x: 316, y: 188, anchor: 'start', width: 108, height: 44 },
-    '结构思维力': { x: 210, y: 268, anchor: 'middle', width: 132, height: 44 },
-    '协作引领力': { x: 104, y: 188, anchor: 'end', width: 108, height: 44 },
-    '目标执行力': { x: 104, y: 84, anchor: 'end', width: 108, height: 44 }
+    '创意表达力': { cx: 220, cy: 34, width: 150, height: 56 },
+    '沟通影响力': { cx: 380, cy: 122, width: 134, height: 56 },
+    '技术适应力': { cx: 382, cy: 232, width: 126, height: 54 },
+    '结构思维力': { cx: 220, cy: 328, width: 156, height: 56 },
+    '协作引领力': { cx: 60, cy: 232, width: 136, height: 56 },
+    '目标执行力': { cx: 60, cy: 122, width: 126, height: 54 }
   };
   const scoreItems = getOrderedDimensionItems(data.part2Scores, data.top3);
   const scoreLookup = scoreItems.reduce((acc, item) => {
@@ -1542,21 +1562,18 @@ function buildRadarSvg(data) {
   const labels = DIMENSION_ORDER.map((name) => {
     const item = scoreLookup[name] || {};
     const layout = labelLayouts[name];
-    const isLeft = layout.anchor === 'end';
     const width = layout.width;
     const height = layout.height;
-    const rectX = layout.anchor === 'middle' ? layout.x - width / 2 : isLeft ? layout.x - width : layout.x;
-    const rectY = layout.y;
-    const textX = layout.anchor === 'middle' ? layout.x : isLeft ? layout.x - 12 : layout.x + 12;
-    const textAnchor = layout.anchor === 'middle' ? 'middle' : isLeft ? 'end' : 'start';
+    const rectX = layout.cx - width / 2;
+    const rectY = layout.cy - height / 2;
     const bg = item.isTop ? 'rgba(232,200,120,0.13)' : 'rgba(255,255,255,0.04)';
     const stroke = item.isTop ? 'rgba(232,200,120,0.45)' : 'rgba(255,255,255,0.08)';
     const secondary = item.isTop ? `TOP ${item.topIndex + 1} · ${item.value ? item.value.toFixed(1) : '0.0'}` : `${item.value ? item.value.toFixed(1) : '0.0'} / 5`;
     return `
       <g>
         <rect x="${rectX}" y="${rectY}" width="${width}" height="${height}" rx="${height / 2}" fill="${bg}" stroke="${stroke}" />
-        <text x="${textX}" y="${rectY + 17}" font-size="10.5" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.78)'}" text-anchor="${textAnchor}" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
-        <text x="${textX}" y="${rectY + 31}" font-size="8.5" fill="${item.isTop ? '#C8973A' : 'rgba(255,255,255,0.4)'}" text-anchor="${textAnchor}" font-family="JetBrains Mono, monospace">${escapeHtml(secondary)}</text>
+        <text x="${layout.cx}" y="${rectY + 22}" font-size="12.5" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.86)'}" text-anchor="middle" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
+        <text x="${layout.cx}" y="${rectY + 40}" font-size="10" fill="${item.isTop ? '#C8973A' : 'rgba(255,255,255,0.48)'}" text-anchor="middle" font-family="JetBrains Mono, monospace">${escapeHtml(secondary)}</text>
       </g>
     `;
   }).join('');
@@ -1573,7 +1590,7 @@ function buildRadarSvg(data) {
   }).join('');
 
   return `
-    <svg viewBox="0 0 424 326" width="424" height="326" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
+    <svg viewBox="0 0 440 360" width="440" height="360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
       <defs>
         <linearGradient id="radarFillGradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="rgba(232,200,120,0.30)" />
@@ -1648,7 +1665,7 @@ function renderCoverSection(data) {
   const roleEn = (roleCard && roleCard.en) || TALENT_EN_MAP[roleName] || roleName.toUpperCase();
   const roleDims = (roleCard && roleCard.dimsHtml) || data.top3.map((item) => `<b>${escapeHtml(item)}</b>`).join(' × ');
   return `
-    <div class="cover fade-in">
+    <div class="cover fade-in" id="section-a">
       <div class="cover-eyebrow">TALENT UNLIMITED LAB · 个人天赋潜能报告</div>
       <div class="cover-title">天赋潜能报告</div>
       <div class="cover-sub">为 ${escapeHtml(data.userInfo.nickname || '你')} 专属生成 · ${formatDisplayDate(data.completedAt)}</div>
@@ -1665,11 +1682,6 @@ function renderCoverSection(data) {
           </div>
           <div class="cover-tagline">${buildCoverLead(data)}</div>
           <div class="cover-dims">${roleDims}</div>
-          <div class="cover-chips">
-            <span class="cover-chip gold">✦ 系统匹配角色</span>
-            <span class="cover-chip">20 型人格之一</span>
-            <span class="cover-chip">Top 6 维度综合</span>
-          </div>
         </div>
       </div>
     </div>
@@ -1688,7 +1700,7 @@ function renderTalentMatrixSection(data) {
   `).join('');
 
   return `
-    <div class="section fade-in delay-2">
+    <div class="section fade-in delay-2" id="section-b">
       <div class="section-eyebrow">B · YOUR TALENT MATRIX</div>
       <div class="section-title">你的天赋组合</div>
       <div class="section-sub">六维潜能雷达 · 优势三维交叉形成你的专属类型</div>
@@ -1702,7 +1714,7 @@ function renderTalentMatrixSection(data) {
 
 function renderCompleteProfileSection(data) {
   return `
-    <div class="section">
+    <div class="section" id="section-c">
       <div class="section-eyebrow">C · COMPLETE PROFILE</div>
       <div class="section-title">完整解读</div>
       <div class="section-sub">你是什么类型的人 · 核心运作方式是什么</div>
@@ -1753,7 +1765,7 @@ function renderStrengthSection(data) {
       <div class="flow-divider-text">↓ · 展开你的潜能清单 · ↓</div>
       <div class="flow-divider-line"></div>
     </div>
-    <div class="section">
+    <div class="section" id="section-d">
       <div class="section-eyebrow">D · CORE STRENGTHS TOP 3</div>
       <div class="section-title">核心优势</div>
       <div class="section-sub">报告最核心的内容 · 关键词 + 学习建议 + 职业方向</div>
@@ -1781,7 +1793,7 @@ function renderCalibrationSection(data) {
       <div class="flow-divider-text">↓ · 对照你现在的实际状态 · ↓</div>
       <div class="flow-divider-line"></div>
     </div>
-    <div class="section">
+    <div class="section" id="section-f">
       <div class="section-eyebrow">F · POTENTIAL CALIBRATION</div>
       <div class="section-title">潜能校准</div>
       <div class="section-sub">学习感知力 / 创意活跃度 / 内驱动状态<br>当前 % 激活程度</div>
@@ -1806,7 +1818,7 @@ function renderActivationSection(data) {
   }).join('');
 
   return `
-    <div class="section">
+    <div class="section" id="section-g">
       <div class="section-eyebrow">G · CURRENT ACTIVATION</div>
       <div class="section-title">当前投入 × 潜能激发</div>
       <div class="section-sub">你的潜能在当前场景下激活了多少</div>
@@ -1835,7 +1847,7 @@ function renderPowerBlindSection(data) {
     : ['当某项优势发挥到极致时，也要留意节奏、边界与协作空间。'];
 
   return `
-    <div class="section">
+    <div class="section" id="section-e">
       <div class="section-eyebrow">E · SUPERPOWER × BLIND SPOT</div>
       <div class="section-title">超能力 × 潜在盲区</div>
       <div class="section-sub">你擅长什么 / 容易忽略什么</div>
@@ -1939,11 +1951,11 @@ function renderActionSection(data) {
 
   if (!blocks.length && !fallbackSuggestions.length) {
     return `
-      <div class="section">
+      <div class="section" id="section-h">
         <div class="section-eyebrow">H · ACTION GUIDE</div>
         <div class="section-title">行动建议</div>
-        <div class="section-sub">工作学业 / 日常生活 / 社交人际 / 长期发展 · 报告收尾</div>
-        <div class="action-grid">
+        <div class="section-sub">工作学业 / 日常生活 / 社交人际 / 长期发展</div>
+      <div class="action-grid">
           ${fallbackBlocks.map((block, index) => {
             const isWide = fallbackBlocks.length % 2 === 1 && index === fallbackBlocks.length - 1;
             return `
@@ -1976,10 +1988,10 @@ function renderActionSection(data) {
     `;
 
   return `
-    <div class="section">
+    <div class="section" id="section-h">
       <div class="section-eyebrow">H · ACTION GUIDE</div>
       <div class="section-title">行动建议</div>
-      <div class="section-sub">工作学业 / 日常生活 / 社交人际 / 长期发展 · 报告收尾</div>
+      <div class="section-sub">工作学业 / 日常生活 / 社交人际 / 长期发展</div>
       <div class="action-grid">${html}</div>
     </div>
   `;
@@ -1987,20 +1999,17 @@ function renderActionSection(data) {
 
 function renderArcAndFooter(data) {
   return `
-    <div class="arc-strip">
-      <div class="arc-node active">A · 你是谁</div>
-      <div class="arc-arrow">→</div>
-      <div class="arc-node active">B · 天赋组合</div>
-      <div class="arc-arrow">→</div>
-      <div class="arc-node active">C · 完整解读</div>
-      <div class="arc-arrow">→</div>
-      <div class="arc-node active">D · 你有什么</div>
-      <div class="arc-arrow">→</div>
-      <div class="arc-node active">F·G · 激活状态</div>
-      <div class="arc-arrow">→</div>
-      <div class="arc-node active">E · 盲区揭示</div>
-      <div class="arc-arrow">→</div>
-      <div class="arc-node active">H · 怎么走</div>
+    <div class="quick-nav">
+      <div class="quick-nav-grid">
+        <a class="quick-nav-link active" href="#section-a">A · 你是谁</a>
+        <a class="quick-nav-link active" href="#section-b">B · 天赋组合</a>
+        <a class="quick-nav-link active" href="#section-c">C · 完整解读</a>
+        <a class="quick-nav-link active" href="#section-d">D · 核心优势</a>
+        <a class="quick-nav-link active" href="#section-e">E · 盲区揭示</a>
+        <a class="quick-nav-link active" href="#section-f">F · 潜能校准</a>
+        <a class="quick-nav-link active" href="#section-g">G · 当前激活</a>
+        <a class="quick-nav-link active" href="#section-h">H · 行动建议</a>
+      </div>
     </div>
     <div class="report-footer">
       <div class="footer-brand">TALENT UNLIMITED LAB · 天赋无限研究所</div>
