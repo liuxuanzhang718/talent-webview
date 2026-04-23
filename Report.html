@@ -302,12 +302,12 @@ body.pdf-exporting .delay-4 {
 ══════════════════════════════════════ */
 .radar-layout {
   display: flex;
-  gap: 28px;
+  gap: 22px;
   align-items: flex-start;
 }
 .radar-svg-wrap {
   flex-shrink: 0;
-  width: min(392px, 100%);
+  width: min(340px, 100%);
   padding: 0;
   border: none;
   background: none;
@@ -911,14 +911,14 @@ body.pdf-exporting .delay-4 {
     min-width: 0;
   }
   .radar-svg-wrap {
-    width: min(100%, 332px);
+    width: min(100%, 300px);
     margin: 0 auto;
     align-self: auto;
   }
   .radar-layout {
     flex-direction: column;
     align-items: stretch;
-    gap: 22px;
+    gap: 18px;
   }
   .bars-wrap {
     width: 100%;
@@ -1521,23 +1521,23 @@ function buildCoverArtworkSvg(data) {
 }
 
 function buildRadarSvg(data) {
-  const centerX = 220;
-  const centerY = 176;
+  const centerX = 200;
+  const centerY = 156;
   const positions = {
-    '创意表达力': [220, 78],
-    '沟通影响力': [312, 126],
-    '技术适应力': [312, 226],
-    '结构思维力': [220, 274],
-    '协作引领力': [128, 226],
-    '目标执行力': [128, 126]
+    '创意表达力': [200, 88],
+    '沟通影响力': [276, 122],
+    '技术适应力': [276, 210],
+    '结构思维力': [200, 248],
+    '协作引领力': [124, 210],
+    '目标执行力': [124, 122]
   };
   const labelLayouts = {
-    '创意表达力': { cx: 220, cy: 34, width: 150, height: 56 },
-    '沟通影响力': { cx: 380, cy: 122, width: 134, height: 56 },
-    '技术适应力': { cx: 382, cy: 232, width: 126, height: 54 },
-    '结构思维力': { cx: 220, cy: 328, width: 156, height: 56 },
-    '协作引领力': { cx: 60, cy: 232, width: 136, height: 56 },
-    '目标执行力': { cx: 60, cy: 122, width: 126, height: 54 }
+    '创意表达力': { cx: 200, cy: 40, width: 132, height: 48 },
+    '沟通影响力': { cx: 330, cy: 118, width: 116, height: 46 },
+    '技术适应力': { cx: 330, cy: 214, width: 108, height: 44 },
+    '结构思维力': { cx: 200, cy: 298, width: 136, height: 48 },
+    '协作引领力': { cx: 70, cy: 214, width: 116, height: 46 },
+    '目标执行力': { cx: 70, cy: 118, width: 108, height: 44 }
   };
   const scoreItems = getOrderedDimensionItems(data.part2Scores, data.top3);
   const scoreLookup = scoreItems.reduce((acc, item) => {
@@ -1574,8 +1574,8 @@ function buildRadarSvg(data) {
     return `
       <g>
         <rect x="${rectX}" y="${rectY}" width="${width}" height="${height}" rx="${height / 2}" fill="${bg}" stroke="${stroke}" />
-        <text x="${layout.cx}" y="${rectY + 22}" font-size="12.5" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.86)'}" text-anchor="middle" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
-        <text x="${layout.cx}" y="${rectY + 40}" font-size="10" fill="${item.isTop ? '#C8973A' : 'rgba(255,255,255,0.48)'}" text-anchor="middle" font-family="JetBrains Mono, monospace">${escapeHtml(secondary)}</text>
+        <text x="${layout.cx}" y="${rectY + 20}" font-size="11.5" font-weight="600" fill="${item.isTop ? '#F4DEA4' : 'rgba(255,255,255,0.86)'}" text-anchor="middle" font-family="PingFang SC, sans-serif">${escapeHtml(name)}</text>
+        <text x="${layout.cx}" y="${rectY + 36}" font-size="9.4" fill="${item.isTop ? '#C8973A' : 'rgba(255,255,255,0.48)'}" text-anchor="middle" font-family="JetBrains Mono, monospace">${escapeHtml(secondary)}</text>
       </g>
     `;
   }).join('');
@@ -1586,13 +1586,13 @@ function buildRadarSvg(data) {
     const py = centerY + (y - centerY) * (item.percent || 0) / 100;
     return `
       <g>
-        <circle cx="${px}" cy="${py}" r="${item.isTop ? 7 : 5}" fill="${item.isTop ? '#F4DEA4' : '#C8973A'}" stroke="#0F0E0C" stroke-width="1.6" />
+        <circle cx="${px}" cy="${py}" r="${item.isTop ? 6 : 4.6}" fill="${item.isTop ? '#F4DEA4' : '#C8973A'}" stroke="#0F0E0C" stroke-width="1.4" />
       </g>
     `;
   }).join('');
 
   return `
-    <svg viewBox="0 0 440 360" width="440" height="360" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
+    <svg viewBox="0 0 400 324" width="400" height="324" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%;height:auto;">
       <defs>
         <linearGradient id="radarFillGradient" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="rgba(232,200,120,0.30)" />
@@ -1601,10 +1601,10 @@ function buildRadarSvg(data) {
       </defs>
       ${rings}
       ${axisLines}
-      <polygon points="${polygonPoints}" fill="url(#radarFillGradient)" stroke="#E8C878" stroke-width="2.2" />
-      <circle cx="${centerX}" cy="${centerY}" r="20" fill="#0F0E0C" stroke="rgba(232,200,120,0.28)" stroke-width="1.4" />
+      <polygon points="${polygonPoints}" fill="url(#radarFillGradient)" stroke="#E8C878" stroke-width="2" />
+      <circle cx="${centerX}" cy="${centerY}" r="18" fill="#0F0E0C" stroke="rgba(232,200,120,0.28)" stroke-width="1.2" />
       <text x="${centerX}" y="${centerY - 3}" font-size="8" fill="#E8C878" text-anchor="middle" font-family="JetBrains Mono, monospace">RADAR</text>
-      <text x="${centerX}" y="${centerY + 10}" font-size="15" fill="#FFFFFF" text-anchor="middle" font-family="JetBrains Mono, monospace">6D</text>
+      <text x="${centerX}" y="${centerY + 9}" font-size="14" fill="#FFFFFF" text-anchor="middle" font-family="JetBrains Mono, monospace">6D</text>
       ${nodes}
       ${labels}
     </svg>
