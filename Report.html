@@ -1008,7 +1008,6 @@ body.pdf-exporting .delay-4 {
 <div class="report-app" id="reportApp">
   <main id="reportMount"></main>
   <div class="report-navigation" id="reportNavigation" style="display:none;">
-    <button class="report-nav-btn secondary" id="backButton" onclick="backToMiniProgram()">返回上一页</button>
     <button class="report-nav-btn primary" id="downloadButton" onclick="downloadReport()">下载 PDF 报告</button>
   </div>
 </div>
@@ -2059,9 +2058,6 @@ function renderError(message) {
 }
 
 async function renderReportPage() {
-  const backButton = document.getElementById('backButton');
-  backButton.textContent = isMiniProgram ? '返回小程序' : '返回上一页';
-
   const data = await resolveReportData();
   if (!data || !data.roleData || !data.roleData.name) {
     renderError('请返回小程序后重试。如果问题持续，请重新进入完整报告。');
@@ -2074,20 +2070,6 @@ async function renderReportPage() {
   document.getElementById('reportMount').innerHTML = generateReportMarkup(data);
   document.getElementById('reportNavigation').style.display = 'flex';
   document.getElementById('reportLoadingScreen').classList.add('hidden');
-}
-
-function backToMiniProgram() {
-  if (isMiniProgram) {
-    try {
-      wx.miniProgram.navigateBack();
-      return;
-    } catch (error) {
-      console.warn('[Report] navigateBack failed:', error);
-    }
-  }
-  if (window.history.length > 1) {
-    window.history.back();
-  }
 }
 
 async function createPdfDocument() {
