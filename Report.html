@@ -842,8 +842,67 @@ body.pdf-exporting .delay-4 {
   color: rgba(255,255,255,0.84);
   border: 1px solid rgba(255,255,255,0.14);
 }
+.report-nav-btn.locked {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.42);
+  border: 1px solid rgba(255,255,255,0.1);
+}
 .report-nav-btn:active {
   transform: scale(0.995);
+}
+.preview-unlock-section {
+  padding: 12px 56px 64px;
+  background: var(--ink);
+}
+.preview-unlock-card {
+  padding: 34px 28px;
+  border-radius: 28px;
+  border: 1px solid rgba(200,151,58,0.24);
+  background: linear-gradient(180deg, rgba(200,151,58,0.12) 0%, rgba(255,255,255,0.025) 100%);
+  text-align: center;
+}
+.preview-unlock-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.preview-unlock-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.preview-unlock-desc {
+  max-width: 520px;
+  margin: 0 auto 24px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.56);
+}
+.preview-unlock-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.preview-unlock-link {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--ink);
+  background: var(--gold);
+  cursor: pointer;
+}
+.preview-unlock-link.secondary {
+  color: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
 }
 .report-error {
   min-height: 100vh;
@@ -885,6 +944,19 @@ body.pdf-exporting .delay-4 {
   .report-navigation {
     padding-left: 22px;
     padding-right: 22px;
+  }
+  .preview-unlock-section {
+    padding: 4px 22px 50px;
+  }
+  .preview-unlock-card {
+    padding: 30px 22px;
+    border-radius: 24px;
+  }
+  .preview-unlock-title {
+    font-size: 24px;
+  }
+  .preview-unlock-actions {
+    flex-direction: column;
   }
   .cover-title {
     font-size: 29px;
@@ -1008,6 +1080,7 @@ body.pdf-exporting .delay-4 {
 <div class="report-app" id="reportApp">
   <main id="reportMount"></main>
   <div class="report-navigation" id="reportNavigation" style="display:none;">
+    <button class="report-nav-btn primary" id="unlockButton" onclick="requestReportUnlock()" style="display:none;">输入激活码解锁完整报告</button>
     <button class="report-nav-btn primary" id="downloadButton" onclick="downloadReport()">下载 PDF 报告</button>
   </div>
 </div>
@@ -1200,6 +1273,24 @@ function getURLParameter(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+function getReportAccessLevel() {
+  return getURLParameter('access') === 'preview' ? 'preview' : 'full';
+}
+
+function postMessageToMiniProgram(messageData) {
+  if (!isMiniProgram) {
+    return false;
+  }
+
+  try {
+    wx?.miniProgram?.postMessage({ data: messageData });
+    return true;
+  } catch (error) {
+    console.warn('[Report] postMessage failed:', error);
+    return false;
+  }
+}
+
 function escapeHtml(value) {
   return String(value == null ? '' : value)
     .replace(/&/g, '&amp;')
@@ -1319,7 +1410,7 @@ function parseReportDataFromURL() {
 }
 
 async function resolveReportData() {
-  const reportUrl = getURLParameter('reportUrl');
+  const reportUrl = getReportAccessLevel() === 'preview' ? '' : getURLParameter('reportUrl');
   if (reportUrl) {
     try {
       const response = await fetch(reportUrl, { cache: 'no-store' });
@@ -2027,10 +2118,40 @@ function renderArcAndFooter(data) {
   `;
 }
 
-function generateReportMarkup(data) {
-  return [
+function renderPreviewUnlockSection(data) {
+  const reportId = data.reportId || '';
+  return `
+    <div class="preview-unlock-section" id="section-unlock" data-report-id="${escapeHtml(reportId)}">
+      <div class="preview-unlock-card">
+        <div class="preview-unlock-eyebrow">FULL REPORT LOCKED</div>
+        <div class="preview-unlock-title">解锁完整报告</div>
+        <div class="preview-unlock-desc">
+          当前为免费预览版，已开放你的角色名、角色卡与天赋组合雷达。输入客服给你的激活码后，可查看完整解读、核心优势、潜能校准、行动建议，并下载 PDF 报告。
+        </div>
+        <div class="preview-unlock-actions">
+          <button class="preview-unlock-link" onclick="requestReportUnlock()">输入激活码解锁</button>
+          <button class="preview-unlock-link secondary" onclick="contactService()">联系客服获取激活码</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function generateReportMarkup(data, accessLevel = 'full') {
+  const previewSections = [
     renderCoverSection(data),
-    renderTalentMatrixSection(data),
+    renderTalentMatrixSection(data)
+  ];
+
+  if (accessLevel === 'preview') {
+    return [
+      ...previewSections,
+      renderPreviewUnlockSection(data)
+    ].join('');
+  }
+
+  return [
+    ...previewSections,
     renderCompleteProfileSection(data),
     renderStrengthSection(data),
     renderCalibrationSection(data),
@@ -2054,7 +2175,22 @@ function renderError(message) {
     </div>
   `;
   nav.style.display = 'flex';
+  document.getElementById('unlockButton').style.display = 'none';
   document.getElementById('downloadButton').style.display = 'none';
+}
+
+function updateReportNavigation(accessLevel) {
+  const nav = document.getElementById('reportNavigation');
+  const unlockButton = document.getElementById('unlockButton');
+  const downloadButton = document.getElementById('downloadButton');
+  const isPreview = accessLevel === 'preview';
+
+  nav.style.display = 'flex';
+  unlockButton.style.display = isPreview ? 'block' : 'none';
+  downloadButton.disabled = isPreview;
+  downloadButton.textContent = isPreview ? '解锁后可下载 PDF 报告' : '下载 PDF 报告';
+  downloadButton.classList.toggle('locked', isPreview);
+  downloadButton.classList.toggle('primary', !isPreview);
 }
 
 async function renderReportPage() {
@@ -2065,10 +2201,12 @@ async function renderReportPage() {
     return;
   }
 
+  const accessLevel = getReportAccessLevel();
   window.reportData = data;
+  window.reportAccess = accessLevel;
   document.title = `个人天赋潜能报告 · ${data.userInfo.nickname || data.roleData.name}`;
-  document.getElementById('reportMount').innerHTML = generateReportMarkup(data);
-  document.getElementById('reportNavigation').style.display = 'flex';
+  document.getElementById('reportMount').innerHTML = generateReportMarkup(data, accessLevel);
+  updateReportNavigation(accessLevel);
   document.getElementById('reportLoadingScreen').classList.add('hidden');
 }
 
@@ -2139,8 +2277,35 @@ async function createPdfDocument() {
   }
 }
 
+function requestReportUnlock() {
+  const reportId = window.reportData && window.reportData.reportId || getURLParameter('reportId') || '';
+  const posted = postMessageToMiniProgram({
+    type: 'unlock_report_request',
+    data: { reportId }
+  });
+
+  if (!posted) {
+    alert('请在小程序内输入激活码，解锁完整报告。');
+  }
+}
+
+function contactService() {
+  const posted = postMessageToMiniProgram({
+    type: 'contact_service_request',
+    data: {}
+  });
+
+  if (!posted) {
+    alert('请联系客服获取激活码。');
+  }
+}
+
 async function downloadReport() {
   if (!window.reportData) return;
+  if (window.reportAccess === 'preview') {
+    alert('解锁完整报告后即可下载 PDF。');
+    return;
+  }
   const button = document.getElementById('downloadButton');
   const originalText = button.textContent;
   button.disabled = true;
