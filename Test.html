@@ -925,13 +925,38 @@
         .question-footer {
             padding: 20px 0;
             display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .question-footer-top {
+            width: 100%;
+            display: none;
+        }
+
+        .question-footer-top.active {
+            display: block;
+        }
+
+        .question-footer-main {
+            width: 100%;
+            display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 16px;
         }
 
         .question-footer .btn-dark {
             flex: 1;
             max-width: 200px;
+        }
+
+        .question-footer .btn-jump {
+            width: 100%;
+            max-width: none;
+            min-height: 52px;
+            border-style: dashed;
+            color: #A78A53;
         }
 
         /* ========== Report Screen (Step 4) ========== */
@@ -1585,12 +1610,19 @@
                     <div class="q-options" id="questionOptions"></div>
                 </div>
                 <div class="question-footer">
-                    <button class="btn-outline" id="btnPrev" onclick="prevQuestion()" style="visibility:hidden;">
-                        <i class="fas fa-chevron-left"></i> 上一题
-                    </button>
-                    <button class="btn-dark" id="btnNext" onclick="nextQuestion()">
-                        下一题 <span>→</span>
-                    </button>
+                    <div class="question-footer-top" id="questionJumpRow">
+                        <button class="btn-outline btn-jump" id="btnJump" onclick="jumpQuestionShortcut()">
+                            跳到下一道未完成
+                        </button>
+                    </div>
+                    <div class="question-footer-main">
+                        <button class="btn-outline" id="btnPrev" onclick="prevQuestion()" style="visibility:hidden;">
+                            <i class="fas fa-chevron-left"></i> 上一题
+                        </button>
+                        <button class="btn-dark" id="btnNext" onclick="nextQuestion()">
+                            下一题 <span>→</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1599,10 +1631,7 @@
         <div class="step" id="step4">
             <div class="report-screen">
                 <div id="report-content" class="report-content"></div>
-                <div class="report-navigation">
-                    <button class="btn-gold" onclick="backToMiniProgram()" style="max-width:100%;">
-                        返回小程序 <span>→</span>
-                    </button>
+                <div class="report-navigation" id="reportNavigation">
                     <button class="btn-teal" onclick="downloadReport()" style="width:100%;">
                         <span class="loading" id="loadingPdf"></span>
                         <i class="fas fa-download"></i> 下载PDF报告
@@ -1633,6 +1662,8 @@
         let questionStageView = 'question';
         let part1QuestionCount = 0;
         let part2StartIndex = 0;
+        let reviewMode = false;
+        let jumpTargetIndex = -1;
 
         // Question navigation state
         let currentQuestionIndex = 0;
@@ -1783,6 +1814,91 @@
             if (questionScreen) questionScreen.classList.toggle('active', view === 'question');
             if (partIntro1) partIntro1.classList.toggle('active', view === 'intro1');
             if (partIntro2) partIntro2.classList.toggle('active', view === 'intro2');
+        }
+
+        function getPartRangeForIndex(index) {
+            const question = allQuestions[index];
+            if (!question || question.part === 1) {
+                return {
+                    part: 1,
+                    start: 0,
+                    end: Math.max(part1QuestionCount - 1, 0)
+                };
+            }
+
+            return {
+                part: 2,
+                start: Math.max(part2StartIndex, 0),
+                end: Math.max(allQuestions.length - 1, 0)
+            };
+        }
+
+        function isQuestionAnswered(index) {
+            const question = allQuestions[index];
+            return !!(question && questionAnswers[question.name]);
+        }
+
+        function findNextUnansweredInRange(currentIndex, start, end) {
+            for (let i = currentIndex + 1; i <= end; i++) {
+                if (!isQuestionAnswered(i)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function isCurrentPartComplete(index) {
+            const range = getPartRangeForIndex(index);
+            for (let i = range.start; i <= range.end; i++) {
+                if (!isQuestionAnswered(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function updateJumpShortcut() {
+            const row = document.getElementById('questionJumpRow');
+            const button = document.getElementById('btnJump');
+            jumpTargetIndex = -1;
+
+            if (!row || !button || !reviewMode || !allQuestions.length) {
+                if (row) row.classList.remove('active');
+                return;
+            }
+
+            const range = getPartRangeForIndex(currentQuestionIndex);
+            const nextUnanswered = findNextUnansweredInRange(currentQuestionIndex, range.start, range.end);
+
+            if (nextUnanswered >= 0) {
+                jumpTargetIndex = nextUnanswered;
+                button.textContent = '跳到下一道未完成';
+                row.classList.add('active');
+                return;
+            }
+
+            if (
+                isQuestionAnswered(currentQuestionIndex) &&
+                isCurrentPartComplete(currentQuestionIndex) &&
+                currentQuestionIndex < range.end
+            ) {
+                jumpTargetIndex = range.end;
+                button.textContent = range.part === 1 ? '跳到第一部分最后一题' : '跳到第二部分最后一题';
+                row.classList.add('active');
+                return;
+            }
+
+            row.classList.remove('active');
+        }
+
+        function jumpQuestionShortcut() {
+            if (jumpTargetIndex < 0 || jumpTargetIndex >= allQuestions.length) {
+                return;
+            }
+
+            currentQuestionIndex = jumpTargetIndex;
+            showQuestion(currentQuestionIndex);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function persistDraftState() {
@@ -2721,6 +2837,8 @@
                 btnNext.innerHTML = '下一题 <span>→</span>';
             }
 
+            updateJumpShortcut();
+
             // Animate card
             const card = document.getElementById('questionCard');
             card.style.animation = 'none';
@@ -2780,8 +2898,8 @@
                 // Last question - validate all and submit
                 const unanswered = allQuestions.filter(q => !questionAnswers[q.name]);
                 if (unanswered.length > 0) {
-                    alert(`还有 ${unanswered.length} 道题未完成，请返回完成。`);
-                    // Go to first unanswered
+                    reviewMode = true;
+                    alert(`还有 ${unanswered.length} 道题未完成，系统将带你回到未完成题目。`);
                     const firstUnanswered = allQuestions.indexOf(unanswered[0]);
                     currentQuestionIndex = firstUnanswered;
                     showQuestion(currentQuestionIndex);
@@ -2792,8 +2910,17 @@
                 injectAnswersForScoring();
                 calculateScores();
                 submitToGoogleSheets();
-                generateReport();
                 clearDraftState();
+                reviewMode = false;
+
+                if (isMiniProgram && !isReportMode) {
+                    renderMiniProgramSubmittingState();
+                    sendAssessmentCompleteToMiniProgram();
+                    switchStep(3, 4);
+                    return;
+                }
+
+                generateReport();
                 switchStep(3, 4);
             }
         }
@@ -3025,10 +3152,53 @@
         }
 
         // ================= Report Generation =================
+        function renderMiniProgramSubmittingState() {
+            const container = document.getElementById('report-content');
+            const navigation = document.getElementById('reportNavigation');
+            if (navigation) {
+                navigation.style.display = 'none';
+            }
+
+            container.innerHTML = `
+                <div class="report-header">
+                    <div class="brand-label">TALENT UNLIMITED LAB</div>
+                    <h1>正在生成你的报告</h1>
+                    <p>系统正在保存测评结果，并跳转到新版报告页。</p>
+                </div>
+                <div class="report-intro">
+                    <p>请稍等片刻，不需要重复提交。完成后将自动进入新版报告预览。</p>
+                </div>
+            `;
+        }
+
+        function sendAssessmentCompleteToMiniProgram() {
+            postMessageToMiniProgram({
+                type: 'assessment_complete',
+                data: {
+                    talentType: window.reportData.roleData.name,
+                    top3: window.reportData.top3,
+                    part1Scores: window.reportData.part1Scores,
+                    part2Scores: window.reportData.part2Scores,
+                    roleData: window.reportData.roleData,
+                    roleKey: window.reportData.roleKey,
+                    matchType: window.reportData.matchType,
+                    userInfo: window.reportData.userInfo,
+                    rawAnswers: window.reportData.rawAnswers,
+                    returnTarget: 'report',
+                    timestamp: new Date().toISOString()
+                }
+            });
+        }
+
         function generateReport() {
             const container = document.getElementById('report-content');
+            const navigation = document.getElementById('reportNavigation');
             const data = window.reportData;
             const role = data.roleData;
+
+            if (navigation) {
+                navigation.style.display = 'flex';
+            }
 
             let matchNote = "";
             if (data.matchType === "permutation" || data.matchType === "similar") {
@@ -3143,25 +3313,6 @@
 
             container.innerHTML = html;
 
-            // Post to miniprogram
-            if (!isReportMode) {
-                postMessageToMiniProgram({
-                    type: 'assessment_complete',
-                    data: {
-                        talentType: window.reportData.roleData.name,
-                        top3: window.reportData.top3,
-                        part1Scores: window.reportData.part1Scores,
-                        part2Scores: window.reportData.part2Scores,
-                        roleData: window.reportData.roleData,
-                        roleKey: window.reportData.roleKey,
-                        matchType: window.reportData.matchType,
-                        userInfo: window.reportData.userInfo,
-                        rawAnswers: window.reportData.rawAnswers,
-                        returnTarget: 'report',
-                        timestamp: new Date().toISOString()
-                    }
-                });
-            }
         }
 
         function downloadReport() {

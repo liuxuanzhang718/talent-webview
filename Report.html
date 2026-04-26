@@ -548,72 +548,6 @@ body.pdf-exporting .delay-4 {
 }
 
 /* ══════════════════════════════════════
-   G · CURRENT ACTIVATION
-══════════════════════════════════════ */
-.invest-task-box {
-  background: rgba(200,151,58,0.06);
-  border: 1px solid rgba(200,151,58,0.2);
-  padding: 18px 24px;
-  margin-bottom: 28px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.invest-task-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 8px; letter-spacing: 3px;
-  color: var(--gold);
-  margin-bottom: 5px;
-}
-.invest-task-value {
-  font-size: 13px; font-weight: 700;
-  color: var(--white);
-  line-height: 1.6;
-}
-.invest-icon { font-size: 28px; flex-shrink: 0; }
-
-.g-bars { }
-.g-bar-row { margin-bottom: 18px; }
-.g-bar-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 7px;
-}
-.g-bar-name { font-size: 13px; color: rgba(255,255,255,0.8); font-weight: 500; }
-.g-bar-status {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px; letter-spacing: 1px;
-  padding: 2px 8px;
-  border: 1px solid;
-}
-.g-bar-status.hot { color: var(--gold-l); border-color: rgba(200,151,58,0.4); background: rgba(200,151,58,0.08); }
-.g-bar-status.mid { color: rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.1); }
-.g-bar-status.low { color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.07); }
-.g-bar-track { height: 3px; background: rgba(255,255,255,0.07); }
-.g-bar-fill { height: 100%; background: linear-gradient(90deg, rgba(200,151,58,0.5), var(--gold)); }
-.g-bar-fill.dim { background: rgba(255,255,255,0.15); }
-.g-bar-fill.low { background: rgba(255,255,255,0.08); }
-
-.gap-insight {
-  margin-top: 28px;
-  border: 1px solid rgba(200,151,58,0.25);
-  border-left: 3px solid var(--gold);
-  padding: 16px 20px;
-  background: rgba(200,151,58,0.04);
-}
-.gap-insight-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 8px; letter-spacing: 3px;
-  color: var(--gold); margin-bottom: 7px;
-}
-.gap-insight-text {
-  font-size: 12px;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.85;
-}
-
-/* ══════════════════════════════════════
    E · POWER / BLIND
 ══════════════════════════════════════ */
 .power-blind-grid {
@@ -904,6 +838,80 @@ body.pdf-exporting .delay-4 {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
 }
+.service-qr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7, 7, 7, 0.74);
+  backdrop-filter: blur(8px);
+}
+.service-qr-modal.active {
+  display: flex;
+}
+.service-qr-dialog {
+  width: min(100%, 430px);
+  padding: 28px 24px 24px;
+  border-radius: 28px;
+  border: 1px solid rgba(200,151,58,0.24);
+  background: linear-gradient(180deg, rgba(20,19,16,0.98) 0%, rgba(16,15,12,0.98) 100%);
+  box-shadow: 0 26px 72px rgba(0,0,0,0.38);
+  text-align: center;
+}
+.service-qr-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-left: auto;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.78);
+  font-size: 16px;
+  cursor: pointer;
+}
+.service-qr-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold);
+}
+.service-qr-title {
+  margin-top: 14px;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--white);
+}
+.service-qr-desc {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.58);
+}
+.service-qr-image-wrap {
+  margin-top: 22px;
+  padding: 16px;
+  border-radius: 22px;
+  background: #fbf8f2;
+}
+.service-qr-image {
+  display: block;
+  width: 100%;
+  border-radius: 16px;
+}
+.service-qr-tip {
+  margin-top: 18px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.58);
+}
 .report-error {
   min-height: 100vh;
   padding: 72px 56px;
@@ -1084,6 +1092,19 @@ body.pdf-exporting .delay-4 {
   </div>
 </div>
 
+<div class="service-qr-modal" id="serviceQrModal" onclick="closeServiceQrModal(event)">
+  <div class="service-qr-dialog" onclick="event.stopPropagation()">
+    <button class="service-qr-close" onclick="closeServiceQrModal(event)">×</button>
+    <div class="service-qr-eyebrow">PRIVATE CHANNEL</div>
+    <div class="service-qr-title" id="serviceQrTitle">添加客服微信</div>
+    <div class="service-qr-desc" id="serviceQrDesc">扫码添加客服微信，获取激活码、个性化方案解读与深度咨询入口。</div>
+    <div class="service-qr-image-wrap">
+      <img class="service-qr-image" src="./qrcode.jpg" alt="客服微信二维码">
+    </div>
+    <div class="service-qr-tip">请在小程序中扫码或保存二维码后添加客服微信。</div>
+  </div>
+</div>
+
 <script>
 const isMiniProgram = window.__wxjs_environment === 'miniprogram';
 const ROLE_CARD_LIBRARY = window.REPORT_ROLE_CARDS || {};
@@ -1121,9 +1142,9 @@ const DIMENSION_META = {
   '目标执行力': { en: 'EXECUTION DRIVE', short: '执行' }
 };
 const CALIBRATION_META = {
-  '学习感知力': { en: 'LEARNING ACUITY', aliases: ['学习感知力', '潜能校准', '学习感知', '学习潜能'] },
-  '创意活跃度': { en: 'CREATIVE ACTIVITY', aliases: ['创意活跃度', '优势发挥', '创意活跃', '优势激发'] },
-  '内驱动状态': { en: 'INTRINSIC DRIVE', aliases: ['内驱动状态', '环境适配', '内驱动力', '环境匹配度'] }
+  '学习感知力': { en: '学习感知力', aliases: ['学习感知力', '潜能校准', '学习感知', '学习潜能'] },
+  '创意活跃度': { en: '创意活跃度', aliases: ['创意活跃度', '优势发挥', '创意活跃', '优势激发'] },
+  '内驱动状态': { en: '内驱动状态', aliases: ['内驱动状态', '环境适配', '内驱动力', '环境匹配度'] }
 };
 const ACTION_META = [
   { key: 'work', icon: '🎓', en: 'WORK & STUDY', title: '工作与学业' },
@@ -1287,6 +1308,47 @@ function postMessageToMiniProgram(messageData) {
   } catch (error) {
     console.warn('[Report] postMessage failed:', error);
     return false;
+  }
+}
+
+function navigateMiniProgramPage(url) {
+  if (!isMiniProgram) {
+    return false;
+  }
+
+  try {
+    wx?.miniProgram?.navigateTo({ url });
+    return true;
+  } catch (error) {
+    console.warn('[Report] miniProgram navigate failed:', error);
+    return false;
+  }
+}
+
+function openServiceQrModal(type = 'contact') {
+  const modal = document.getElementById('serviceQrModal');
+  const title = document.getElementById('serviceQrTitle');
+  const desc = document.getElementById('serviceQrDesc');
+  if (!modal || !title || !desc) return;
+
+  if (type === 'unlock') {
+    title.textContent = '获取激活码'
+    desc.textContent = '扫码添加客服微信，获取完整报告激活码，并解锁 PDF 下载。'
+  } else {
+    title.textContent = '添加客服微信'
+    desc.textContent = '扫码添加客服微信，获取激活码、个性化方案解读与深度咨询入口。'
+  }
+
+  modal.classList.add('active');
+}
+
+function closeServiceQrModal(event) {
+  if (event) {
+    event.stopPropagation();
+  }
+  const modal = document.getElementById('serviceQrModal');
+  if (modal) {
+    modal.classList.remove('active');
   }
 }
 
@@ -1738,26 +1800,6 @@ function getCalibrationSummary(name, score) {
     : '目前的任务还没有完全点燃你的内驱力，建议用更清晰的小目标和反馈把状态重新带起来。';
 }
 
-function getActivationStatus(value) {
-  if (value >= 4.1) {
-    return { label: '高度激活 ↑', className: 'hot' };
-  }
-  if (value >= 3.4) {
-    return { label: '部分激活', className: 'mid' };
-  }
-  return { label: '低度激活', className: 'low' };
-}
-
-function buildActivationInsight(data, dimensionItems) {
-  const top3 = data.top3.slice(0, 3).join(' × ');
-  const highCount = dimensionItems.filter((item) => item.value >= 4.0).length;
-  const lowNames = dimensionItems.slice(-2).map((item) => item.name).join('、');
-  if (highCount >= 3) {
-    return `你的核心三维（${escapeHtml(top3)}）在当前场景下被明显点亮，这说明你正在投入的事情与天赋结构高度匹配。接下来可以把注意力放在 ${escapeHtml(lowNames)} 的补位上，让优势发挥得更稳。`;
-  }
-  return `你已经在当前场景中激活了一部分优势，但还有一些维度没有完全被调动起来。尤其是 ${escapeHtml(lowNames)}，可以在接下来的学习、协作或环境选择里重点补强。`;
-}
-
 function renderCoverSection(data) {
   const roleCard = getRoleCardData(data.roleData.name || '', data);
   const roleName = (roleCard && roleCard.name) || data.roleData.name || '综合型人才';
@@ -1895,44 +1937,8 @@ function renderCalibrationSection(data) {
     <div class="section" id="section-f">
       <div class="section-eyebrow">F · POTENTIAL CALIBRATION</div>
       <div class="section-title">潜能校准</div>
-      <div class="section-sub">学习感知力 / 创意活跃度 / 内驱动状态<br>当前 % 激活程度</div>
+      <div class="section-sub">学习感知力 / 创意活跃度 / 内驱动状态<br>当前%激活程度，你的潜能在当前场景下激活了多少</div>
       <div class="cal-grid">${cards}</div>
-    </div>
-  `;
-}
-
-function renderActivationSection(data) {
-  const items = getOrderedDimensionItems(data.part2Scores, data.top3);
-  const bars = items.map((item) => {
-    const status = getActivationStatus(item.value);
-    return `
-      <div class="g-bar-row">
-        <div class="g-bar-meta">
-          <div class="g-bar-name">${escapeHtml(item.name)}</div>
-          <div class="g-bar-status ${status.className}">${escapeHtml(status.label)}</div>
-        </div>
-        <div class="g-bar-track"><div class="g-bar-fill ${status.className === 'mid' ? 'dim' : status.className === 'low' ? 'low' : ''}" style="width:${Math.max(item.percent, 12)}%"></div></div>
-      </div>
-    `;
-  }).join('');
-
-  return `
-    <div class="section" id="section-g">
-      <div class="section-eyebrow">G · CURRENT ACTIVATION</div>
-      <div class="section-title">当前投入 × 潜能激发</div>
-      <div class="section-sub">你的潜能在当前场景下激活了多少</div>
-      <div class="invest-task-box">
-        <div class="invest-icon">⚡</div>
-        <div>
-          <div class="invest-task-label">YOU ARE CURRENTLY FOCUSED ON</div>
-          <div class="invest-task-value">${escapeHtml(data.userInfo.focus || '当前未填写主要投入事项')}</div>
-        </div>
-      </div>
-      <div class="g-bars">${bars}</div>
-      <div class="gap-insight">
-        <div class="gap-insight-label">INSIGHT · 潜能 × 当前投入的匹配度</div>
-        <div class="gap-insight-text">${escapeHtml(buildActivationInsight(data, items))}</div>
-      </div>
     </div>
   `;
 }
@@ -2087,8 +2093,8 @@ function renderActionSection(data) {
     `;
 
   return `
-    <div class="section" id="section-h">
-      <div class="section-eyebrow">H · ACTION GUIDE</div>
+    <div class="section" id="section-g">
+      <div class="section-eyebrow">G · ACTION GUIDE</div>
       <div class="section-title">行动建议</div>
       <div class="section-sub">工作学业 / 日常生活 / 社交人际 / 长期发展</div>
       <div class="action-grid">${html}</div>
@@ -2106,8 +2112,7 @@ function renderArcAndFooter(data) {
         <a class="quick-nav-link active" href="#section-d">D · 核心优势</a>
         <a class="quick-nav-link active" href="#section-e">E · 盲区揭示</a>
         <a class="quick-nav-link active" href="#section-f">F · 潜能校准</a>
-        <a class="quick-nav-link active" href="#section-g">G · 当前激活</a>
-        <a class="quick-nav-link active" href="#section-h">H · 行动建议</a>
+        <a class="quick-nav-link active" href="#section-g">G · 行动建议</a>
       </div>
     </div>
     <div class="report-footer">
@@ -2129,7 +2134,7 @@ function renderPreviewUnlockSection(data) {
         </div>
         <div class="preview-unlock-actions">
           <button class="preview-unlock-link" onclick="requestReportUnlock()">输入激活码解锁</button>
-          <button class="preview-unlock-link secondary" onclick="contactService()">联系客服获取激活码</button>
+          <button class="preview-unlock-link secondary" onclick="contactService()">添加客服微信获取激活码</button>
         </div>
       </div>
     </div>
@@ -2154,7 +2159,6 @@ function generateReportMarkup(data, accessLevel = 'full') {
     renderCompleteProfileSection(data),
     renderStrengthSection(data),
     renderCalibrationSection(data),
-    renderActivationSection(data),
     renderPowerBlindSection(data),
     renderActionSection(data),
     renderArcAndFooter(data)
@@ -2276,24 +2280,34 @@ async function createPdfDocument() {
 
 function requestReportUnlock() {
   const reportId = window.reportData && window.reportData.reportId || getURLParameter('reportId') || '';
+  const unlockUrl = `/pages/activate/index?mode=reportUnlock${reportId ? `&reportId=${encodeURIComponent(reportId)}` : ''}`;
+
+  if (navigateMiniProgramPage(unlockUrl)) {
+    return;
+  }
+
   const posted = postMessageToMiniProgram({
     type: 'unlock_report_request',
     data: { reportId }
   });
 
   if (!posted) {
-    alert('请在小程序内输入激活码，解锁完整报告。');
+    openServiceQrModal('unlock');
   }
 }
 
 function contactService() {
+  if (navigateMiniProgramPage('/pages/service-contact/index?source=report')) {
+    return;
+  }
+
   const posted = postMessageToMiniProgram({
     type: 'contact_service_request',
     data: {}
   });
 
   if (!posted) {
-    alert('请联系客服获取激活码。');
+    openServiceQrModal('contact');
   }
 }
 
