@@ -2916,6 +2916,7 @@
                 if (isMiniProgram && !isReportMode) {
                     renderMiniProgramSubmittingState();
                     sendAssessmentCompleteToMiniProgram();
+                    routeToNativeReportGenerating();
                     switchStep(3, 4);
                     return;
                 }
@@ -3188,6 +3189,23 @@
                     timestamp: new Date().toISOString()
                 }
             });
+        }
+
+        function routeToNativeReportGenerating() {
+            if (!isMiniProgram || isReportMode) {
+                return;
+            }
+
+            const talentType = window.reportData?.roleData?.name || '';
+            const url = `/pages/report-generating/index?submittedAt=${Date.now()}&talentType=${encodeURIComponent(talentType)}`;
+
+            setTimeout(() => {
+                try {
+                    wx?.miniProgram?.redirectTo({ url });
+                } catch (error) {
+                    console.warn('[MiniProgram] redirect to report generating failed:', error);
+                }
+            }, 120);
         }
 
         function generateReport() {
