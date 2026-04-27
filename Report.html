@@ -749,11 +749,12 @@ body.pdf-exporting .delay-4 {
   background: var(--ink);
   border-top: 1px solid rgba(255,255,255,0.05);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
 }
 .report-nav-btn {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   border: none;
   outline: none;
   border-radius: 999px;
@@ -954,6 +955,13 @@ body.pdf-exporting .delay-4 {
     padding-left: 22px;
     padding-right: 22px;
   }
+  .report-navigation {
+    gap: 10px;
+  }
+  .report-nav-btn {
+    padding: 16px 12px;
+    font-size: 14px;
+  }
   .preview-unlock-section {
     padding: 4px 22px 50px;
   }
@@ -1089,6 +1097,7 @@ body.pdf-exporting .delay-4 {
 <div class="report-app" id="reportApp">
   <main id="reportMount"></main>
   <div class="report-navigation" id="reportNavigation" style="display:none;">
+    <button class="report-nav-btn secondary" id="shareButton" onclick="shareReport()">分享给朋友</button>
     <button class="report-nav-btn primary" id="downloadButton" onclick="downloadReport()">下载 PDF 报告</button>
   </div>
 </div>
@@ -1302,6 +1311,10 @@ function getURLParameter(name) {
 
 function getReportAccessLevel() {
   return getURLParameter('access') === 'preview' ? 'preview' : 'full';
+}
+
+function isSharedReportView() {
+  return getURLParameter('shared') === '1';
 }
 
 function postMessageToMiniProgram(messageData) {
@@ -2123,8 +2136,8 @@ function renderArcAndFooter(data) {
       </div>
     </div>
     <div class="report-footer">
-      <div class="footer-brand">TALENT UNLIMITED LAB · 天赋无限研究所</div>
-      <div class="footer-date">GENERATED · ${formatDisplayDate(data.completedAt)}</div>
+      <div class="footer-brand">TALENT UNLIMITED LAB</div>
+      <div class="footer-date">${formatDisplayDate(data.completedAt)}</div>
     </div>
   `;
 }
@@ -2185,16 +2198,27 @@ function renderError(message) {
     </div>
   `;
   nav.style.display = 'flex';
+  const shareButton = document.getElementById('shareButton');
   const downloadButton = document.getElementById('downloadButton');
+  if (shareButton) shareButton.style.display = 'none';
   if (downloadButton) downloadButton.style.display = 'none';
 }
 
 function updateReportNavigation(accessLevel) {
   const nav = document.getElementById('reportNavigation');
+  const shareButton = document.getElementById('shareButton');
   const downloadButton = document.getElementById('downloadButton');
   const isPreview = accessLevel === 'preview';
+  const isShared = isSharedReportView();
 
   nav.style.display = 'flex';
+
+  shareButton.style.display = isShared ? 'none' : '';
+  shareButton.disabled = isPreview;
+  shareButton.textContent = isPreview ? '解锁后可分享报告' : '分享给朋友';
+  shareButton.classList.toggle('locked', isPreview);
+  shareButton.classList.toggle('secondary', !isPreview);
+
   downloadButton.disabled = isPreview;
   downloadButton.textContent = isPreview ? '解锁后可下载 PDF 报告' : '下载 PDF 报告';
   downloadButton.classList.toggle('locked', isPreview);
@@ -2318,6 +2342,41 @@ function contactService() {
   if (!posted) {
     openServiceQrModal('contact');
   }
+}
+
+function shareReport() {
+  if (!window.reportData) return;
+  if (window.reportAccess === 'preview') {
+    alert('解锁完整报告后即可分享给朋友。');
+    return;
+  }
+
+  if (isSharedReportView()) {
+    alert('这是朋友分享给你的完整报告。');
+    return;
+  }
+
+  const reportId = window.reportData.reportId || getURLParameter('reportId') || '';
+  if (!reportId) {
+    alert('报告 ID 缺失，请返回小程序后重试。');
+    return;
+  }
+
+  const shareUrl = `/pages/share/index?mode=report&reportId=${encodeURIComponent(reportId)}`;
+  if (navigateMiniProgramPage(shareUrl)) {
+    return;
+  }
+
+  const posted = postMessageToMiniProgram({
+    type: 'share_report_request',
+    data: { reportId }
+  });
+
+  if (posted) {
+    return;
+  }
+
+  alert('请在小程序内打开报告后分享给朋友。');
 }
 
 async function downloadReport() {
