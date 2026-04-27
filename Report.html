@@ -2282,18 +2282,20 @@ function requestReportUnlock() {
   const reportId = window.reportData && window.reportData.reportId || getURLParameter('reportId') || '';
   const unlockUrl = `/pages/activate/index?mode=reportUnlock${reportId ? `&reportId=${encodeURIComponent(reportId)}` : ''}`;
 
-  if (navigateMiniProgramPage(unlockUrl)) {
-    return;
-  }
-
   const posted = postMessageToMiniProgram({
     type: 'unlock_report_request',
     data: { reportId }
   });
 
-  if (!posted) {
-    openServiceQrModal('unlock');
+  if (posted) {
+    return;
   }
+
+  if (navigateMiniProgramPage(unlockUrl)) {
+    return;
+  }
+
+  alert(isMiniProgram ? '请返回小程序后重试，在激活页输入激活码解锁完整报告。' : '请在小程序内输入激活码，解锁完整报告。');
 }
 
 function contactService() {
